@@ -4,10 +4,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.14.36025.13 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreoCreator.API", "ChoreoCreator.API\ChoreoCreator.API.csproj", "{166F299C-88DD-4DF6-ACF6-73AC6AF4DC65}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C656ECA5-1137-4658-8F7D-8E30CC432E2F} = {C656ECA5-1137-4658-8F7D-8E30CC432E2F}
+		{EFD7BA29-694B-4174-89C9-4621C07A456A} = {EFD7BA29-694B-4174-89C9-4621C07A456A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreoCreator.Application", "ChoreoCreator.Application\ChoreoCreator.Application.csproj", "{C656ECA5-1137-4658-8F7D-8E30CC432E2F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2299AAF1-A2DF-4A7A-851E-1D1B0A6D951D} = {2299AAF1-A2DF-4A7A-851E-1D1B0A6D951D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreoCreator.DataAccess", "ChoreoCreator.DataAccess\ChoreoCreator.DataAccess.csproj", "{EFD7BA29-694B-4174-89C9-4621C07A456A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C656ECA5-1137-4658-8F7D-8E30CC432E2F} = {C656ECA5-1137-4658-8F7D-8E30CC432E2F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreoCreator.Core", "ChoreoCreator.Core\ChoreoCreator.Core.csproj", "{2299AAF1-A2DF-4A7A-851E-1D1B0A6D951D}"
 EndProject
