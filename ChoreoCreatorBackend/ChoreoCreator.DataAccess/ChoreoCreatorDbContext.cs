@@ -11,7 +11,7 @@ namespace ChoreoCreator.DataAccess
         }
 
         public DbSet<ScenarioEntity> Scenarios { get; set; }
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; } = null!;
         public DbSet<FormationEntity> Formations { get; set; }
         public DbSet<DancerPositionEntity> DancerPositions { get; set; }
     }

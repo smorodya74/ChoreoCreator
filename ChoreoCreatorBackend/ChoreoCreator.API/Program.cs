@@ -2,6 +2,7 @@ using ChoreoCreator.Application.Services;
 using ChoreoCreator.Core.Abstractions;
 using ChoreoCreator.DataAccess;
 using ChoreoCreator.DataAccess.Repositories;
+using ChoreoCreator.DataAccess.Seed;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,8 +21,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,5 +35,15 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// 👉 Сидинг перед запуском
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ChoreoCreatorDbContext>();
+
+    db.Database.Migrate(); // применить миграции (если не применены)
+
+    await FakeUserSeeder.SeedAsync(db); // 👈 добавить заглушку пользователя
+}
 
 app.Run();
