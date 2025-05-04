@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChoreoCreator.Core.Models
 {
-    internal class Marker
+    public class Marker
     {
         public Guid Id { get; }
         public Guid ScenarioId { get; }
