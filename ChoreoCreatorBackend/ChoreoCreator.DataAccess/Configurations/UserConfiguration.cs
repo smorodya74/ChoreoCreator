@@ -8,7 +8,7 @@ namespace ChoreoCreator.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
-            throw new NotImplementedException();
+            builder.HasKey(x => x.Id);
         }
     }
 }
