@@ -1,14 +1,15 @@
-﻿using ChoreoCreator.Core.Models;
+﻿using ChoreoCreator.Core.Abstractions;
+using ChoreoCreator.Core.Models;
 using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreoCreator.DataAccess.Repositories
 {
-    public class ScenarioRepository
+    public class ScenariosRepository : IScenariosRepository
     {
         private readonly ChoreoCreatorDbContext _context;
 
-        public ScenarioRepository(ChoreoCreatorDbContext context)
+        public ScenariosRepository(ChoreoCreatorDbContext context)
         {
             _context = context;
         }
@@ -18,7 +19,7 @@ namespace ChoreoCreator.DataAccess.Repositories
             var scenarioEntities = await _context.Scenarios
                 .AsNoTracking()
                 .ToListAsync();
-        
+
             var scenarios = scenarioEntities
                 .Select(b => Scenario.Create(b.Id, b.Title, b.Description, b.DancerCount, b.UserId, b.CreatedAt, b.UpdatedAt).Scenario)
                 .ToList();
