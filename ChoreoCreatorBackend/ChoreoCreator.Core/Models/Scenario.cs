@@ -8,21 +8,10 @@ namespace ChoreoCreator.Core.Models
 {
     public class Scenario
     {
-        public Guid Id { get; }
-        public string Title { get; private set; }
-        public string Description { get; private set; }
-        public int DancerCount { get; }
-        public Guid UserId { get; }
-        public DateTime CreatedAt { get; }
-        public DateTime UpdatedAt { get; private set; }
+        public const int MAX_TITLE_LENGTH = 100;
+        public const int MAX_DESCRIPTION_LENGTH = 250;
 
-        private readonly List<Formation> _formations = new();
-        private readonly List<Marker> _markers = new();
-
-        public IReadOnlyCollection<Formation> Formations => _formations.AsReadOnly();
-        public IReadOnlyCollection<Marker> Markers => _markers.AsReadOnly();
-
-        public Scenario(Guid id, string title, string description, int dancerCount, Guid userId)
+        public Scenario(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
         {
             // ВАЛИДАЦИЮ НА TITLE, DancerCount (1-16)
 
@@ -33,6 +22,32 @@ namespace ChoreoCreator.Core.Models
             UserId = userId;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = CreatedAt;
+        }
+
+        public Guid Id { get; }
+        public string Title { get; private set; }
+        public string Description { get; private set; }
+        public int DancerCount { get; }
+        public Guid UserId { get; }
+        public DateTime CreatedAt { get; }
+        public DateTime UpdatedAt { get; private set; }
+
+        private readonly List<Formation> _formations = new();
+        public IReadOnlyCollection<Formation> Formations => _formations.AsReadOnly();
+                
+
+        public static (Scenario Scenario, string Error) Create(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
+        {
+            var error = string.Empty;
+
+            if (string.IsNullOrEmpty(title) || title.Length > MAX_TITLE_LENGTH)
+            {
+                error = "Title can not be empty or be longer 100 symbols";
+            }
+
+            var scenario = new Scenario(id, title, description, dancerCount, userId, createdAt, updatedAt);
+
+            return (scenario, error);
         }
 
         private void Touch()
@@ -61,13 +76,6 @@ namespace ChoreoCreator.Core.Models
             Touch();
         }
 
-        public void AddMarker(Marker marker)
-        {
-            if (marker == null) throw new ArgumentNullException(nameof(marker));
-            _markers.Add(marker);
-            Touch();
-        }
-
         public void RemoveFormation(Guid formationId)
         {
             var formation = _formations.FirstOrDefault(f => f.Id == formationId);
@@ -78,15 +86,6 @@ namespace ChoreoCreator.Core.Models
             }
         }
 
-        public void RemoveMarker(Guid markerId)
-        {
-            var marker = _markers.FirstOrDefault(m => m.Id == markerId);
-            if (marker != null)
-            {
-                _markers.Remove(marker);
-                Touch();
-            }
-        }
 
         public byte[] ExportToPdf()
         {
