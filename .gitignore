@@ -10,6 +10,12 @@
 *.userosscache
 *.sln.docstates
 
+# Docker-специфичные файлы
+**/Dockerfile
+**/.dockerignore
+**/docker-compose*.yml
+pgdata/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
