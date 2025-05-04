@@ -10,7 +10,7 @@
         {
             if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Email is required.");
             if (string.IsNullOrWhiteSpace(username)) throw new ArgumentException("Username is required.");
-
+                
             Id = id;
             Email = email;
             Username = username;
