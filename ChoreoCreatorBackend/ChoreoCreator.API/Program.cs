@@ -1,4 +1,7 @@
+using ChoreoCreator.Application.Services;
+using ChoreoCreator.Core.Abstractions;
 using ChoreoCreator.DataAccess;
+using ChoreoCreator.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +12,9 @@ builder.Services.AddDbContext<ChoreoCreatorDbContext>(
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ChoreoCreatorDbContext)));
     });
+
+builder.Services.AddScoped<IScenariosServices, ScenariosServices>();
+builder.Services.AddScoped<IScenariosRepository, ScenariosRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
