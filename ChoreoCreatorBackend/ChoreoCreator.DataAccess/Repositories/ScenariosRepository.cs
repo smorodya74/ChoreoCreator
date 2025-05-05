@@ -49,12 +49,12 @@ namespace ChoreoCreator.DataAccess.Repositories
         public async Task<Guid> Update(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
         {
             await _context.Scenarios
-                .Where(b => b.Id == id)
+                .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(s => s
-                    .SetProperty(b => b.Title, b => title)
-                    .SetProperty(b => b.Description, b => description)
-                    .SetProperty(b => b.DancerCount, b => dancerCount)
-                    .SetProperty(b => b.UpdatedAt, b => DateTime.UtcNow));
+                    .SetProperty(s => s.Title, s => title)
+                    .SetProperty(s => s.Description, s => description)
+                    .SetProperty(s => s.DancerCount, s => dancerCount)
+                    .SetProperty(s => s.UpdatedAt, s => DateTime.UtcNow));
 
             return id;
         }
@@ -62,7 +62,7 @@ namespace ChoreoCreator.DataAccess.Repositories
         public async Task<Guid> Delete(Guid id)
         {
             await _context.Scenarios
-                .Where(b => b.Id == id)
+                .Where(s => s.Id == id)
                 .ExecuteDeleteAsync();
 
             return id;

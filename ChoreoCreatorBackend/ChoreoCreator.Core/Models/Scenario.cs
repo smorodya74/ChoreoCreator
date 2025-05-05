@@ -1,10 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
-
-namespace ChoreoCreator.Core.Models
+﻿namespace ChoreoCreator.Core.Models
 {
     public class Scenario
     {
@@ -41,9 +35,13 @@ namespace ChoreoCreator.Core.Models
             var error = string.Empty;
 
             if (string.IsNullOrEmpty(title) || title.Length > MAX_TITLE_LENGTH)
-            {
-                error = "Title can not be empty or be longer 100 symbols";
-            }
+                return (null!, "Название не может быть пустым или длиннее 100 символов");
+            
+            if (description.Length > MAX_DESCRIPTION_LENGTH)
+                return (null!, "Описание не может быть длиннее 250 символов");
+
+            if (dancerCount < 1 || dancerCount > 16)
+                return (null!, "Количество танцоров должно быть от 1 до 16");
 
             var scenario = new Scenario(id, title, description, dancerCount, userId, createdAt, updatedAt);
 
@@ -57,7 +55,8 @@ namespace ChoreoCreator.Core.Models
 
         public void Rename(string newTitle)
         {
-            // Валидация на title
+            if (string.IsNullOrWhiteSpace(newTitle) || newTitle.Length > MAX_TITLE_LENGTH)
+                throw new ArgumentException("Название не может быть пустым или длиннее 100 символов");
 
             Title = newTitle;
             Touch();
@@ -65,6 +64,9 @@ namespace ChoreoCreator.Core.Models
 
         public void UpdateDescription(string newDescription)
         {
+            if (newDescription != null && newDescription.Length > MAX_DESCRIPTION_LENGTH)
+                throw new ArgumentException("Описание не может быть длиннее 250 символов");
+
             Description = newDescription ?? string.Empty;
             Touch();
         }
@@ -89,9 +91,9 @@ namespace ChoreoCreator.Core.Models
 
         public byte[] ExportToPdf()
         {
-            // Это будет реализовано в Application/Infrastructure слоях
-            // Здесь просто сигнатура
-            throw new NotImplementedException("PDF export is implemented in application layer.");
+            throw new NotImplementedException("Реализация в Application слое");
         }
+
+
     }
 }

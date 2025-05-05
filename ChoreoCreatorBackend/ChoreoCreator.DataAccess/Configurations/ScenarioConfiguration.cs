@@ -9,20 +9,20 @@ namespace ChoreoCreator.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<ScenarioEntity> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(s => s.Id);
 
-            builder.Property(b => b.Title)
+            builder.Property(s => s.Title)
                 .HasMaxLength(Scenario.MAX_TITLE_LENGTH)
                 .IsRequired();
 
-            builder.Property(b => b.Description)
+            builder.Property(s => s.Description)
                 .HasMaxLength(Scenario.MAX_DESCRIPTION_LENGTH)
                 .IsRequired();
 
-            builder.Property(b => b.DancerCount)
+            builder.Property(s => s.DancerCount)
                 .IsRequired();
 
-            builder.Property(b => b.UserId)
+            builder.Property(s => s.UserId)
                 .IsRequired();
         }
     }
