@@ -4,9 +4,13 @@
     {
         public Guid Id { get; set; }
 
-        public string Email { get; set; } = default!;
-        public string Username { get; set; } = default!;
-        public string PasswordHash { get; set; } = default!;
+        public string Email { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public byte[] PasswordHash { get; set; } = Array.Empty<byte>();
+        public string Role { get; set; } = "User";
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public ICollection<ScenarioEntity> Scenarios { get; set; } = new List<ScenarioEntity>();
     }
