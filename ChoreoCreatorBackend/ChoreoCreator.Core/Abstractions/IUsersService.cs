@@ -1,4 +1,5 @@
 ﻿using ChoreoCreator.Core.Models;
+using ChoreoCreator.Core.ValueObjects;
 
 namespace ChoreoCreator.Core.Abstractions
 {
@@ -6,5 +7,7 @@ namespace ChoreoCreator.Core.Abstractions
     {
         Task<User?> GetByEmail(string email);  // Получить пользователя по email
         Task<User?> ValidateCredentials(string email, string password);  // Проверка логина и пароля
+
+        Task<Result<UserId, string>> RegisterUser(string email, string password, CancellationToken ct);
     }
 }
