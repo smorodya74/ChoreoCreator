@@ -10,7 +10,7 @@ namespace ChoreoCreator.DataAccess.Configurations
         {
             builder.HasKey(f => f.Id);
 
-            builder.Property(f => f.Order)
+            builder.Property(f => f.NumberOnScenario)
                 .IsRequired();
 
             builder.HasOne(f => f.Scenario)
@@ -18,7 +18,7 @@ namespace ChoreoCreator.DataAccess.Configurations
                 .HasForeignKey(f => f.ScenarioId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(f => new { f.ScenarioId, f.Order })
+            builder.HasIndex(f => new { f.ScenarioId, f.NumberOnScenario })
                 .IsUnique();
         }
     }

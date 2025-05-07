@@ -1,10 +1,11 @@
-﻿using ChoreoCreator.Core.Models;
+﻿using ChoreoCreator.Core.Abstractions;
+using ChoreoCreator.Core.Models;
 using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreoCreator.DataAccess.Repositories
 {
-    public class FormationsRepository
+    public class FormationsRepository : IFormationsRepository
     {
         private readonly ChoreoCreatorDbContext _context;
 
@@ -24,9 +25,14 @@ namespace ChoreoCreator.DataAccess.Repositories
             return entities
                 .Select(e =>
                 {
-                    var (formation, _) = Formation.Create(e.Id, e.ScenarioId, e.Order);
+                    var (formation, _) = Formation.Create(e.Id, e.ScenarioId, e.NumberOnScenario);
+
                     foreach (var p in e.DancerPositions)
-                        formation.AddDancerPosition(new DancerPosition(p.DancerNumber, p.X, p.Y));
+                    {
+                        var (dancerPosition, _) = DancerPosition.Create(p.Id, p.FormationId, p.DancerNumber, p.X, p.Y);
+                        formation.AddDancerPosition(dancerPosition);
+                    }
+
                     return formation;
                 })
                 .ToList();
@@ -38,7 +44,7 @@ namespace ChoreoCreator.DataAccess.Repositories
             {
                 Id = formation.Id,
                 ScenarioId = formation.ScenarioId,
-                Order = formation.Order,
+                NumberOnScenario = formation.NumberOnScenario,
                 DancerPositions = formation.DancerPositions
                     .Select(p => new DancerPositionEntity
                     {

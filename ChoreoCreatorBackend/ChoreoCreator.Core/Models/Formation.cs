@@ -17,12 +17,12 @@
 
         public IReadOnlyCollection<DancerPosition> DancerPositions => _dancerPositions.AsReadOnly();
 
-        public static (Formation Formation, string Error) Create(Guid id, Guid scenarioId, int order)
+        public static (Formation Formation, string Error) Create(Guid id, Guid scenarioId, int numberOnScenario)
         {
-            if (order < 0)
+            if (numberOnScenario < 0)
                 return (null!, "Порядковый номер слайда не может быть отрицательным");
 
-            var formation = new Formation(id, scenarioId, order);
+            var formation = new Formation(id, scenarioId, numberOnScenario);
 
             return (formation, string.Empty);
         }
@@ -48,7 +48,7 @@
         {
             var position = _dancerPositions.FirstOrDefault(p => p.DancerNumber == dancerNumber);
             
-            position?.SetPosition(x, y);
+            position?.UpdatePosition(x, y);
         }
     }
 }

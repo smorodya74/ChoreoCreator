@@ -8,7 +8,7 @@
 
         public ScenarioEntity? Scenario { get; set; }
 
-        public int Order { get; set; }
+        public int NumberOnScenario { get; set; }
 
         public ICollection<DancerPositionEntity> DancerPositions { get; set; } = new List<DancerPositionEntity>();
     }
