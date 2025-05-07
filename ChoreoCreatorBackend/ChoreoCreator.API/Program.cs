@@ -36,14 +36,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// 👉 Сидинг перед запуском
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ChoreoCreatorDbContext>();
 
-    db.Database.Migrate(); // применить миграции (если не применены)
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<ChoreoCreatorDbContext>();
 
-    await FakeUserSeeder.SeedAsync(db); // 👈 добавить заглушку пользователя
-}
+//    db.Database.Migrate();
+
+//    await FakeUserSeeder.SeedAsync(db);
+//}
 
 app.Run();

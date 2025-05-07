@@ -8,7 +8,18 @@ namespace ChoreoCreator.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<FormationEntity> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(f => f.Id);
+
+            builder.Property(f => f.Order)
+                .IsRequired();
+
+            builder.HasOne(f => f.Scenario)
+                .WithMany(s => s.Formations)
+                .HasForeignKey(f => f.ScenarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(f => new { f.ScenarioId, f.Order })
+                .IsUnique();
         }
     }
 }
