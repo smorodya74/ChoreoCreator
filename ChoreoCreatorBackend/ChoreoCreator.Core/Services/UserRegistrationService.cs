@@ -4,9 +4,6 @@ using ChoreoCreator.Core.ValueObjects;
 
 namespace ChoreoCreator.Core.Services;
 
-/// <summary>
-/// Служба предметной области, TODO: удалить комент после понимания
-/// </summary>
 public class UserRegistrationService
 {
     private readonly IUserPasswordHasher _passwordHasher;
@@ -18,16 +15,21 @@ public class UserRegistrationService
         this._userCollection = userCollection;
     }
 
-    public async Task<Result<User, string>> Register(UserEmail userEmail, UserPassword password, CancellationToken ct)
+    public async Task<Result<User, string>> Register(UserEmail userEmail, Username username, UserPassword password, CancellationToken ct)
     {
-        if (await this._userCollection.UserExistBy(userEmail, ct))
+        if (!Username.CanCreate(username.Value))
+            return "Некорректный username: запрещены специальные символы и пустая строка";
+
+        if (await _userCollection.UserExistBy(userEmail, ct))
         {
             return "Пользователь с такой почтой уже существует";
         }
 
-        var hashedPassword = this._passwordHasher.HashPassword(password);
+        var hashedPassword = _passwordHasher.HashPassword(password);
 
-        return User.Create(userEmail, hashedPassword);
+        var user = User.Create(userEmail, username, hashedPassword);
+
+        return user;
     }
 
 }

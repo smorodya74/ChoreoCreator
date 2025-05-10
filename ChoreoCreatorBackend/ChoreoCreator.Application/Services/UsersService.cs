@@ -1,26 +1,31 @@
 ﻿using ChoreoCreator.Application.Abstractions;
+using ChoreoCreator.Application.Abstractions.Repositories;
+using ChoreoCreator.Core.Contracts;
 using ChoreoCreator.Core.Helpers;
 using ChoreoCreator.Core.Models;
 using ChoreoCreator.Core.Services;
 using ChoreoCreator.Core.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace ChoreoCreator.Core.Services
+namespace ChoreoCreator.Application.Services
 {
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _userRepository;
         private readonly ILogger<UsersService> _logger;
         private readonly UserRegistrationService _userRegistrationService;
+        private readonly IUserPasswordHasher _passwordHasher;
 
         public UsersService(
             IUsersRepository userRepository,
             ILogger<UsersService> logger,
-            UserRegistrationService userRegistrationService)
+            UserRegistrationService userRegistrationService,
+            IUserPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _logger = logger;
-            this._userRegistrationService = userRegistrationService;
+            _userRegistrationService = userRegistrationService;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<User?> GetByEmail(string email)
@@ -33,43 +38,37 @@ namespace ChoreoCreator.Core.Services
             var user = await GetByEmail(email);
 
             if (user == null)
-            {
                 return null;
-            }
 
-            // Проверяем пароль
-            if (_passwordHasher.VerifyHashedPassword(user.PasswordHash, password)
-                != PasswordVerificationResult.Success)
+            var result = _passwordHasher.VerifyHashedPassword(user.PasswordHash, UserPassword.From(password));
+            if (result != PasswordVerificationResult.Success)
             {
-                _logger.LogWarning($"Неверный логин или пароль {email}.");
+                _logger.LogWarning("Неверный логин или пароль для {Email}", email);
                 return null;
             }
 
             return user;
         }
 
-        /// <inheritdoc />
-        public async Task<Result<UserId, string>> RegisterUser(string email, string password, CancellationToken ct)
+        public async Task<Result<UserId, string>> RegisterUser(string email, string username, string password, CancellationToken ct)
         {
-            if (UserEmail.CanCreate(email) == false)
+            if (!UserEmail.CanCreate(email))
             {
-                return "Неправильно указана почта, попробуйте ввести другую"; // Тут пользовательские ошибки на уровне представления
+                return "Введите почту в формате example@mail.ru";
             }
 
-            if (UserPassword.CanCreate(password) == false)
+            if (!UserPassword.CanCreate(password))
             {
-                return $"неправильно указан пароль: максимальная длина {UserPassword.MaximumLength} минимальная {UserPassword.MinimumLength}";
+                return $"Минимальная длина пароля {UserPassword.MinimumLength} символов, максимальная {UserPassword.MaximumLength}.";
             }
 
-            var result = await this._userRegistrationService.Register(UserEmail.From(email), UserPassword.From(password), ct);
+            var result = await _userRegistrationService.Register(UserEmail.From(email), Username.From(username), UserPassword.From(password), ct);
             if (result is { IsFailure: true })
             {
-                // Ну тут ошибка должна быть не строкой скорее всего, это я сделал чтобы быстро написать. Нужно доменные ошибки формировать в ошибки представления
-                // например если у тебя есть два приложения, админка и апи, в одном случае надо подробно рассказать, в другом нет
                 return result.Error; 
             }
 
-            var id = await this._userRepository.Create(result.Value);
+            var id = await _userRepository.Create(result.Value);
 
             return UserId.From(id);
         }

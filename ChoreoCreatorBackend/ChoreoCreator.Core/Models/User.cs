@@ -31,6 +31,8 @@ namespace ChoreoCreator.Core.Models
         public DateTime CreatedAt { get; }
         public DateTime UpdatedAt { get; private set; }
 
+
+        // CREATE для Регистрации
         public static User Create(UserEmail userEmail, Username username, HashUserPassword userPassword)
         {
             Ensure.IsNotNull(userEmail, nameof(userEmail));
@@ -46,6 +48,36 @@ namespace ChoreoCreator.Core.Models
                 DateTime.UtcNow,
                 DateTime.UtcNow
             );
+        }
+
+        // CREATE для восстановления из БД
+        public static (User user, string? error) CreateDB(
+            Guid id,
+            string email,
+            string username,
+            string passwordHash,
+            string role,
+            DateTime createdAt,
+            DateTime updatedAt)
+        {
+            try
+            {
+                var user = new User(
+                    UserId.From(id),
+                    UserEmail.From(email),
+                    Username.From(username),
+                    HashUserPassword.From(passwordHash),
+                    role,
+                    createdAt,
+                    updatedAt
+                );
+
+                return (user, null);
+            }
+            catch (Exception ex)
+            {
+                return (null!, ex.Message);
+            }
         }
 
         public void Rename(Username newUsername)

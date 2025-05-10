@@ -1,6 +1,5 @@
-﻿using System.Net.Mail;
-
-namespace ChoreoCreator.Core.ValueObjects;
+﻿using ChoreoCreator.Core.ValueObjects;
+using System.Net.Mail;
 
 public sealed class UserEmail : ValueObject
 {
@@ -11,11 +10,17 @@ public sealed class UserEmail : ValueObject
         Value = value;
     }
 
+    public static bool CanCreate(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        return MailAddress.TryCreate(value, out _);
+    }
+
     public static UserEmail From(string value)
     {
-        Ensure.IsNotNullOrEmpty(value, nameof(value));
-
-        if (!MailAddress.TryCreate(value, out _))
+        if (!CanCreate(value))
             throw new ArgumentException("Неправильный формат почты", nameof(value));
 
         return new UserEmail(value);

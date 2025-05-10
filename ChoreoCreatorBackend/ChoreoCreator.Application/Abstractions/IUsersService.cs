@@ -9,5 +9,5 @@ public interface IUsersService
     Task<User?> GetByEmail(string email);  // Получить пользователя по email
     Task<User?> ValidateCredentials(string email, string password);  // Проверка логина и пароля
 
-    Task<Result<UserId, string>> RegisterUser(string email, string password, CancellationToken ct);
+    Task<Result<UserId, string>> RegisterUser(string email, string username, string password, CancellationToken ct);
 }
