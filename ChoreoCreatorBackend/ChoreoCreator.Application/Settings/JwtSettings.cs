@@ -1,4 +1,4 @@
-﻿namespace ChoreoCreator.Application.Settings
+﻿namespace ChoreoCreator.Core.Settings
 {
     public class JwtSettings
     {

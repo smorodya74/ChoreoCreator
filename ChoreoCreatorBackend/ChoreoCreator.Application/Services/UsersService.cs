@@ -1,11 +1,11 @@
-﻿using ChoreoCreator.Core.Abstractions;
+﻿using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.Helpers;
 using ChoreoCreator.Core.Models;
 using ChoreoCreator.Core.Services;
 using ChoreoCreator.Core.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace ChoreoCreator.Application.Services
+namespace ChoreoCreator.Core.Services
 {
     public class UsersService : IUsersService
     {

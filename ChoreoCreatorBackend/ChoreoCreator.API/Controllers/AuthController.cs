@@ -1,7 +1,7 @@
-﻿using ChoreoCreator.Application.Services;
-using ChoreoCreator.Core.Abstractions;
+﻿using ChoreoCreator.Core.Services;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using ChoreoCreator.Core.Abstractions;
 
 namespace ChoreoCreator.API.Controllers
 {

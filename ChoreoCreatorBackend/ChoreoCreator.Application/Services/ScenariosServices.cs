@@ -2,7 +2,7 @@
 using ChoreoCreator.Core.Models;
 using System.Collections.Specialized;
 
-namespace ChoreoCreator.Application.Services
+namespace ChoreoCreator.Core.Services
 {
     public class ScenariosServices : IScenariosServices
     {

@@ -1,4 +1,4 @@
-﻿using ChoreoCreator.Application.Settings;
+﻿using ChoreoCreator.Core.Settings;
 using ChoreoCreator.Core.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ChoreoCreator.Application.Services
+namespace ChoreoCreator.Core.Services
 {
     public interface IJwtTokenService
     {

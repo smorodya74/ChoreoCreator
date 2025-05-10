@@ -1,5 +1,5 @@
-using ChoreoCreator.Application.Services;
-using ChoreoCreator.Application.Settings;
+using ChoreoCreator.Core.Services;
+using ChoreoCreator.Core.Settings;
 using ChoreoCreator.Core.Abstractions;
 using ChoreoCreator.DataAccess;
 using ChoreoCreator.DataAccess.Repositories;
