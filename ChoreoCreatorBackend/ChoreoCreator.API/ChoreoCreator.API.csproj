@@ -20,4 +20,8 @@
     <ProjectReference Include="..\ChoreoCreator.DataAccess\ChoreoCreator.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Constants\" />
+  </ItemGroup>
+
 </Project>
