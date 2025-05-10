@@ -8,6 +8,8 @@ using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Application.Abstractions.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ChoreoCreator.Application.Services;
+using ChoreoCreator.Core.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +58,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<UserRegistrationService>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IUserPasswordHasher, UserPasswordHasher>();
+builder.Services.AddScoped<IUserCollection, UserCollection>();
 builder.Services.AddScoped<IScenariosServices, ScenariosServices>();
 builder.Services.AddScoped<IScenariosRepository, ScenariosRepository>();
 

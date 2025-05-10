@@ -1,10 +1,8 @@
-﻿namespace ChoreoCreator.Core.ValueObjects;
-
-/// <summary>
-/// Результат проверки соответствия пароля и его хэша.
-/// </summary>
-public enum PasswordVerificationResult
+﻿namespace ChoreoCreator.Core.ValueObjects
 {
-    Failed = 0,
-    Success = 1
+    public enum PasswordVerificationResult
+    {
+        Success,
+        Failed
+    }
 }

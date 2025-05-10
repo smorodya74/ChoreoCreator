@@ -1,7 +1,7 @@
-﻿using ChoreoCreator.Core.Services;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using ChoreoCreator.API.Contracts.Auth;
 using ChoreoCreator.Application.Abstractions;
+using ChoreoCreator.Core.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChoreoCreator.API.Controllers
 {
@@ -16,6 +16,19 @@ namespace ChoreoCreator.API.Controllers
         {
             _userService = userService;
             _jwtTokenService = jwtTokenService;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken ct)
+        {
+            var result = await _userService.RegisterUser(request.Email, request.Username, request.Password, ct);
+
+            if (result.IsFailure)
+            {
+                return BadRequest(new { error = result.Error });
+            }
+
+            return Ok(new { userId = result.Value.Value });
         }
 
         [HttpPost("login")]

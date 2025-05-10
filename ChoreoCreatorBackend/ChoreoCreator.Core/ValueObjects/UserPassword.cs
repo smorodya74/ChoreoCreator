@@ -6,8 +6,7 @@ public class UserPassword : ValueObject
     public const int MaximumLength = 100;
     
     public string Value { get; }
-
-    private UserPassword(string value)
+    public UserPassword(string value)
     {
         Value = value;
     }

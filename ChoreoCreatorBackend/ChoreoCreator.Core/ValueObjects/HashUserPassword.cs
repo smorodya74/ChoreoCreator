@@ -4,7 +4,7 @@ public class HashUserPassword : ValueObject
 {
     public string Value { get; }
 
-    private HashUserPassword(string value)
+    public HashUserPassword(string value)
     {
         Value = value;
     }

@@ -1,10 +1,10 @@
 ﻿using ChoreoCreator.Core.ValueObjects;
 
-namespace ChoreoCreator.Core.Contracts;
-
-public interface IUserPasswordHasher
+namespace ChoreoCreator.Core.Contracts
 {
-    HashUserPassword HashPassword(UserPassword password);
-
-    PasswordVerificationResult VerifyHashedPassword(HashUserPassword hashedPassword, UserPassword providedPassword);
+    public interface IUserPasswordHasher
+    {
+        HashUserPassword HashPassword(UserPassword password);
+        PasswordVerificationResult VerifyHashedPassword(HashUserPassword hashedPassword, UserPassword providedPassword);
+    }
 }
