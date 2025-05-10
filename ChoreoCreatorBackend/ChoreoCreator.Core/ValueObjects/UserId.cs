@@ -2,7 +2,7 @@
 
 public class UserId : ValueObject
 {
-    public Guid Value { get; set; }
+    public Guid Value { get; }
 
     private UserId(Guid value)
     {
@@ -24,7 +24,6 @@ public class UserId : ValueObject
         return From(Guid.NewGuid());
     }
 
-    /// <inheritdoc />
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Value;

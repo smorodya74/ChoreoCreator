@@ -5,7 +5,7 @@ public class UserPassword : ValueObject
     public const int MinimumLength = 8;
     public const int MaximumLength = 100;
     
-    public string Value { get; set; }
+    public string Value { get; }
 
     private UserPassword(string value)
     {
@@ -15,21 +15,16 @@ public class UserPassword : ValueObject
     public static bool CanCreate(string value)
     {
         if (string.IsNullOrEmpty(value))
-        {
             return false;
-        }
-        
-        if (value.Length < MinimumLength)
-        {
-            return false;
-        }
 
-        if (value.Length > MaximumLength)
-        {
+        if (value.Length < MinimumLength || value.Length > MaximumLength)
             return false;
-        }
 
-        return true;
+        bool hasUpper = value.Any(char.IsUpper);
+        bool hasDigit = value.Any(char.IsDigit);
+        bool hasSpecial = value.Any(ch => !char.IsLetterOrDigit(ch));
+
+        return hasUpper && hasDigit && hasSpecial;
     }
     
     public static UserPassword From(string value)
@@ -39,10 +34,8 @@ public class UserPassword : ValueObject
         return new UserPassword(value);
     }
 
-    /// <inheritdoc />
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Value;
     }
 }
-
