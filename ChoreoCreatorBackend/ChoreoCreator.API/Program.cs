@@ -1,11 +1,13 @@
 using ChoreoCreator.Core.Services;
 using ChoreoCreator.Core.Settings;
-using ChoreoCreator.Core.Abstractions;
 using ChoreoCreator.DataAccess;
 using ChoreoCreator.DataAccess.Repositories;
-using ChoreoCreator.DataAccess.Seed;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using ChoreoCreator.Application.Abstractions;
+using ChoreoCreator.Application.Abstractions.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,15 +78,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<ChoreoCreatorDbContext>();
-
-//    db.Database.Migrate();
-
-//    await FakeUserSeeder.SeedAsync(db);
-//}
 
 app.Run();
