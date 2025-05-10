@@ -1,6 +1,6 @@
 ﻿using ChoreoCreator.Core.Models;
 
-namespace ChoreoCreator.Application.Abstractions;
+namespace ChoreoCreator.Application.Abstractions.Repositories;
 
 public interface IDancerPositionsRepository
 {

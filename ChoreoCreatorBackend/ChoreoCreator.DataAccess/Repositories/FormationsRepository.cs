@@ -1,4 +1,4 @@
-﻿using ChoreoCreator.Core.Abstractions;
+﻿using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
 using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
