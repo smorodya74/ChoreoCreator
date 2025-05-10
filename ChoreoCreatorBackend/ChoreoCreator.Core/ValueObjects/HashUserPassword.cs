@@ -2,7 +2,7 @@
 
 public class HashUserPassword : ValueObject
 {
-    public string Value { get; set; }
+    public string Value { get; }
 
     private HashUserPassword(string value)
     {
@@ -16,7 +16,6 @@ public class HashUserPassword : ValueObject
         return new HashUserPassword(value);
     }
 
-    /// <inheritdoc />
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Value;
