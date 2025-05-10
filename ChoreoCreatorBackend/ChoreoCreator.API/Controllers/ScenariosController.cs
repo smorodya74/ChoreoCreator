@@ -1,6 +1,6 @@
 ﻿using ChoreoCreator.API.Constants;
 using ChoreoCreator.API.Contracts;
-using ChoreoCreator.Core.Abstractions;
+using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
