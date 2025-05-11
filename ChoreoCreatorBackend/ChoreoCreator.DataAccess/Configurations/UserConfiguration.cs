@@ -12,14 +12,12 @@ namespace ChoreoCreator.DataAccess.Configurations
             builder.HasKey(u => u.Id);
 
             builder.Property(u => u.Email)
-                .HasMaxLength(User.MAX_EMAIL_LENGTH)
                 .IsRequired();
 
             builder.HasIndex(u => u.Email)
                 .IsUnique();
 
             builder.Property(u => u.Username)
-                .HasMaxLength(User.MAX_USERNAME_LENGTH)
                 .IsRequired();
 
             builder.Property(u => u.PasswordHash)

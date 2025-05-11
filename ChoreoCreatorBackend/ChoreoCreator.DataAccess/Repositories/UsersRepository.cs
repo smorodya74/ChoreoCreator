@@ -1,4 +1,4 @@
-﻿using ChoreoCreator.Core.Abstractions;
+﻿using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
 using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +19,20 @@ namespace ChoreoCreator.DataAccess.Repositories
             var userEntity = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
+            if (userEntity is null)
+                return null;
 
-            return userEntity == null
-                ? null
-                : User.Create(userEntity.Id, userEntity.Email, userEntity.Username, userEntity.PasswordHash, userEntity.Role, userEntity.CreatedAt, userEntity.UpdatedAt).user;
+            var (user, error) = User.CreateDB(
+                userEntity.Id,
+                userEntity.Email,
+                userEntity.Username,
+                userEntity.PasswordHash,
+                userEntity.Role,
+                userEntity.CreatedAt,
+                userEntity.UpdatedAt
+            );
+
+            return user;
         }
 
         public async Task<User?> GetByEmail(string email)
@@ -31,17 +41,46 @@ namespace ChoreoCreator.DataAccess.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Email == email);
 
-            return userEntity == null
-                ? null
-                : User.Create(userEntity.Id, userEntity.Email, userEntity.Username, userEntity.PasswordHash, userEntity.Role, userEntity.CreatedAt, userEntity.UpdatedAt).user;
+            var (user, error) = User.CreateDB(
+                userEntity.Id,
+                userEntity.Email,
+                userEntity.Username,
+                userEntity.PasswordHash,
+                userEntity.Role,
+                userEntity.CreatedAt,
+                userEntity.UpdatedAt
+            );
+
+            return user;
         }
 
         public async Task<List<User>> GetAll()
         {
-            var userEntities = await _context.Users.AsNoTracking().ToListAsync();
+            var userEntities = await _context.Users
+                .AsNoTracking()
+                .ToListAsync();
 
-            return userEntities.Select(e =>
-                User.Create(e.Id, e.Email, e.Username, e.PasswordHash, e.Role, e.CreatedAt, e.UpdatedAt).user).ToList();
+            var users = new List<User>();
+
+            foreach (var userEntity in userEntities )
+            {
+                var (user, error) = User.CreateDB(
+                    userEntity.Id,
+                    userEntity.Email,
+                    userEntity.Username,
+                    userEntity.PasswordHash,
+                    userEntity.Role,
+                    userEntity.CreatedAt,
+                    userEntity.UpdatedAt
+                );
+
+                if (user != null)
+                {
+                    users.Add(user);
+                }
+                else { }
+            }
+            return users;
         }
 
         public async Task<bool> ExistsByEmail(string email)
@@ -53,10 +92,10 @@ namespace ChoreoCreator.DataAccess.Repositories
         {
             var userEntity = new UserEntity
             {
-                Id = user.Id,
-                Email = user.Email,
-                Username = user.Username,
-                PasswordHash = user.PasswordHash,
+                Id = user.Id.Value,
+                Email = user.Email.Value,
+                Username = user.Username.Value,
+                PasswordHash = user.PasswordHash.Value,
                 Role = user.Role,
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
@@ -71,11 +110,11 @@ namespace ChoreoCreator.DataAccess.Repositories
         public async Task Update(User user)
         {
             await _context.Users
-                .Where(u => u.Id == user.Id)
+                .Where(u => u.Id == user.Id.Value)
                 .ExecuteUpdateAsync(s => s
-                    .SetProperty(u => u.Email, u => user.Email)
-                    .SetProperty(u => u.Username, u => user.Username)
-                    .SetProperty(u => u.PasswordHash, u => user.PasswordHash)
+                    .SetProperty(u => u.Email, u => user.Email.Value)
+                    .SetProperty(u => u.Username, u => user.Username.Value)
+                    .SetProperty(u => u.PasswordHash, u => user.PasswordHash.Value)
                     .SetProperty(u => u.Role, u => user.Role)
                     .SetProperty(u => u.UpdatedAt, u => DateTime.UtcNow));
         }

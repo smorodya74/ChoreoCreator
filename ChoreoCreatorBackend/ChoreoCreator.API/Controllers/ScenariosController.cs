@@ -1,6 +1,5 @@
-﻿using ChoreoCreator.API.Constants;
-using ChoreoCreator.API.Contracts;
-using ChoreoCreator.Core.Abstractions;
+﻿using ChoreoCreator.API.Contracts;
+using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +34,7 @@ namespace ChoreoCreator.API.Controllers
                 request.Title,
                 request.Description,
                 request.DancerCount,
-                FakeUsers.Id,
+                request.UserId,
                 request.CreatedAt,
                 request.UpdatedAt);
 
