@@ -3,10 +3,12 @@ import {CardTitle} from "./Cardtitle";
 import Button from "antd/es/button/button";
 
 interface Props {
-    scenarios: Scenario[]
+    scenarios: Scenario[];
+    handleDelete: (id: string) => void;
+    handleOpen: (scenario: Scenario) => void;
 }
 
-export const Scenarios = ({scenarios}: Props) => {
+export const Scenarios = ({scenarios, handleDelete, handleOpen}: Props) => {
     return (
         <div className="cards">
             {scenarios.map((scenario : Scenario) => (
@@ -17,9 +19,20 @@ export const Scenarios = ({scenarios}: Props) => {
                 >
                     <p>{scenario.description}</p>
                     <p>{scenario.dancerCount}</p>
-                    <div className="card__buttons">
-                        <Button>Редактировать</Button>
-                        <Button>Удалить</Button>
+                    <div className="card_buttons">
+                        <Button 
+                            onClick={() => handleOpen(scenario)}
+                            style={{flex: 1}}
+                        >
+                            Редактировать
+                        </Button>
+                        <Button 
+                            onClick={() => handleDelete(scenario.id)}
+                            danger
+                            style={{flex: 1}}
+                        >
+                            Удалить
+                        </Button>
                     </div>
                 </Card>
             ))}

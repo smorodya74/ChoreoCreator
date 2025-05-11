@@ -6,7 +6,7 @@ export interface ScenarioRequest {
 }
 
 export const getAllScenarios = async () => {
-    const response = await fetch("http://localhost:5281/Scenarios");
+    const response = await fetch("http://localhost:5281");
 
     return response.json();
 }

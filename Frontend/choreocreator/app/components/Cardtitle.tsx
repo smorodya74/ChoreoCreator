@@ -11,8 +11,8 @@ export const CardTitle = ({title, author}: Props) => {
             alignItems: "center",
             justifyContent: "space-between",
         }}>
-            <p className="card__title">{title}</p>
-            <p className="card__author">{author}</p>
+            <p className="card_title">{title}</p>
+            <p className="card_author">{author}</p>
         </div>
     );
 };

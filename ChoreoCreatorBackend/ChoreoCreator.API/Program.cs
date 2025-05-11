@@ -50,7 +50,7 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.HttpContext.Request.Cookies["jwt_token"];
+            context.Token = context.HttpContext.Request.Cookies["jwt"];
             return Task.CompletedTask;
         }
     };
