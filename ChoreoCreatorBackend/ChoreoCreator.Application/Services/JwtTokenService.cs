@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ChoreoCreator.Core.Services
+namespace ChoreoCreator.Application.Services
 {
     public interface IJwtTokenService
     {

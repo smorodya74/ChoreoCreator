@@ -1,6 +1,6 @@
 ﻿using ChoreoCreator.API.Contracts.Auth;
 using ChoreoCreator.Application.Abstractions;
-using ChoreoCreator.Core.Services;
+using ChoreoCreator.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChoreoCreator.API.Controllers

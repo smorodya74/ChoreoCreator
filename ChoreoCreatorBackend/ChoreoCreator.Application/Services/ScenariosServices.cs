@@ -1,9 +1,8 @@
 ﻿using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
-using System.Collections.Specialized;
 
-namespace ChoreoCreator.Core.Services
+namespace ChoreoCreator.Application.Services
 {
     public class ScenariosServices : IScenariosServices
     {

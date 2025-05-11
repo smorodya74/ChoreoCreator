@@ -1,13 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 using ChoreoCreator.Core.Services;
 using ChoreoCreator.Core.Settings;
 using ChoreoCreator.DataAccess;
 using ChoreoCreator.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
 using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Application.Abstractions.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using ChoreoCreator.Application.Services;
 using ChoreoCreator.Core.Contracts;
 
