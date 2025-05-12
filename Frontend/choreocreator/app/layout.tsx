@@ -6,9 +6,22 @@ import { Content, Footer, Header } from "antd/es/layout/layout";
 import { AuthProvider } from "./context/auth-context";
 import Link from "next/link";
 import HeaderRight from './components/Header';
+import logo from "@/public/logo.svg"
+import Image from "next/image";
+
+const LogoLink = () => (
+  <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+    <Image
+      src={logo}
+      alt="ChoreoCreator Logo"
+      width={50}
+      height={50}
+      priority
+    />
+  </Link>
+);
 
 const items = [
-  { key: "home", label: <Link href={"/"}>Home</Link> }, // Заменить на ЛОГОТИП
   { key: "features", label: <Link href={"/features"}>Features</Link> }, // Заглушка (О сервисе)
   { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> }, // Реализовать функции
 ];
@@ -19,7 +32,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <Layout style={{ minHeight: "100vh" }}>
-            <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: 'transparent'}}>
+              <LogoLink />
               <Menu
                 theme="dark"
                 mode="horizontal"
