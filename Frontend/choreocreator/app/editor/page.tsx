@@ -11,11 +11,11 @@ export default function EditorPage() {
     const { user } = useAuth();
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout style={{ height: 'calc(100vh - 64px)'}}>
             <EditorSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
             <Layout>
-                <Content style={{ margin: '15px 15px', padding: 24, background: '#FFFFFF' }}>
-                    {/* Сюда позже добавим <Scene /> */}
+                <Content style={{ margin: '15px 15px 0px 15px', padding: 24, background: '#FFFFFF' }}>
+                    {}
                     <p>Редактор активен</p>
                 </Content>
             </Layout>
