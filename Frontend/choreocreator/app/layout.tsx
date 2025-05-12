@@ -8,8 +8,9 @@ import Link from "next/link";
 import HeaderRight from './components/Header';
 
 const items = [
-  { key: "home", label: <Link href={"/"}>Home</Link> },
-  { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> },
+  { key: "home", label: <Link href={"/"}>Home</Link> }, // Заменить на ЛОГОТИП
+  { key: "features", label: <Link href={"/features"}>Features</Link> }, // Заглушка (О сервисе)
+  { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> }, // Реализовать функции
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
