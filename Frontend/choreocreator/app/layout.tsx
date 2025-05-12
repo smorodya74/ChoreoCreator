@@ -1,12 +1,10 @@
 'use client';
 import '@ant-design/v5-patch-for-react-19';
-import { Button, Dropdown, Layout, Menu, Space } from "antd";
+import { Layout, Menu} from "antd";
 import "./globals.css";
 import { Content, Footer, Header } from "antd/es/layout/layout";
-import { AuthProvider, useAuth } from "./context/auth-context";
+import { AuthProvider } from "./context/auth-context";
 import Link from "next/link";
-import { DownOutlined } from '@ant-design/icons';
-import { useState } from 'react';
 import HeaderRight from './components/Header';
 
 const items = [

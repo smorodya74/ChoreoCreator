@@ -3,10 +3,14 @@ import { Button, Dropdown, MenuProps, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useAuth } from '../context/auth-context';
 import { useState } from 'react';
+import AuthModal from './AuthModal';
+
 
 const HeaderRight = () => {
     const { user, logout } = useAuth();
     const [isModalOpen, setModalOpen] = useState(false);
+
+    console.log(user);
 
     const menuItems: MenuProps['items'] = [
         { 
@@ -27,7 +31,7 @@ const HeaderRight = () => {
             <Dropdown menu={{ items: menuItems }}>
                 <a onClick={(e) => e.preventDefault()} style={{ color: 'white' }}>
                     <Space>
-                        {user.username}
+                        {user.username?.value || 'Гость'} {/* Если user.username не найден, отобразится 'Гость' */}
                         <DownOutlined />
                     </Space>
                 </a>
@@ -36,12 +40,17 @@ const HeaderRight = () => {
     }
 
     return (
-        <Button 
-            type="primary" 
-            onClick={() => setModalOpen(true)}
-        >
-            Войти
-        </Button>
+        <>
+            <Button 
+                type="primary" 
+                onClick={() => setModalOpen(true)}
+            >
+                Войти
+            </Button>
+            <AuthModal open={isModalOpen} 
+                onClose={() => setModalOpen(false)} 
+            />
+        </>
     );
 };
 

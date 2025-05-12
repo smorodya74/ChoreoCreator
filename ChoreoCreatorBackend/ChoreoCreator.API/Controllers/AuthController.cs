@@ -11,7 +11,7 @@ namespace ChoreoCreator.API.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IUsersService _userService;       // Сервис для работы с пользователями
+        private readonly IUsersService _userService;
         private readonly IJwtTokenService _jwtTokenService;  // Сервис для работы с токенами
 
         public AuthController(IUsersService userService, IJwtTokenService jwtTokenService)
