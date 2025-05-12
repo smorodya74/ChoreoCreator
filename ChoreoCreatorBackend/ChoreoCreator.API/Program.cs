@@ -50,7 +50,7 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.HttpContext.Request.Cookies["jwt_token"];
+            context.Token = context.HttpContext.Request.Cookies["jwt"];
             return Task.CompletedTask;
         }
     };
@@ -82,9 +82,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
+
+app.UseCors(x =>
+{
+    x.WithOrigins("http://localhost:3000")
+     .AllowAnyHeader()
+     .AllowAnyMethod()
+     .AllowCredentials();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();
