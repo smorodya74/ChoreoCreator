@@ -116,3 +116,4 @@ _ReSharper*/
 # Optional: Exclude frontend build artifacts from version control
 **/choreocreator/.next/
 **/choreocreator/node_modules/
+Frontend/choreocreator/scr/mockData.ts

@@ -1,4 +1,8 @@
+import { mockAuth } from "@/scr/mockData";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5281';
+
+
 
 export interface LoginRequest {
   email: string;
@@ -17,8 +21,11 @@ export interface User {
   role: string;
 }
 
-// Функция входа
 export async function login(data: LoginRequest): Promise<void> {
+  if (process.env.NEXT_PUBLIC_MOCK_API === 'true') {
+    return mockAuth.login(data);
+  }
+  
   const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -32,7 +39,6 @@ export async function login(data: LoginRequest): Promise<void> {
   }
 }
 
-// Функция регистрации
 export async function register(data: RegisterRequest): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
     method: "POST",
@@ -50,6 +56,10 @@ export async function register(data: RegisterRequest): Promise<void> {
 }
 
 export const getMe = async (): Promise<User | null> => {
+  if (process.env.NEXT_PUBLIC_MOCK_API === 'true') {
+    return mockAuth.user;
+  }
+  
   const response = await fetch("http://localhost:5281/api/auth/me", {
     credentials: "include",
   });
@@ -61,13 +71,17 @@ export const getMe = async (): Promise<User | null> => {
   const user = await response.json();
 
   return {
-    username: user.username?.value ?? user.username, // на случай, если value уже не объект
+    username: user.username,
     email: user.email,
     role: user.role,
   };
 };
 
 export async function logout(): Promise<void> {
+  if (process.env.NEXT_PUBLIC_MOCK_API === 'true') {
+    return mockAuth.logout();
+  }
+  
   await fetch(`${API_BASE_URL}/api/auth/logout`, {
     method: "POST",
     credentials: "include",

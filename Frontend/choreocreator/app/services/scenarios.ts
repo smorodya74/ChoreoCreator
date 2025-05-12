@@ -1,3 +1,5 @@
+import { mockScenarios } from "@/scr/mockData";
+
 export interface ScenarioRequest {
     title: string;
     description: string;
@@ -6,6 +8,10 @@ export interface ScenarioRequest {
 }
 
 export const getAllScenarios = async () => {
+    if (process.env.NEXT_PUBLIC_MOCK_API === 'true') {
+        return mockScenarios.list;
+    }
+    
     const response = await fetch("http://localhost:5281/api/scenarios", {
         credentials: 'include',
     });
@@ -20,6 +26,10 @@ export const getAllScenarios = async () => {
 }
 
 export const createScenario = async (scenarioRequest: ScenarioRequest) => {
+    if (process.env.NEXT_PUBLIC_MOCK_API === 'true') {
+        return mockScenarios.create(scenarioRequest);
+    }
+    
     const response = await fetch("http://localhost:5281/api/scenarios", {
         method: "POST",
         headers: {
