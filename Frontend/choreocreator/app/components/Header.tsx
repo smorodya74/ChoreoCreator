@@ -31,7 +31,7 @@ const HeaderRight = () => {
             <Dropdown menu={{ items: menuItems }}>
                 <a onClick={(e) => e.preventDefault()} style={{ color: 'white' }}>
                     <Space>
-                        {user.username} {/* Если user.username не найден, отобразится 'Гость' */}
+                        {user.username}
                         <DownOutlined />
                     </Space>
                 </a>
