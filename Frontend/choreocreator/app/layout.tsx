@@ -36,7 +36,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideFooter = pathname === '/editor'; // Скрываем Footer
+  const hideFooter = pathname === '/editor'; // Скрываем Footer в редакторе
+  const noPadding = pathname === '/editor'; // Убираем Padding от краев экрана в редакторе
 
   return (
     <html lang="en">
@@ -53,7 +54,8 @@ export default function RootLayout({
               />
               <HeaderRight />
             </Header>
-            <Content style={{ padding: "0 48px" }}>{children}</Content>
+            {!noPadding ? <Content style={{ padding: "0 48px" }}>{children}</Content>
+                        : <Content style={{ padding: "0 0px" }}>{children}</Content>}
             {!hideFooter &&
               <Footer style={{ textAlign: "center" }}>
                 © 2025 Choreo Creator. Created by Stepan Smorodnikov
