@@ -26,6 +26,7 @@ const items = [
   { key: "home", label: <Link href={"/"}>Home</Link> },
   { key: "features", label: <Link href={"/features"}>Features</Link> },
   { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> },
+  { key: "editor", label: <Link href={"/editor"}>Редактор</Link> },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
