@@ -1,6 +1,6 @@
 'use client';
 import '@ant-design/v5-patch-for-react-19';
-import { Layout, Menu} from "antd";
+import { Layout, Menu } from "antd";
 import "./globals.css";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import { AuthProvider } from "./context/auth-context";
@@ -17,13 +17,15 @@ const LogoLink = () => (
       width={50}
       height={50}
       priority
+      style={{ display: "block" }}
     />
   </Link>
 );
 
 const items = [
-  { key: "features", label: <Link href={"/features"}>Features</Link> }, // Заглушка (О сервисе)
-  { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> }, // Реализовать функции
+  { key: "home", label: <Link href={"/"}>Home</Link> },
+  { key: "features", label: <Link href={"/features"}>Features</Link> },
+  { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,23 +34,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <Layout style={{ minHeight: "100vh" }}>
-            <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: 'transparent'}}>
-              <LogoLink />
-              <Menu
-                theme="dark"
-                mode="horizontal"
-                items={items}
-                style={{ flex: 1, minWidth: 0 }}
-              />
-              <HeaderRight />
+            <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <LogoLink />
+                <Menu
+                  theme="dark"
+                  mode="horizontal"
+                  items={items}
+                  style={{ flex: 1, minWidth: 0 }}
+                />
+                <HeaderRight />
             </Header>
             <Content style={{ padding: "0 48px" }}>{children}</Content>
             <Footer style={{ textAlign: "center" }}>
               © 2025 Choreo Creator. Created by Stepan Smorodnikov
-            </Footer>
-          </Layout>
-        </AuthProvider>
-      </body>
-    </html>
+          </Footer>
+        </Layout>
+      </AuthProvider>
+    </body>
+    </html >
   );
 }

@@ -73,7 +73,7 @@ export default function ScenariosPage(){
 
     return (
         <div>
-            <Title>Шаблоны сценариев</Title>
+            <Title>CHOREOGRAPHY DATABASE</Title>
             <Button
                 type="primary"
                 style={{ marginTop: "30px"}}
