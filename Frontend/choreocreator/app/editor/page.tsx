@@ -10,16 +10,15 @@ import { Dancer } from '../Models/Types';
 const { Header, Content } = Layout;
 
 export default function EditorPage() {
-    const [collapsed, setCollapsed] = useState(false);
     const { user } = useAuth();
     const [dancers, setDancers] = useState<Dancer[]>([]);
     const [selectedDancerId, setSelectedDancerId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) {
-            console.log('Создание нового сценария для гостя...');
+            console.log('[LOGGER] Создание нового сценария для гостя...');
         } else {
-            console.log('Загрузка проекта пользователя...');
+            console.log('[LOGGER] Загрузка проекта пользователя...');
         }
 
         // Первый танцор по умолчанию
@@ -32,13 +31,16 @@ export default function EditorPage() {
     }, [user]);
 
     const handleAddDancer = () => {
+        if (dancers.length >= 16) return; // Не добавляем больше 16 танцоров
+
         const GRID_WIDTH = 32;
         const GRID_HEIGHT = 16;
         const minX = -GRID_WIDTH / 2;
         const maxX = GRID_WIDTH / 2;
         const maxY = GRID_HEIGHT / 2;
         const minY = -GRID_HEIGHT / 2;
-
+        
+        {/* Поиск свободной координаты */}
         let found = false;
         for (let y = maxY; y >= minY; y--) {
             for (let x = minX; x <= maxX; x++) {
@@ -70,10 +72,15 @@ export default function EditorPage() {
     };
 
     const handleDeleteDancer = () => {
-        if (selectedDancerId) {
+        if (selectedDancerId && dancers.length > 1) {
             setDancers(prev => prev.filter(d => d.id !== selectedDancerId));
             setSelectedDancerId(null);
         }
+    };
+
+    const handleSave = () => {
+        console.log('Сохранение проекта...');
+        // Логика сохранения проекта
     };
 
     return (
@@ -85,10 +92,11 @@ export default function EditorPage() {
                 dancers={dancers}
                 selectedDancerId={selectedDancerId}
                 onSelectDancer={handleSelectDancer}
+                onSave={handleSave}
             />
             <Layout>
                 <Header style={{ padding: 0, background: '#041527' }} />
-                <Content style={{ margin: 0, padding: 0, background: '#041527' }}>
+                <Content style={{ marginLeft: 250, padding: 0, background: '#041527' }}>
                     <Scene dancers={dancers} onMove={handleUpdateDancer} />
                 </Content>
             </Layout>
