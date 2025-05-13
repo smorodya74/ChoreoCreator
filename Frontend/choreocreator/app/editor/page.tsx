@@ -79,8 +79,6 @@ export default function EditorPage() {
     return (
         <Layout style={{ height: 'calc(100vh - 64px)' }}>
             <EditorSidebar
-                collapsed={collapsed}
-                onToggle={() => setCollapsed(!collapsed)}
                 onAddDancer={handleAddDancer}
                 onDeleteDancer={handleDeleteDancer}
                 dancerCount={dancers.length}
