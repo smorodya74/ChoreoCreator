@@ -24,9 +24,9 @@ const LogoLink = () => (
 );
 
 const items = [
-  { key: "home", label: <Link href={"/"}>Home</Link> },
-  { key: "features", label: <Link href={"/features"}>Features</Link> },
-  { key: "scenarios", label: <Link href={"/scenarios"}>Base</Link> },
+  { key: "home", label: <Link href={"/"}>Главная</Link> },
+  { key: "features", label: <Link href={"/features"}>О нас</Link> },
+  { key: "scenarios", label: <Link href={"/scenarios"}>Шаблоны</Link> },
   { key: "editor", label: <Link href={"/editor"}>Редактор</Link> },
 ];
 

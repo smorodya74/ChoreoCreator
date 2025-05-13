@@ -12,6 +12,7 @@ const { Header, Content } = Layout;
 export default function EditorPage() {
     const { user } = useAuth();
     const [dancers, setDancers] = useState<Dancer[]>([]);
+
     const [selectedDancerId, setSelectedDancerId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -89,6 +90,7 @@ export default function EditorPage() {
                 onAddDancer={handleAddDancer}
                 onDeleteDancer={handleDeleteDancer}
                 dancerCount={dancers.length}
+                //slideCount={slides.length}
                 dancers={dancers}
                 selectedDancerId={selectedDancerId}
                 onSelectDancer={handleSelectDancer}
