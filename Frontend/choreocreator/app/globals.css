@@ -38,6 +38,7 @@
 }
 
 .home-container {
+    /* background-color: #041527; */
     display: flex;
     flex-direction: column;
     align-items: center;
