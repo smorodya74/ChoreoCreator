@@ -122,7 +122,7 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
                     <text
                         key={`x-label-${i}`}
                         x={px}
-                        y={height + 16}
+                        y={height + 16}  // Поднимем подпись немного выше, чтобы она не перекрывала сетку
                         fill="#ffffff"
                         fontSize={12}
                         textAnchor="middle"

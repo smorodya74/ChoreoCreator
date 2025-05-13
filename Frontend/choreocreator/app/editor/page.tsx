@@ -1,4 +1,5 @@
 'use client';
+
 import { Layout } from 'antd';
 import { useEffect, useState } from 'react';
 import EditorSidebar from '@/app/components/EditorSidebar';
@@ -12,6 +13,7 @@ export default function EditorPage() {
     const [collapsed, setCollapsed] = useState(false);
     const { user } = useAuth();
     const [dancers, setDancers] = useState<Dancer[]>([]);
+    const [selectedDancerId, setSelectedDancerId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) {
@@ -30,7 +32,6 @@ export default function EditorPage() {
     }, [user]);
 
     const handleAddDancer = () => {
-        // Находим следующую свободную координату
         const GRID_WIDTH = 32;
         const GRID_HEIGHT = 16;
         const minX = -GRID_WIDTH / 2;
@@ -64,13 +65,28 @@ export default function EditorPage() {
         );
     };
 
+    const handleSelectDancer = (id: string) => {
+        setSelectedDancerId(id);
+    };
+
+    const handleDeleteDancer = () => {
+        if (selectedDancerId) {
+            setDancers(prev => prev.filter(d => d.id !== selectedDancerId));
+            setSelectedDancerId(null);
+        }
+    };
+
     return (
         <Layout style={{ height: 'calc(100vh - 64px)' }}>
             <EditorSidebar
                 collapsed={collapsed}
                 onToggle={() => setCollapsed(!collapsed)}
                 onAddDancer={handleAddDancer}
+                onDeleteDancer={handleDeleteDancer}
                 dancerCount={dancers.length}
+                dancers={dancers}
+                selectedDancerId={selectedDancerId}
+                onSelectDancer={handleSelectDancer}
             />
             <Layout>
                 <Header style={{ padding: 0, background: '#041527' }} />
