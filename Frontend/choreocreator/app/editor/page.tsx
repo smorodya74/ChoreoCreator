@@ -2,7 +2,7 @@
 
 import { Layout } from 'antd';
 import { useEffect, useState } from 'react';
-import EditorSidebar from '@/app/components/EditorSidebar';
+import EditorSidebar from '@/app/components/EditorBar/EditorBar';
 import { useAuth } from '../context/auth-context';
 import Scene from '../components/Scene/Scene';
 import { Dancer } from '../Models/Types';

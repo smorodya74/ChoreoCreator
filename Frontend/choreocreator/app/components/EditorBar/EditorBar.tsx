@@ -4,18 +4,19 @@ import React, { useState } from 'react';
 import {
     PlusOutlined,
     DeleteOutlined,
-    SettingOutlined,
     UsergroupAddOutlined,
-    SaveOutlined
+    SaveOutlined,
+    CloudUploadOutlined,
+    DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Layout, MenuProps, Typography } from 'antd';
-import { Dancer } from '../Models/Types';
+import { Dancer } from '../../Models/Types';
 import Menu from 'antd/es/menu/menu';
 
 const { Sider } = Layout;
 const { Title } = Typography;
 
-type EditorSidebarProps = {
+type EditorBarProps = {
     dancerCount: number;
     dancers: Dancer[];
     selectedDancerId: string | null;
@@ -31,7 +32,7 @@ const items: MenuItem[] = [
     {
         key: "1",
         icon: <UsergroupAddOutlined />,
-        label: "Navigation One",
+        label: "Танцоры",
         children: [
             { key: "11", label: "Option 1" },
             { key: "12", label: "Option 2" },
@@ -41,10 +42,10 @@ const items: MenuItem[] = [
     {
         key: "2",
         icon: <SaveOutlined />,
-        label: "Navigation Two",
+        label: "Сохранить",
         children: [
-            { key: "21", label: "Публикация" },
-            { key: "22", label: "Экспорт" },
+            { key: "21", icon: <CloudUploadOutlined />, label: "Опубликовать" },
+            { key: "22", icon: <DownloadOutlined />, label: "Экспортировать" },
         ],
     },
 ];
@@ -72,7 +73,7 @@ const getLevelKeys = (items1: LevelKeysProps[]) => {
 
 const levelKeys = getLevelKeys(items as LevelKeysProps[]);
 
-const EditorSidebar: React.FC<EditorSidebarProps> = ({
+const EditorBar: React.FC<EditorBarProps> = ({
     dancerCount,
     dancers,
     selectedDancerId,
@@ -129,9 +130,9 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({
                 defaultSelectedKeys={["1"]}
                 openKeys={stateOpenKeys}
                 onOpenChange={onOpenChange}
-                style={{ width: 256, zIndex:16 }}
+                style={{ width: 256, zIndex: 16 }}
                 items={items}
-                
+
             />
             <div style={{ padding: 15 }}>
                 <Title level={5} style={{ color: '#fff' }}>
@@ -144,7 +145,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({
                     >
                     </Button>
                 </Title>
-                
+
             </div>
             {/* Список танцоров */}
             <div style={{ overflowY: 'auto', paddingBottom: 50 }}>
@@ -173,10 +174,9 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({
                         <span>{`Танцор ${index + 1}`}</span>
                     </div>
                 ))}
-                
             </div>
             {/* Кнопка удаления */}
-            <div style={{ position: 'absolute', bottom: 40, width: '100%', padding: 8 }}>
+            <div style={{ position: 'absolute', bottom: 10, width: '100%', padding: 8 }}>
                 <Button
                     type="primary"
                     danger
@@ -188,18 +188,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({
                     Удалить
                 </Button>
             </div>
-            {/* Кнопка сохранения */}
-            <div style={{ position: 'absolute', bottom: 10, width: '100%', padding: 8 }}>
-                <Button
-                    type="primary"
-                    onClick={onSave}
-                    block
-                >
-                    Сохранить
-                </Button>
-            </div>
         </Sider >
     );
 };
 
-export default EditorSidebar;
+export default EditorBar;
