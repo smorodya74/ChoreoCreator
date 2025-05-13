@@ -36,3 +36,13 @@
     max-width: 80%;
     white-space: normal;
 }
+
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 128px); /* исключая header + footer */
+    text-align: center;
+    gap: 24px;
+}
