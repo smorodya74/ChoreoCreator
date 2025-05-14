@@ -25,7 +25,6 @@ const LogoLink = () => (
 
 const items = [
   { key: "home", label: <Link href={"/"}>Главная</Link> },
-  { key: "features", label: <Link href={"/features"}>О нас</Link> },
   { key: "scenarios", label: <Link href={"/scenarios"}>Шаблоны</Link> },
   { key: "editor", label: <Link href={"/editor"}>Редактор</Link> },
 ];
@@ -36,14 +35,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideFooter = pathname === '/editor'; // Скрываем Footer в редакторе
-  const noPadding = pathname === '/editor'; // Убираем Padding от краев экрана в редакторе
+  const hideFooter = pathname === '/editor';
+  const noPadding = pathname === '/editor';
 
   return (
     <html lang="en">
-      <body>
+      <body style={{ background: '#041527' }}>
         <AuthProvider>
-          <Layout style={{ minHeight: "100vh" }}>
+          <Layout style={{ minHeight: "100vh", background: 'transparent' }}>
             <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <LogoLink />
               <Menu
@@ -54,10 +53,11 @@ export default function RootLayout({
               />
               <HeaderRight />
             </Header>
-            {!noPadding ? <Content style={{ padding: "0 48px" }}>{children}</Content>
-                        : <Content style={{ padding: "0 0px" }}>{children}</Content>}
+            {!noPadding
+              ? <Content style={{ padding: "0 48px", background: 'transparent' }}>{children}</Content>
+              : <Content style={{ padding: "0 0px", background: 'transparent' }}>{children}</Content>}
             {!hideFooter &&
-              <Footer style={{ textAlign: "center" }}>
+              <Footer style={{ borderTop: '1px solid #404040', textAlign: "center", background: 'transparent', color: '#FFFFFF' }}>
                 © 2025 Choreo Creator. Created by Stepan Smorodnikov
               </Footer>}
           </Layout>

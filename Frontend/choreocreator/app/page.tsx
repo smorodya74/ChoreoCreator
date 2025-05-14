@@ -17,7 +17,7 @@ export default function HomePage() {
 
     return (
         <div className="home-container">
-            <Title level={1}>Создайте свою хореографию</Title>
+            <Title style={{ color: '#FFFFFF' }} level={1}>Создайте свою хореографию</Title>
             <Button type="primary" size="large" onClick={handleTryClick}>
                 Попробовать
             </Button>

@@ -101,7 +101,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
             {selectedMenuKey === "1" && (
                 <>
                     <div style={{ padding: 10 }}>
-                        <Title level={5} style={{ color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Title level={5} style={{ color: '#FFFFFF', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             Танцоры: {dancerCount}
                             <Button
                                 ghost

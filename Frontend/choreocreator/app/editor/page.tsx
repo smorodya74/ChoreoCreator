@@ -6,6 +6,7 @@ import EditorSidebar from '@/app/components/EditorBar/EditorBar';
 import { useAuth } from '../context/auth-context';
 import Scene from '../components/Scene/Scene';
 import { Dancer } from '../Models/Types';
+import Title from 'antd/es/typography/Title';
 
 const { Header, Content } = Layout;
 
