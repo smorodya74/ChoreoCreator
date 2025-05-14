@@ -11,7 +11,7 @@ import {
     DiffOutlined
 } from '@ant-design/icons';
 import { Button, Layout, MenuProps, Typography } from 'antd';
-import { Dancer, Slide } from '../../Models/Types';
+import { Dancer, Formation } from '../../Models/Types';
 import Menu from 'antd/es/menu/menu';
 
 const { Sider } = Layout;
@@ -24,10 +24,12 @@ type EditorBarProps = {
     onSelectDancer: (id: string) => void;
     onAddDancer: () => void;
     onDeleteDancer: () => void;
-    // slidesCount: number;
-    // slides: Slide[];
-    // onAddSlide: () => void;
-    // onDeleteSlide: () => void;
+    formationCount: number;
+    formations: Formation[];
+    selectedFormationId: string | null;
+    onSelectFormation: (id: string) => void;
+    onAddFormation: () => void;
+    onDeleteFormation: () => void;
     onSave: () => void;
 };
 
@@ -58,21 +60,18 @@ const EditorBar: React.FC<EditorBarProps> = ({
     onSelectDancer,
     onAddDancer,
     onDeleteDancer,
-    // slideCount,
-    // slides,
-    // selectedSlideId,
-    // onSelectSlide,
-    // onAddSlide,
-    // onDeleteSlide,
+    formationCount,
+    formations,
+    selectedFormationId,
+    onSelectFormation,
+    onAddFormation,
+    onDeleteFormation,
     onSave,
 }) => {
     const [selectedMenuKey, setSelectedMenuKey] = useState("1");
 
     const handleMenuClick: MenuProps['onClick'] = (e) => {
         setSelectedMenuKey(e.key);
-        if (e.key === "2") {
-            onSave(); // при выборе "Сохранить"
-        }
     };
 
     return (
@@ -111,19 +110,19 @@ const EditorBar: React.FC<EditorBarProps> = ({
                         </Title>
                     </div>
 
-                    <div style={{ overflowY: 'auto', paddingBottom: 60 }}>
+                    <div style={{ overflowY: 'auto', paddingBottom: 5 }}>
                         {dancers.map((dancer, index) => (
                             <div
                                 key={dancer.id}
                                 onClick={() => onSelectDancer(dancer.id)}
                                 style={{
                                     padding: '8px',
-                                    background: dancer.id === selectedDancerId ? '#2d2d2d' : 'transparent',
-                                    color: '#fff',
+                                    background: dancer.id === selectedDancerId ? '#2D2D2D' : 'transparent',
+                                    color: '#FFFFFF',
                                     display: 'flex',
                                     alignItems: 'center',
                                     cursor: 'pointer',
-                                    border: dancer.id === selectedDancerId ? '1px solid #c83a77' : 'none',
+                                    border: dancer.id === selectedDancerId ? '1px solid #C83A77' : 'none',
                                 }}
                             >
                                 <div
@@ -131,11 +130,13 @@ const EditorBar: React.FC<EditorBarProps> = ({
                                         width: 16,
                                         height: 16,
                                         borderRadius: '50%',
-                                        backgroundColor: '#c83a77', // цвет танцора
+                                        backgroundColor: '#C83A77', // цвет танцора
                                         marginRight: 8,
                                     }}
                                 />
-                                <span>{`Танцор ${index + 1}`}</span>
+                                <span>
+                                    {`Танцор ${index + 1}`}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -153,24 +154,65 @@ const EditorBar: React.FC<EditorBarProps> = ({
                     </div>
                 </>
             )}
+
+            {/* Контент секции "Слайды" */}
             {selectedMenuKey === "2" && (
                 <>
                     <div style={{ padding: 10 }}>
-                        <Title level={5} style={{ color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            Слайды: { }
+                        <Title
+                            level={5}
+                            style={{
+                                color: '#FFFFFF',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                            }}
+                        >
+                            Слайды: {formationCount}
                             <Button
                                 ghost
                                 icon={<PlusOutlined />}
-                            //onClick={onAddSlide}
+                                onClick={onAddFormation}
                             />
                         </Title>
                     </div>
+
+                    <div style={{ overflowY: 'auto', paddingBottom: 5 }}>
+                        {formations.map((formation, index) => (
+                            <div
+                                key={formation.id}
+                                onClick={() => onSelectFormation(formation.id)}
+                                style={{
+                                    padding: '8px',
+                                    background: formation.id === selectedFormationId ? '#2D2D2D' : 'transparent',
+                                    color: '#FFFFFF',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    cursor: 'pointer',
+                                    border: formation.id === selectedFormationId ? '1px solid #C83A77' : 'none',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        backgroundColor: '#C83A77',
+                                        marginRight: 8,
+                                    }}
+                                />
+                                <span>
+                                    {`Слайд ${index + 1}`}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
                     <div style={{ position: 'absolute', bottom: 10, width: '100%', padding: 8 }}>
                         <Button
                             type="primary"
                             danger
                             ghost
-                            //onClick={onDeleteSlide}
+                            onClick={onDeleteFormation}
                             block
                             icon={<DeleteOutlined />}
                         >
@@ -179,24 +221,26 @@ const EditorBar: React.FC<EditorBarProps> = ({
                     </div>
                 </>
             )}
+
+            {/* Контент секции "Сохранить" */}
             {selectedMenuKey === "3" && (
                 <>
                     <div style={{ padding: 10 }}>
-                        <Button 
-                            ghost 
-                            color="primary" 
+                        <Button
+                            ghost
+                            color="primary"
                             variant="outlined"
                             style={{ margin: 5, width: 220 }}
                         >
-                            Опубликовать
+                            <CloudUploadOutlined /> Опубликовать
                         </Button>
-                        <Button 
-                            ghost 
-                            color="primary" 
+                        <Button
+                            ghost
+                            color="primary"
                             variant="outlined"
                             style={{ margin: 5, width: 220 }}
                         >
-                            Экспортировать
+                            <DownloadOutlined /> Экспортировать
                         </Button>
                     </div>
 

@@ -3,7 +3,8 @@ export type Dancer = {
     position: { x: number; y: number };
 };
 
-export type Slide = {
+export type Formation = {
     id: string;
-    dancerPositions: {}
+    number: number;
+    dancers: Dancer[];
 }
