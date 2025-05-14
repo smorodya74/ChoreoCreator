@@ -73,10 +73,11 @@ export default function ScenariosPage(){
 
     return (
         <div>
-            <Title>CHOREOGRAPHY DATABASE</Title>
+            <Title style={{ padding: 15, color: '#FFFFFF' }} level={1}>CHOREO DATABASE</Title>
             <Button
-                type="primary"
-                style={{ marginTop: "30px"}}
+                ghost
+                color="primary"
+                variant="outlined"
                 size="large"
                 onClick={openModal}
             >

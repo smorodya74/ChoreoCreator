@@ -1,9 +1,8 @@
-﻿namespace ChoreoCreator.API.Contracts.Scenario;
-
-public record ScenariosRequest(
-    string Title,
-    string Description,
-    int DancerCount,
-    Guid UserId,
-    DateTime CreatedAt,
-    DateTime UpdatedAt);
+﻿namespace ChoreoCreator.API.Contracts.Scenario
+{
+    public record ScenariosRequest(
+        string Title,
+        string Description,
+        int DancerCount,
+        Guid UserId);
+}

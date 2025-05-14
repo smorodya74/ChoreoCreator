@@ -9,17 +9,13 @@ namespace ChoreoCreator.Core.Models
             UserEmail email, 
             Username username, 
             HashUserPassword passwordHash, 
-            string role,
-            DateTime createdAt, 
-            DateTime updatedAt)
+            string role)
         {
             Id = id;
             Email = email;
             Username = username;
             PasswordHash = passwordHash;
             Role = role;
-            CreatedAt = createdAt;
-            UpdatedAt = updatedAt;
         }
 
         public UserId Id { get; }
@@ -27,10 +23,6 @@ namespace ChoreoCreator.Core.Models
         public Username Username { get; private set; }
         public HashUserPassword PasswordHash { get; private set; }
         public string Role { get; private set; }
-
-        public DateTime CreatedAt { get; }
-        public DateTime UpdatedAt { get; private set; }
-
 
         // CREATE для Регистрации
         public static User Create(UserEmail userEmail, Username username, HashUserPassword userPassword)
@@ -44,9 +36,7 @@ namespace ChoreoCreator.Core.Models
                 userEmail,
                 username,
                 userPassword,
-                "Choreographer",
-                DateTime.UtcNow,
-                DateTime.UtcNow
+                "Choreographer"
             );
         }
 
@@ -56,9 +46,7 @@ namespace ChoreoCreator.Core.Models
             string email,
             string username,
             string passwordHash,
-            string role,
-            DateTime createdAt,
-            DateTime updatedAt)
+            string role)
         {
             try
             {
@@ -67,9 +55,7 @@ namespace ChoreoCreator.Core.Models
                     UserEmail.From(email),
                     Username.From(username),
                     HashUserPassword.From(passwordHash),
-                    role,
-                    createdAt,
-                    updatedAt
+                    role
                 );
 
                 return (user, null);
@@ -83,20 +69,17 @@ namespace ChoreoCreator.Core.Models
         public void Rename(Username newUsername)
         {
             Username = newUsername;
-            Touch();
         }
 
         public void ChangeEmail(UserEmail newEmail)
         {
             Email = newEmail;
-            Touch();
         }
 
         public void ChangePassword(HashUserPassword newHashedPassword)
         {
             Ensure.IsNotNull(newHashedPassword, nameof(newHashedPassword));
             PasswordHash = newHashedPassword;
-            Touch();
         }
 
         public void ChangeRole(string newRole)
@@ -105,12 +88,7 @@ namespace ChoreoCreator.Core.Models
                 throw new ArgumentException("Роль не указана");
 
             Role = newRole;
-            Touch();
         }
 
-        private void Touch()
-        {
-            UpdatedAt = DateTime.UtcNow;
-        }
     }
 }

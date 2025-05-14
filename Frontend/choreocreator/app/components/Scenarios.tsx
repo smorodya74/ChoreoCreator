@@ -10,12 +10,12 @@ interface Props {
 
 export const Scenarios = ({scenarios, handleDelete, handleOpen}: Props) => {
     return (
-        <div className="cards">
+        <div className="cards" >
             {scenarios.map((scenario : Scenario) => (
-                <Card 
+                <Card
                     key={scenario.id} 
                     title={<CardTitle title={scenario.title} author={scenario.author}/>} 
-                    //variant="borderless"
+                    variant="borderless"
                 >
                     <p>{scenario.description}</p>
                     <p>{scenario.dancerCount}</p>

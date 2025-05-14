@@ -23,9 +23,9 @@ namespace ChoreoCreator.Application.Services
             return await _scenariosRepository.Create(scenario);
         }
 
-        public async Task<Guid> UpdateScenario(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
+        public async Task<Guid> UpdateScenario(Guid id, string title, string description, int dancerCount, Guid userId)
         {
-            return await _scenariosRepository.Update(id, title, description, dancerCount, userId, createdAt, updatedAt);
+            return await _scenariosRepository.Update(id, title, description, dancerCount, userId);
         }
 
         public async Task<Guid> DeleteScenario(Guid id)

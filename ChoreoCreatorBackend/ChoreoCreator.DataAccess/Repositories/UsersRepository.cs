@@ -27,9 +27,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 userEntity.Email,
                 userEntity.Username,
                 userEntity.PasswordHash,
-                userEntity.Role,
-                userEntity.CreatedAt,
-                userEntity.UpdatedAt
+                userEntity.Role
             );
 
             return user;
@@ -46,9 +44,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 userEntity.Email,
                 userEntity.Username,
                 userEntity.PasswordHash,
-                userEntity.Role,
-                userEntity.CreatedAt,
-                userEntity.UpdatedAt
+                userEntity.Role
             );
 
             return user;
@@ -69,9 +65,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                     userEntity.Email,
                     userEntity.Username,
                     userEntity.PasswordHash,
-                    userEntity.Role,
-                    userEntity.CreatedAt,
-                    userEntity.UpdatedAt
+                    userEntity.Role
                 );
 
                 if (user != null)
@@ -96,9 +90,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 Email = user.Email.Value,
                 Username = user.Username.Value,
                 PasswordHash = user.PasswordHash.Value,
-                Role = user.Role,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt
+                Role = user.Role
             };
 
             await _context.Users.AddAsync(userEntity);
@@ -115,8 +107,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                     .SetProperty(u => u.Email, u => user.Email.Value)
                     .SetProperty(u => u.Username, u => user.Username.Value)
                     .SetProperty(u => u.PasswordHash, u => user.PasswordHash.Value)
-                    .SetProperty(u => u.Role, u => user.Role)
-                    .SetProperty(u => u.UpdatedAt, u => DateTime.UtcNow));
+                    .SetProperty(u => u.Role, u => user.Role));
         }
 
         public async Task Delete(Guid id)
