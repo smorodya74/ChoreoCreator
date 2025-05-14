@@ -5,7 +5,5 @@
         string Title,
         string Description,
         int DancerCount,
-        Guid UserId,
-        DateTime CreatedAt,
-        DateTime UpdatedAt);
+        Guid UserId);
 }

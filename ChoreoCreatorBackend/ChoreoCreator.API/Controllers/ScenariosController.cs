@@ -21,7 +21,7 @@ namespace ChoreoCreator.API.Controllers
         {
             var scenarios = await _scenariosServices.GetAllScenarios();
 
-            var response = scenarios.Select(b => new ScenariosResponse(b.Id, b.Title, b.Description, b.DancerCount, b.UserId, b.CreatedAt, b.UpdatedAt));
+            var response = scenarios.Select(b => new ScenariosResponse(b.Id, b.Title, b.Description, b.DancerCount, b.UserId));
 
             return Ok(response);
         }
@@ -34,9 +34,7 @@ namespace ChoreoCreator.API.Controllers
                 request.Title,
                 request.Description,
                 request.DancerCount,
-                request.UserId,
-                request.CreatedAt,
-                request.UpdatedAt);
+                request.UserId);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -51,7 +49,7 @@ namespace ChoreoCreator.API.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<Guid>> UpdateScenario(Guid id, [FromBody] ScenariosRequest request)
         {
-            var scenarioId = await _scenariosServices.UpdateScenario(id, request.Title, request.Description, request.DancerCount, request.UserId, request.CreatedAt, request.UpdatedAt);
+            var scenarioId = await _scenariosServices.UpdateScenario(id, request.Title, request.Description, request.DancerCount, request.UserId);
 
             return Ok(scenarioId);
         }
