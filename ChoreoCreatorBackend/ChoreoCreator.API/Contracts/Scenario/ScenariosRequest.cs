@@ -1,4 +1,4 @@
-﻿namespace ChoreoCreator.API.Contracts
+﻿namespace ChoreoCreator.API.Contracts.Scenario
 {
     public record ScenariosRequest(
         string Title,
