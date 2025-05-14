@@ -5,17 +5,13 @@
         public const int MAX_TITLE_LENGTH = 100;
         public const int MAX_DESCRIPTION_LENGTH = 250;
 
-        public Scenario(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
+        public Scenario(Guid id, string title, string description, int dancerCount, Guid userId)
         {
-            // ВАЛИДАЦИЮ НА TITLE, DancerCount (1-16)
-
             Id = id;
             Title = title;
             Description = description;
             DancerCount = dancerCount;
             UserId = userId;
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = CreatedAt;
         }
 
         public Guid Id { get; }
@@ -23,14 +19,12 @@
         public string Description { get; private set; }
         public int DancerCount { get; }
         public Guid UserId { get; }
-        public DateTime CreatedAt { get; }
-        public DateTime UpdatedAt { get; private set; }
 
         private readonly List<Formation> _formations = new();
         public IReadOnlyCollection<Formation> Formations => _formations.AsReadOnly();
                 
 
-        public static (Scenario Scenario, string Error) Create(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
+        public static (Scenario Scenario, string Error) Create(Guid id, string title, string description, int dancerCount, Guid userId)
         {
             var error = string.Empty;
 
@@ -43,14 +37,9 @@
             if (dancerCount < 1 || dancerCount > 16)
                 return (null!, "Количество танцоров должно быть от 1 до 16");
 
-            var scenario = new Scenario(id, title, description, dancerCount, userId, createdAt, updatedAt);
+            var scenario = new Scenario(id, title, description, dancerCount, userId);
 
             return (scenario, error);
-        }
-
-        private void Touch()
-        {
-            UpdatedAt = DateTime.UtcNow;
         }
 
         public void Rename(string newTitle)
@@ -59,7 +48,6 @@
                 throw new ArgumentException("Название не может быть пустым или длиннее 100 символов");
 
             Title = newTitle;
-            Touch();
         }
 
         public void UpdateDescription(string newDescription)
@@ -68,14 +56,12 @@
                 throw new ArgumentException("Описание не может быть длиннее 250 символов");
 
             Description = newDescription ?? string.Empty;
-            Touch();
         }
 
         public void AddFormation(Formation formation)
         {
             if (formation == null) throw new ArgumentNullException(nameof(formation));
             _formations.Add(formation);
-            Touch();
         }
 
         public void RemoveFormation(Guid formationId)
@@ -84,10 +70,8 @@
             if (formation != null)
             {
                 _formations.Remove(formation);
-                Touch();
             }
         }
-
 
         public byte[] ExportToPdf()
         {

@@ -21,7 +21,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 .ToListAsync();
 
             var scenarios = scenarioEntities
-                .Select(b => Scenario.Create(b.Id, b.Title, b.Description, b.DancerCount, b.UserId, b.CreatedAt, b.UpdatedAt).Scenario)
+                .Select(b => Scenario.Create(b.Id, b.Title, b.Description, b.DancerCount, b.UserId).Scenario)
                 .ToList();
 
             return scenarios;
@@ -35,9 +35,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 Title = scenario.Title,
                 Description = scenario.Description,
                 DancerCount = scenario.DancerCount,
-                UserId = scenario.UserId,
-                CreatedAt = scenario.CreatedAt,
-                UpdatedAt = scenario.UpdatedAt,
+                UserId = scenario.UserId
             };
 
             await _context.Scenarios.AddAsync(scenarioEntity);
@@ -46,15 +44,14 @@ namespace ChoreoCreator.DataAccess.Repositories
             return scenarioEntity.Id;
         }
 
-        public async Task<Guid> Update(Guid id, string title, string description, int dancerCount, Guid userId, DateTime createdAt, DateTime updatedAt)
+        public async Task<Guid> Update(Guid id, string title, string description, int dancerCount, Guid userId)
         {
             await _context.Scenarios
                 .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(s => s
                     .SetProperty(s => s.Title, s => title)
                     .SetProperty(s => s.Description, s => description)
-                    .SetProperty(s => s.DancerCount, s => dancerCount)
-                    .SetProperty(s => s.UpdatedAt, s => DateTime.UtcNow));
+                    .SetProperty(s => s.DancerCount, s => dancerCount));
 
             return id;
         }
