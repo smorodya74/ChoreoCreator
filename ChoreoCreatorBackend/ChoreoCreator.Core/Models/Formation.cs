@@ -19,8 +19,8 @@
 
         public static (Formation Formation, string Error) Create(Guid id, Guid scenarioId, int numberOnScenario)
         {
-            if (numberOnScenario < 0)
-                return (null!, "Порядковый номер слайда не может быть отрицательным");
+            if (numberOnScenario < 1 || numberOnScenario > 16)
+                return (null!, "Порядковый номер слайда не может быть меньше 1");
 
             var formation = new Formation(id, scenarioId, numberOnScenario);
 
@@ -30,7 +30,7 @@
 
         public void AddDancerPosition(DancerPosition position)
         {
-            if (position == null) 
+            if (position == null)
                 throw new ArgumentNullException(nameof(position));
 
             _dancerPositions.Add(position);
@@ -39,7 +39,7 @@
         public void RemoveDancerByNumber(int dancerNumber)
         {
             var position = _dancerPositions.FirstOrDefault(p => p.DancerNumber == dancerNumber);
-            
+
             if (position != null)
                 _dancerPositions.Remove(position);
         }
@@ -47,7 +47,7 @@
         public void UpdateDancerPosition(int dancerNumber, float x, float y)
         {
             var position = _dancerPositions.FirstOrDefault(p => p.DancerNumber == dancerNumber);
-            
+
             position?.UpdatePosition(x, y);
         }
     }
