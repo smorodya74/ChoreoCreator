@@ -1,4 +1,4 @@
-﻿using ChoreoCreator.API.Contracts;
+﻿using ChoreoCreator.API.Contracts.Scenario;
 using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.Models;
 using Microsoft.AspNetCore.Mvc;
