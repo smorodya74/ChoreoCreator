@@ -20,9 +20,8 @@ const LoginForm: React.FC<Props> = ({ onSwitchToRegister, onClose }) => {
         setLoading(true);
         try {
             await login(values.email, values.password);
-            onClose(); // закрываем модалку при успехе
+            onClose();
         } catch {
-            // ошибка уже будет в error
         } finally {
             setLoading(false);
         }
@@ -58,7 +57,6 @@ const LoginForm: React.FC<Props> = ({ onSwitchToRegister, onClose }) => {
             Войти
         </Button>
       </Form.Item>
-
       <Form.Item>
         <Text>Не зарегистрированы? <a onClick={onSwitchToRegister}>Создать аккаунт</a></Text>
       </Form.Item>

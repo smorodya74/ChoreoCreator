@@ -29,7 +29,7 @@ const HeaderRight = () => {
     if (user) {
         return (
             <Dropdown menu={{ items: menuItems }}>
-                <a onClick={(e) => e.preventDefault()} style={{ color: 'white' }}>
+                <a onClick={(e) => e.preventDefault()} style={{ color: 'white', background: 'transparent' }}>
                     <Space>
                         {user.username}
                         <DownOutlined />
@@ -41,14 +41,17 @@ const HeaderRight = () => {
 
     return (
         <>
-            <Button 
-                type="primary" 
-                onClick={() => setModalOpen(true)}
+            <Button
+                ghost
+                color="primary"
+                variant="outlined"
+                size="large"
+                onClick={() => setModalOpen(true)} 
             >
                 Войти
             </Button>
-            <AuthModal open={isModalOpen} 
-                onClose={() => setModalOpen(false)} 
+            <AuthModal open={isModalOpen}
+                onClose={() => setModalOpen(false)}
             />
         </>
     );
