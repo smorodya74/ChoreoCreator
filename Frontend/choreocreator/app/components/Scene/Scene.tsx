@@ -7,13 +7,20 @@ import { Dancer } from '@/app/Models/Types';
 type SceneProps = {
     dancers: Dancer[];
     onMove: (id: string, position: { x: number; y: number }) => void;
+    selectedDancerId: string|null;
+    onSelectDancer: (id: string) => void;
 };
 
 const GRID_WIDTH = 32;
 const GRID_HEIGHT = 16;
 const CELL_SIZE = 40;
 
-const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
+const Scene: React.FC<SceneProps> = ({ 
+    dancers, 
+    onMove,
+    selectedDancerId,
+    onSelectDancer 
+}) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
 
@@ -122,7 +129,7 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
                     <text
                         key={`x-label-${i}`}
                         x={px}
-                        y={height + 16}  // Поднимем подпись немного выше, чтобы она не перекрывала сетку
+                        y={height - 10}  // Поднимем подпись немного выше, чтобы она не перекрывала сетку
                         fill="#ffffff"
                         fontSize={12}
                         textAnchor="middle"
@@ -142,10 +149,11 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
                         cy={y}
                         r={12}
                         fill="#c83a77"
-                        stroke="#ffffff"
+                        stroke={dancer.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
                         strokeWidth={2}
                         onMouseDown={(e) => handleMouseDown(e, dancer.id)}
-                        style={{ cursor: 'grab' }}
+                        onClick={() => onSelectDancer(dancer.id)}
+                        style={{ cursor: 'grab', transition: 'stroke 0.3s, stroke-width 0.3s' }}
                     />
                 );
             })}

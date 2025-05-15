@@ -48,7 +48,7 @@ export default function EditorPage() {
             },
         ]);
         setSelectedFormationId(initialFormationId);
-        setSelectedDancerId(null);
+        setSelectedDancerId(initialDancerId);
     }, [user]);
 
 
@@ -223,7 +223,12 @@ export default function EditorPage() {
             <Layout>
                 <Header style={{ padding: 0, background: '#041527' }} />
                 <Content style={{ marginLeft: 250, padding: 0, background: '#041527' }}>
-                    <Scene dancers={dancers} onMove={handleUpdateDancer} />
+                    <Scene 
+                        dancers={dancers} 
+                        onMove={handleUpdateDancer}
+                        onSelectDancer={handleSelectDancer}
+                        selectedDancerId={selectedDancerId} 
+                    />
                 </Content>
             </Layout>
         </Layout>
