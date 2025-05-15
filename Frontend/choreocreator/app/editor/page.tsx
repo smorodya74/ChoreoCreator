@@ -307,10 +307,10 @@ export default function EditorPage() {
     };  
     
     // ОПУБЛИКОВАТЬ
-    const handlePublicScenariok = () => {
+    const handlePublicScenario = () => {
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку');
-            setPendingAction('save');
+            setPendingAction('publish');
             setModalOpen(true); // Твоя модалка
             return;
         }
@@ -323,7 +323,7 @@ export default function EditorPage() {
     const handleExportScenario = () => {
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку');
-            setPendingAction('save');
+            setPendingAction('export');
             setModalOpen(true); // Твоя модалка
             return;
         }
@@ -334,7 +334,7 @@ export default function EditorPage() {
 
     return (
         <>
-            <Layout style={{ height: 'calc(100vh - 64px)' }}>
+            <Layout style={{ height: 'calc(100vh - 128px)' }}>
                 <EditorSidebar
                     dancerCount={dancers.length}
                     dancers={dancers}
@@ -349,15 +349,15 @@ export default function EditorPage() {
                     onAddFormation={handleAddFormation}
                     onDeleteFormation={handleDeleteFormation}
                     onSaveScenario={handleSaveScenario}
-                    onPublicScenario={handlePublicScenariok}
+                    onPublicScenario={handlePublicScenario}
                     onExportScenario={handleExportScenario}
                 />
 
-                <Layout style={{ background: '#041527' }}>
+                <Layout style={{ background: '#041527', paddingLeft: 250 }}>
                     <Content
                         style={{
                             marginTop: 25,
-                            marginLeft: 275,
+                            marginLeft: 25,
                             marginRight: 25,
                             padding: 0,
                             background: '#041527'

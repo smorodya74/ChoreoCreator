@@ -3,6 +3,7 @@ export type Formation = {
     numberInScenario: number;
     dancers: Dancer[];
 }
+
 export type Dancer = {
     id: string;
     numberInFormation: number;
