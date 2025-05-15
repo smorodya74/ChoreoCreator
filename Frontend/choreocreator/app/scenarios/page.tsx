@@ -108,7 +108,7 @@ export default function ScenariosPage(){
             />
 
             {loading ? (
-                <Title>Загрузка...</Title>
+                <Title style={{color: '#FFFFFF', textAlign: 'center'}}>Загрузка...</Title>
             ) : (
                 <Scenarios 
                     scenarios={scenarios} 

@@ -18,7 +18,7 @@ const LogoLink = () => (
       width={50}
       height={50}
       priority
-      style={{ display: "block", marginRight: 600, marginLeft: 50}}
+      style={{ display: "block", marginRight: 550, marginLeft: 50}}
     />
   </Link>
 );
