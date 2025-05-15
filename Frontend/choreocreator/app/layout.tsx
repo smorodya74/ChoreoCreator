@@ -1,33 +1,11 @@
 'use client';
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname } from 'next/navigation';
-import { Layout, Menu } from "antd";
+import { Layout } from "antd";
 import "./globals.css";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import { AuthProvider } from "./context/auth-context";
-import Link from "next/link";
-import HeaderRight from './components/Header';
-import logo from "@/public/logo.png"
-import Image from "next/image";
-
-const LogoLink = () => (
-  <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-    <Image
-      src={logo}
-      alt="ChoreoCreator Logo"
-      width={50}
-      height={50}
-      priority
-      style={{ display: "block", marginRight: 550, marginLeft: 50}}
-    />
-  </Link>
-);
-
-const items = [
-  { key: "home", label: <Link href={"/"}>Главная</Link> },
-  { key: "scenarios", label: <Link href={"/scenarios"}>Шаблоны</Link> },
-  { key: "editor", label: <Link href={"/editor"}>Редактор</Link> },
-];
+import AppHeader from './components/Header/Header';
 
 export default function RootLayout({
   children,
@@ -43,16 +21,7 @@ export default function RootLayout({
       <body style={{ background: '#041527' }}>
         <AuthProvider>
           <Layout style={{ minHeight: "100vh", justifyContent:"space-betweem", background: 'transparent' }}>
-            <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <LogoLink />
-              <Menu
-                theme="dark"
-                mode="horizontal"
-                items={items}
-                style={{ flex: 1, minWidth: 0 }}
-              />
-              <HeaderRight />
-            </Header>
+            <AppHeader />
             {!noPadding
               ? <Content
                 style={{

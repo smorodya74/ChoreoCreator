@@ -3,6 +3,7 @@ import { ScenarioRequest } from "../services/scenarios";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import Input from "antd/es/input/Input";
+import { Scenario } from "../Models/Scenario";
 
 interface Props{
     mode: Mode;

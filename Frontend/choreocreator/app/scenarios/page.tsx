@@ -1,7 +1,6 @@
 "use client";
 
 import Button from "antd/es/button/button";
-import { Scenarios } from "../components/Scenarios";
 import { useEffect, useState } from "react";
 import { createScenario, deleteScenario, getAllScenarios, ScenarioRequest, updateScenario } from "../services/scenarios";
 import Title from "antd/es/typography/Title";

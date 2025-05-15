@@ -1,0 +1,60 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: transparent;
+    box-shadow: 0 1px 0 0 #404040;
+    flex-wrap: wrap;
+    position: relative; /* или fixed/sticky, если надо */
+    z-index: 10; /* чтобы тень была сверху */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.logoText {
+    display: none;
+}
+
+.menu {
+    flex: 1;
+    min-width: 200px;
+    justify-content: center;
+    display: flex;
+}
+
+.right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 150px;
+}
+
+/* Адаптивность */
+@media (min-width: 600px) {
+    .logoText {
+        display: inline;
+    }
+}
+
+@media (max-width: 768px) {
+    .menu {
+        justify-content: flex-start;
+        margin-top: 8px;
+        width: 100%;
+    }
+
+    .right {
+        justify-content: flex-start;
+        margin-top: 8px;
+        width: 100%;
+    }
+}
