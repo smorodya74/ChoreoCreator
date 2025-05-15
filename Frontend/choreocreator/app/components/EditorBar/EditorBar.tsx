@@ -231,16 +231,18 @@ const EditorBar: React.FC<EditorBarProps> = ({
                             color="primary"
                             variant="outlined"
                             style={{ margin: 5, width: 220 }}
+                            icon={<CloudUploadOutlined />}
                         >
-                            <CloudUploadOutlined /> Опубликовать
+                            Опубликовать
                         </Button>
                         <Button
                             ghost
                             color="primary"
                             variant="outlined"
                             style={{ margin: 5, width: 220 }}
+                            icon={<DownloadOutlined />}
                         >
-                            <DownloadOutlined /> Экспортировать
+                            Экспортировать
                         </Button>
                     </div>
 

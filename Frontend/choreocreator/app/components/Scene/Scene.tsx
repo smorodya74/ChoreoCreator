@@ -7,7 +7,7 @@ import { Dancer } from '@/app/Models/Types';
 type SceneProps = {
     dancers: Dancer[];
     onMove: (id: string, position: { x: number; y: number }) => void;
-    selectedDancerId: string|null;
+    selectedDancerId: string | null;
     onSelectDancer: (id: string) => void;
 };
 
@@ -15,11 +15,11 @@ const GRID_WIDTH = 32;
 const GRID_HEIGHT = 16;
 const CELL_SIZE = 40;
 
-const Scene: React.FC<SceneProps> = ({ 
-    dancers, 
+const Scene: React.FC<SceneProps> = ({
+    dancers,
     onMove,
     selectedDancerId,
-    onSelectDancer 
+    onSelectDancer
 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -143,18 +143,33 @@ const Scene: React.FC<SceneProps> = ({
             {dancers.map((dancer) => {
                 const { x, y } = gridToPx(dancer.position.x, dancer.position.y);
                 return (
-                    <circle
-                        key={dancer.id}
-                        cx={x}
-                        cy={y}
-                        r={12}
-                        fill="#c83a77"
-                        stroke={dancer.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
-                        strokeWidth={2}
-                        onMouseDown={(e) => handleMouseDown(e, dancer.id)}
-                        onClick={() => onSelectDancer(dancer.id)}
-                        style={{ cursor: 'grab', transition: 'stroke 0.3s, stroke-width 0.3s' }}
-                    />
+                    <g key={dancer.id} >
+                        <circle
+                            cx={x}
+                            cy={y}
+                            r={16}
+                            fill="#c83a77"
+                            stroke={dancer.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
+                            strokeWidth={dancer.id === selectedDancerId ? 2 : 1}
+                            onMouseDown={(e) => handleMouseDown(e, dancer.id)}
+                            onClick={() => onSelectDancer(dancer.id)}
+                            style={{
+                                cursor: 'grab',
+                                transition: 'stroke 0.2s, stroke-width 0.2s' // Плавное изменение
+                            }}
+                        />
+                        <text
+                            x={x}
+                            y={y}
+                            fill="white"
+                            fontSize="14"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            pointerEvents="none" // Чтобы текст не перехватывал события мыши
+                        >
+                            {dancer.numberInFormation}
+                        </text>
+                    </g>
                 );
             })}
         </svg>

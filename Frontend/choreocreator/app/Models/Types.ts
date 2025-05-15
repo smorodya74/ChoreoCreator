@@ -1,10 +1,10 @@
-export type Dancer = {
-    id: string;
-    position: { x: number; y: number };
-};
-
 export type Formation = {
     id: string;
-    number: number;
+    numberInScenario: number;
     dancers: Dancer[];
 }
+export type Dancer = {
+    id: string;
+    numberInFormation: number;
+    position: { x: number; y: number };
+};

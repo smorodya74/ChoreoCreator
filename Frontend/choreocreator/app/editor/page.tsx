@@ -15,8 +15,12 @@ export default function EditorPage() {
 
     const [formations, setFormations] = useState<Formation[]>([{
         id: uuidv4(),
-        number: 1,
-        dancers: [{ id: uuidv4(), position: { x: 0, y: 0 },}]
+        numberInScenario: 1,
+        dancers: [{ 
+            id: uuidv4(), 
+            numberInFormation: 1, 
+            position: { x: 0, y: 0 },
+        }]
     }]);
 
     const [selectedFormationId, setSelectedFormationId] = useState<string | null>(null);
@@ -38,10 +42,11 @@ export default function EditorPage() {
         setFormations([
             {
                 id: initialFormationId,
-                number: 0,
+                numberInScenario: 1,
                 dancers: [
                     {
                         id: initialDancerId,
+                        numberInFormation: 1,
                         position: { x: 0, y: 0 },
                     },
                 ],
@@ -54,7 +59,7 @@ export default function EditorPage() {
 
     // ДОБАВИТЬ ТАНЦОРА
     const handleAddDancer = () => {
-        if (currentFormation && dancers.length <= 16) {
+        if (currentFormation && dancers.length < 16) {
             const GRID_WIDTH = 32;
             const GRID_HEIGHT = 16;
             const minX = -GRID_WIDTH / 2;
@@ -68,6 +73,7 @@ export default function EditorPage() {
                     if (!taken) {
                         const newDancer = {
                             id: crypto.randomUUID(),
+                            numberInFormation: dancers.length + 1,
                             position: { x, y },
                         };
 
@@ -129,7 +135,14 @@ export default function EditorPage() {
                 if (index === -1) return prev;
 
                 const formation = prev[index];
-                const updatedDancers = formation.dancers.filter(d => d.id !== selectedDancerId);
+
+                // Удаление выбранного танцора
+                const updatedDancers = formation.dancers
+                    .filter(d => d.id !== selectedDancerId)
+                    .map((d, idx) => ({
+                        ...d,
+                        numberInFormation: idx + 1, // переиндексация
+                    }));
 
                 const updated = [...prev];
                 updated[index] = {
@@ -141,8 +154,8 @@ export default function EditorPage() {
             });
 
             setSelectedDancerId(null);
-        };
-    }
+        }
+    };
 
 
     // ДОБАВИТЬ СЛАЙД
@@ -153,15 +166,16 @@ export default function EditorPage() {
 
         const newFormation: Formation = {
             id: uuidv4(),
-            number: lastFormation.number + 1,
-            dancers: lastFormation.dancers.map(d => ({
-                    id: uuidv4(),
-                    position: { ...d.position },
-                })),
+            numberInScenario: lastFormation.numberInScenario + 1,
+            dancers: lastFormation.dancers.map((d, index) => ({
+                id: uuidv4(),
+                numberInFormation: index + 1,
+                position: { ...d.position },
+            })),
         };
 
         setFormations(prev => [...prev, newFormation]);
-        setSelectedFormationId(newFormation.id); // переход на новый слайд
+        setSelectedFormationId(newFormation.id);
         setSelectedDancerId(null);
     };
 
@@ -175,12 +189,19 @@ export default function EditorPage() {
             if (indexToDelete === -1) return prev;
 
             const updated = prev.filter((_, i) => i !== indexToDelete);
+
+            // Переиндексация numberInScenario
+            const reIndexed = updated.map((f, index) => ({
+                ...f,
+                numberInScenario: index + 1,
+            }));
+
             const newSelectedIndex = indexToDelete > 0 ? indexToDelete - 1 : 0;
 
-            setSelectedFormationId(updated[newSelectedIndex].id);
+            setSelectedFormationId(reIndexed[newSelectedIndex].id);
             setSelectedDancerId(null);
 
-            return updated;
+            return reIndexed;
         });
     };
 
