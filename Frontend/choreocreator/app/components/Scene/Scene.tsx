@@ -1,19 +1,25 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import './Scene.css';
 import { Dancer } from '@/app/Models/Types';
 
 type SceneProps = {
     dancers: Dancer[];
     onMove: (id: string, position: { x: number; y: number }) => void;
+    selectedDancerId: string | null;
+    onSelectDancer: (id: string) => void;
 };
 
-const GRID_WIDTH = 32;
-const GRID_HEIGHT = 16;
+const GRID_WIDTH = 34;
+const GRID_HEIGHT = 18;
 const CELL_SIZE = 40;
 
-const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
+const Scene: React.FC<SceneProps> = ({
+    dancers,
+    onMove,
+    selectedDancerId,
+    onSelectDancer
+}) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
 
@@ -27,6 +33,13 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
 
     const gridOffsetX = width / 2;
     const gridOffsetY = height / 2;
+
+    const VISIBLE_FRAME = {
+        x1: (-GRID_WIDTH / 2) + 1,
+        x2: (GRID_WIDTH / 2) - 1,
+        y1: (-GRID_HEIGHT / 2) + 1,
+        y2: (GRID_HEIGHT / 2) - 1,
+    };
 
     const gridToPx = (x: number, y: number) => ({
         x: x * CELL_SIZE + gridOffsetX,
@@ -80,10 +93,18 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
             style={{
                 display: 'block',
                 backgroundColor: '#041527',
-                border: '2px solid #c83a77',
-                margin: 'auto',
+                zIndex: 900
             }}
         >
+            {/* Подсвеченная область */}
+            <rect
+                x={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).x}
+                y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
+                width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
+                height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
+                fill="rgb(255, 255, 0, 0.05)"
+            />
+
             {/* Сетка */}
             {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
                 const x = i * CELL_SIZE;
@@ -114,20 +135,44 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
                 );
             })}
 
-            {/* Подписи оси X */}
+            {/* Рамка видимой части */}
+            <rect
+                x={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).x}
+                y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
+                width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
+                height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
+                fill="none"
+                stroke="#c83a77"
+                strokeWidth={2}
+            />
+
+            {/* Подпись BACKSTAGE сверху по центру */}
+            <text
+                x={width / 2}
+                y={67} // отступ сверху
+                fill="rgba(200, 58, 119, 0.9)"
+                fontSize={20}
+                fontWeight="bold"
+                textAnchor="middle"
+                style={{ letterSpacing: 12 }}
+            >
+                BACKSTAGE
+            </text>
+            
+            {/* Подписи осей X */}
             {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
-                const x = minX + i;
+                const xMark = minX + i;
                 const px = i * CELL_SIZE;
                 return (
                     <text
                         key={`x-label-${i}`}
                         x={px}
-                        y={height + 16}  // Поднимем подпись немного выше, чтобы она не перекрывала сетку
+                        y={height - 10}
                         fill="#ffffff"
-                        fontSize={12}
+                        fontSize={10}
                         textAnchor="middle"
                     >
-                        {x}
+                        {xMark}
                     </text>
                 );
             })}
@@ -136,17 +181,33 @@ const Scene: React.FC<SceneProps> = ({ dancers, onMove }) => {
             {dancers.map((dancer) => {
                 const { x, y } = gridToPx(dancer.position.x, dancer.position.y);
                 return (
-                    <circle
-                        key={dancer.id}
-                        cx={x}
-                        cy={y}
-                        r={12}
-                        fill="#c83a77"
-                        stroke="#ffffff"
-                        strokeWidth={2}
-                        onMouseDown={(e) => handleMouseDown(e, dancer.id)}
-                        style={{ cursor: 'grab' }}
-                    />
+                    <g key={dancer.id}>
+                        <circle
+                            cx={x}
+                            cy={y}
+                            r={16}
+                            fill="#c83a77"
+                            stroke={dancer.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
+                            strokeWidth={dancer.id === selectedDancerId ? 2 : 1}
+                            onMouseDown={(e) => handleMouseDown(e, dancer.id)}
+                            onClick={() => onSelectDancer(dancer.id)}
+                            style={{
+                                cursor: 'grab',
+                                transition: 'stroke 0.2s, stroke-width 0.2s',
+                            }}
+                        />
+                        <text
+                            x={x}
+                            y={y}
+                            fill="white"
+                            fontSize="14"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            pointerEvents="none"
+                        >
+                            {dancer.numberInFormation}
+                        </text>
+                    </g>
                 );
             })}
         </svg>

@@ -28,54 +28,77 @@ const RegisterForm: React.FC<Props> = ({ onSwitchToLogin, onClose }) => {
     };
 
     return (
-    <Form layout="vertical" onFinish={onFinish} form={form}>
-        <Form.Item 
-            label="Email" 
-            name="email" 
-            rules={[{ required: true, message: 'Введите email' }]}
-        >
-            <Input />
-        </Form.Item>
+        <Form layout="vertical" onFinish={onFinish} form={form}>
 
-        <Form.Item 
-            label="Имя пользователя" 
-            name="username" 
-            rules={[{ required: true, message: 'Введите имя' }]}
-        >
-            <Input />
-        </Form.Item>
-
-        <Form.Item 
-            label="Пароль" 
-            name="password" 
-            rules={[{ required: true, message: 'Введите пароль' }]}
-        >
-            <Input.Password />
-        </Form.Item>
-
-        {error && <Text type="danger">{error}</Text>}
-
-        <Form.Item>
-            <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={loading} 
-                block
+            <Form.Item
+                label="Email"
+                name="email"
+                rules={[{ required: true, message: 'Введите email' }]}
             >
-                Создать аккаунт
-            </Button>
-        </Form.Item>
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                        <Input
+                            variant='borderless'
+                        />
+                    </div>
+                </div>
+            </Form.Item>
 
-        <Form.Item>
-            <Text>
-                Уже есть аккаунт? 
-                <a onClick={onSwitchToLogin}>
-                    Войти
-                </a>
-            </Text>
-        </Form.Item>
-    </Form>
-  );
+            <Form.Item
+                label="Имя пользователя"
+                name="username"
+                rules={[{ required: true, message: 'Введите имя' }]}
+            >
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                        <Input
+                            variant='borderless'
+                        />
+                    </div>
+                </div>
+            </Form.Item>
+
+            <Form.Item
+                label="Пароль"
+                name="password"
+                rules={[{ required: true, message: 'Введите пароль' }]}
+            >
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                        <Input.Password
+                            variant='borderless'
+                        />
+                    </div>
+                </div>
+            </Form.Item>
+
+            {error && <Text type="danger">{error}</Text>}
+
+            <Form.Item>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    block
+                >
+                    Создать аккаунт
+                </Button>
+            </Form.Item>
+
+            <Form.Item
+                style={{
+                    textAlign: "center"
+                }}
+            >
+                <Text>
+                    Уже есть аккаунт?
+                    <a onClick={onSwitchToLogin}>
+                        Войти
+                    </a>
+                </Text>
+            </Form.Item>
+        </Form>
+    );
 };
 
 export default RegisterForm;

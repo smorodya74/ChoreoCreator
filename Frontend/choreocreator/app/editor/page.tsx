@@ -1,60 +1,106 @@
 'use client';
 
 import { Layout } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import EditorSidebar from '@/app/components/EditorBar/EditorBar';
 import { useAuth } from '../context/auth-context';
 import Scene from '../components/Scene/Scene';
-import { Dancer, Formation } from '../Models/Types';
+import { Formation } from '../Models/Types';
 import { v4 as uuidv4 } from 'uuid';
+import { getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
+import AuthModal from '../components/AuthModal';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 export default function EditorPage() {
     const { user } = useAuth();
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [pendingAction, setPendingAction] = useState<null | 'save' | 'publish' | 'export'>(null);
 
     const [formations, setFormations] = useState<Formation[]>([{
         id: uuidv4(),
-        number: 1,
-        dancers: [{ id: uuidv4(), position: { x: 0, y: 0 },}]
+        numberInScenario: 1,
+        dancers: [{ 
+            id: uuidv4(), 
+            numberInFormation: 1, 
+            position: { x: 0, y: 0 },
+        }]
     }]);
 
     const [selectedFormationId, setSelectedFormationId] = useState<string | null>(null);
     const [selectedDancerId, setSelectedDancerId] = useState<string | null>(null);
 
-    const currentFormation = formations.find(f => f.id === selectedFormationId);
+    const currentFormation = useMemo(
+        () => formations.find(f => f.id === selectedFormationId),
+        [formations, selectedFormationId]
+    );
+    
     const dancers = currentFormation?.dancers ?? [];
 
     useEffect(() => {
         if (!user) {
-            console.log('[LOGGER] Создание нового сценария для гостя...');
+            console.log('[LOGGER] Гость: загружаем черновик или создаем новый...');
+
+            const localDraft = getDraftFromLocalStorage();
+
+            if (localDraft) {
+                setFormations(localDraft.formations);
+                setSelectedFormationId(localDraft.formations[0].id);
+                setSelectedDancerId(localDraft.formations[0].dancers[0]?.id ?? null);
+                return;
+            }
         } else {
-            console.log('[LOGGER] Загрузка проекта пользователя...');
+            console.log('[LOGGER] Авторизованный пользователь: загружаем сценарий из БД...');
+            // Тут позже будет загрузка с сервера
+            return;
         }
 
-        // Первый танцор по умолчанию
-        const initialFormationId = crypto.randomUUID();
-        const initialDancerId = crypto.randomUUID();
-        setFormations([
-            {
-                id: initialFormationId,
-                number: 0,
-                dancers: [
-                    {
-                        id: initialDancerId,
-                        position: { x: 0, y: 0 },
-                    },
-                ],
-            },
-        ]);
+        // По умолчанию создаем новый сценарий
+        const initialFormationId = uuidv4();
+        const initialDancerId = uuidv4();
+        const defaultFormations = [{
+            id: initialFormationId,
+            numberInScenario: 1,
+            dancers: [{
+                id: initialDancerId,
+                numberInFormation: 1,
+                position: { x: 0, y: 0 },
+            }]
+        }];
+
+        setFormations(defaultFormations);
         setSelectedFormationId(initialFormationId);
-        setSelectedDancerId(null);
+        setSelectedDancerId(initialDancerId);
+
+        saveDraftToLocalStorage({
+            isPublished: false,
+            formations: defaultFormations,
+            dancerCount: 1
+        });
+
     }, [user]);
 
+    useEffect(() => {
+        if (user && pendingAction) {
+            console.log(`[LOGGER] Пользователь вошёл, но нужно нажать кнопку "${pendingAction}" ещё раз`);
+            setPendingAction(null); // сбрасываем, чтобы не повторилось
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) {
+            const dancerCount = Math.max(...formations.map(f => f.dancers.length));
+            saveDraftToLocalStorage({
+                isPublished: false,
+                formations,
+                dancerCount,
+            });
+        }
+    }, [formations, user]);
 
     // ДОБАВИТЬ ТАНЦОРА
     const handleAddDancer = () => {
-        if (currentFormation && dancers.length <= 16) {
+        if (currentFormation && dancers.length < 16) {
             const GRID_WIDTH = 32;
             const GRID_HEIGHT = 16;
             const minX = -GRID_WIDTH / 2;
@@ -67,7 +113,8 @@ export default function EditorPage() {
                     const taken = dancers.some(d => d.position.x === x && d.position.y === y);
                     if (!taken) {
                         const newDancer = {
-                            id: crypto.randomUUID(),
+                            id: uuidv4(),
+                            numberInFormation: dancers.length + 1,
                             position: { x, y },
                         };
 
@@ -79,6 +126,12 @@ export default function EditorPage() {
                             const updatedFormation = { ...updated[index] };
                             updatedFormation.dancers = [...updatedFormation.dancers, newDancer];
                             updated[index] = updatedFormation;
+
+                            saveDraftToLocalStorage({
+                                isPublished: false,
+                                formations: updated, // после setFormations
+                                dancerCount: Math.max(...updated.map(f => f.dancers.length))
+                            });
 
                             return updated;
                         });
@@ -109,6 +162,12 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
+                saveDraftToLocalStorage({
+                    isPublished: false,
+                    formations: updated, // после setFormations
+                    dancerCount: Math.max(...updated.map(f => f.dancers.length))
+                });
+
                 return updated;
             })
         };
@@ -129,7 +188,17 @@ export default function EditorPage() {
                 if (index === -1) return prev;
 
                 const formation = prev[index];
-                const updatedDancers = formation.dancers.filter(d => d.id !== selectedDancerId);
+                const dancers = formation.dancers;
+
+                const deleteIndex = dancers.findIndex(d => d.id === selectedDancerId);
+                if (deleteIndex === -1) return prev;
+
+                const updatedDancers = dancers
+                    .filter((_, i) => i !== deleteIndex)
+                    .map((d, idx) => ({
+                        ...d,
+                        numberInFormation: idx + 1,
+                    }));
 
                 const updated = [...prev];
                 updated[index] = {
@@ -137,12 +206,22 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
+                saveDraftToLocalStorage({
+                    isPublished: false,
+                    formations: updated, // после setFormations
+                    dancerCount: Math.max(...updated.map(f => f.dancers.length))
+                });
+
+                // Выбрать предыдущего или следующего
+                const newSelectedIndex = deleteIndex > 0 ? deleteIndex - 1 : 0;
+                const newSelectedId = updatedDancers[newSelectedIndex]?.id || null;
+
+                setSelectedDancerId(newSelectedId);
+
                 return updated;
             });
-
-            setSelectedDancerId(null);
-        };
-    }
+        }
+    };
 
 
     // ДОБАВИТЬ СЛАЙД
@@ -153,15 +232,22 @@ export default function EditorPage() {
 
         const newFormation: Formation = {
             id: uuidv4(),
-            number: lastFormation.number + 1,
-            dancers: lastFormation.dancers.map(d => ({
-                    id: uuidv4(),
-                    position: { ...d.position },
-                })),
+            numberInScenario: lastFormation.numberInScenario + 1,
+            dancers: lastFormation.dancers.map((d, index) => ({
+                id: uuidv4(),
+                numberInFormation: index + 1,
+                position: { ...d.position },
+            })),
         };
 
         setFormations(prev => [...prev, newFormation]);
-        setSelectedFormationId(newFormation.id); // переход на новый слайд
+        const updatedFormations = [...formations, newFormation];
+        saveDraftToLocalStorage({
+            isPublished: false,
+            formations: updatedFormations,
+            dancerCount: Math.max(...updatedFormations.map(f => f.dancers.length))
+        });
+        setSelectedFormationId(newFormation.id);
         setSelectedDancerId(null);
     };
 
@@ -175,12 +261,25 @@ export default function EditorPage() {
             if (indexToDelete === -1) return prev;
 
             const updated = prev.filter((_, i) => i !== indexToDelete);
+
+            // Переиндексация numberInScenario
+            const reIndexed = updated.map((f, index) => ({
+                ...f,
+                numberInScenario: index + 1,
+            }));
+
+            saveDraftToLocalStorage({
+                isPublished: false,
+                formations: reIndexed,
+                dancerCount: Math.max(...reIndexed.map(f => f.dancers.length))
+            });
+
             const newSelectedIndex = indexToDelete > 0 ? indexToDelete - 1 : 0;
 
-            setSelectedFormationId(updated[newSelectedIndex].id);
+            setSelectedFormationId(reIndexed[newSelectedIndex].id);
             setSelectedDancerId(null);
 
-            return updated;
+            return reIndexed;
         });
     };
 
@@ -194,38 +293,85 @@ export default function EditorPage() {
         setSelectedDancerId(null);
     };
 
+    // СОХРАНИТЬ
+    const handleSaveScenario = () => {
+        if (!user) {
+            console.log('[LOGGER] Не авторизован: открываем модалку');
+            setPendingAction('save');
+            setModalOpen(true); // Твоя модалка
+            return;
+        }
 
-    // СОХРАНИТЬ ТИПА
-    const handleSave = () => {
-        console.log('Сохранение проекта...');
-        // Логика сохранения проекта
+        console.log('[LOGGER] Авторизован: сохраняем в БД (POST или PUT)');
+        // TODO: отправить сценарий в БД
+    };  
+    
+    // ОПУБЛИКОВАТЬ
+    const handlePublicScenariok = () => {
+        if (!user) {
+            console.log('[LOGGER] Не авторизован: открываем модалку');
+            setPendingAction('save');
+            setModalOpen(true); // Твоя модалка
+            return;
+        }
+
+        console.log('[LOGGER] Авторизован: публикуем в БД (POST или PUT) isPublish = true');
+        // TODO: отправить сценарий в БД
+    };   
+    
+    // ЭКСПОРТИРОВАТЬ
+    const handleExportScenario = () => {
+        if (!user) {
+            console.log('[LOGGER] Не авторизован: открываем модалку');
+            setPendingAction('save');
+            setModalOpen(true); // Твоя модалка
+            return;
+        }
+
+        console.log('[LOGGER] Авторизован: экспорт в PDF');
+        // TODO: отправить сценарий в БД
     };
 
-
     return (
-        <Layout style={{ height: 'calc(100vh - 64px)' }}>
-            <EditorSidebar
-                dancerCount={dancers.length}
-                dancers={dancers}
-                selectedDancerId={selectedDancerId}
-                onSelectDancer={handleSelectDancer}
-                onAddDancer={handleAddDancer}
-                onDeleteDancer={handleDeleteDancer}
-                formationCount={formations.length}
-                formations={formations}
-                selectedFormationId={selectedFormationId}
-                onSelectFormation={handleSelectFormation}
-                onAddFormation={handleAddFormation}
-                onDeleteFormation={handleDeleteFormation}
-                onSave={handleSave}
-            />
+        <>
+            <Layout style={{ height: 'calc(100vh - 64px)' }}>
+                <EditorSidebar
+                    dancerCount={dancers.length}
+                    dancers={dancers}
+                    selectedDancerId={selectedDancerId}
+                    onSelectDancer={handleSelectDancer}
+                    onAddDancer={handleAddDancer}
+                    onDeleteDancer={handleDeleteDancer}
+                    formationCount={formations.length}
+                    formations={formations}
+                    selectedFormationId={selectedFormationId}
+                    onSelectFormation={handleSelectFormation}
+                    onAddFormation={handleAddFormation}
+                    onDeleteFormation={handleDeleteFormation}
+                    onSaveScenario={handleSaveScenario}
+                    onPublicScenario={handlePublicScenariok}
+                    onExportScenario={handleExportScenario}
+                />
 
-            <Layout>
-                <Header style={{ padding: 0, background: '#041527' }} />
-                <Content style={{ marginLeft: 250, padding: 0, background: '#041527' }}>
-                    <Scene dancers={dancers} onMove={handleUpdateDancer} />
-                </Content>
+                <Layout style={{ background: '#041527' }}>
+                    <Content
+                        style={{
+                            marginTop: 25,
+                            marginLeft: 275,
+                            marginRight: 25,
+                            padding: 0,
+                            background: '#041527'
+                        }}>
+                        <Scene
+                            dancers={dancers}
+                            onMove={handleUpdateDancer}
+                            onSelectDancer={handleSelectDancer}
+                            selectedDancerId={selectedDancerId}
+                        />
+                    </Content>
+                </Layout>
             </Layout>
-        </Layout>
+            <AuthModal open={isModalOpen} onClose={() => setModalOpen(false)} />
+        </>
     );
 }

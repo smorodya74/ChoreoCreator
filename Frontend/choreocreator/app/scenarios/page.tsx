@@ -73,16 +73,30 @@ export default function ScenariosPage(){
 
     return (
         <div>
-            <Title style={{ padding: 15, color: '#FFFFFF' }} level={1}>CHOREO DATABASE</Title>
-            <Button
-                ghost
-                color="primary"
-                variant="outlined"
-                size="large"
-                onClick={openModal}
+            <Title
+                style={{
+                    padding: 15,
+                    color: '#FFFFFF',
+                    textAlign: "center"
+                }}
+                level={1}
             >
-                Создать сценарий
-            </Button>
+                CHOREO DATABASE
+            </Title>
+            <div
+                style={{
+                    textAlign: "center",
+                    alignContent: "center"
+                }}>
+                <Button className="btnTry"
+                    ghost
+                    size="large"
+                    onClick={openModal}
+
+                >
+                    Создать сценарий
+                </Button>
+            </div>
 
             <CreateUpdateScenario 
                 mode={mode} 
