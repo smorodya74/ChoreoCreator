@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './context/auth-context';
 import './globals.css';
 import { saveDraftToLocalStorage } from './utils/localStorageScenario';
+import { v4 as uuidv4 } from 'uuid';
 
 const { Title } = Typography;
 
@@ -11,16 +12,17 @@ export default function HomePage() {
     const router = useRouter();
     const { user } = useAuth();
 
+    
     const handleTryClick = () => {
     if (!user) {
         // Неавторизован — создаём локальный сценарий
         saveDraftToLocalStorage({
             isPublished: false,
             formations: [{
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 numberInScenario: 1,
                 dancers: [{
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     numberInFormation: 1,
                     position: { x: 0, y: 0 }
                 }]
@@ -39,8 +41,8 @@ export default function HomePage() {
         <div className="home-container">
             <Title style={{ color: '#FFFFFF' }} level={1}>Создайте свою хореографию</Title>
             <Button
-                type="primary" 
-                size="large" 
+                className="btnTry"
+                size="large"
                 onClick={handleTryClick}
             >
                 Попробовать

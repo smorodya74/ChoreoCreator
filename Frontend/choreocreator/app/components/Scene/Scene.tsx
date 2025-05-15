@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import './Scene.css';
 import { Dancer } from '@/app/Models/Types';
 
 type SceneProps = {
@@ -103,7 +102,7 @@ const Scene: React.FC<SceneProps> = ({
                 y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
                 width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
                 height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
-                fill="rgb(255, 255, 0, 0.02)"
+                fill="rgb(255, 255, 0, 0.05)"
             />
 
             {/* Сетка */}

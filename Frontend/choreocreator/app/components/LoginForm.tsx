@@ -29,39 +29,60 @@ const LoginForm: React.FC<Props> = ({ onSwitchToRegister, onClose }) => {
 
     return (
         <Form layout="vertical" onFinish={onFinish} form={form}>
-            <Form.Item 
-                label="Email" 
-                name="email" 
+            <Form.Item
+                label="Email"
+                name="email"
                 rules={[{ required: true, message: 'Введите email' }]}
             >
-                <Input />
-        </Form.Item>
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                    <Input
+                        variant='borderless'
+                    />
+                </div>
+                </div>
+            </Form.Item>
 
-        <Form.Item 
-            label="Пароль" 
-            name="password" 
-            rules={[{ required: true, message: 'Введите пароль' }]}
-        >
-            <Input.Password />
-        </Form.Item>
+            <Form.Item
+                label="Пароль"
+                name="password"
+                rules={[{ required: true, message: 'Введите пароль' }]}
+            >
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                    <Input.Password
+                        variant='borderless'
+                    />
+                </div>
+                </div>
+            </Form.Item>
 
-      {error && <Text type="danger">{error}</Text>}
+            {error && <Text type="danger">{error}</Text>}
 
-      <Form.Item>
-        <Button 
-            type="primary" 
-            htmlType="submit" 
-            loading={loading} 
-            block
-        >
-            Войти
-        </Button>
-      </Form.Item>
-      <Form.Item>
-        <Text>Не зарегистрированы? <a onClick={onSwitchToRegister}>Создать аккаунт</a></Text>
-      </Form.Item>
-    </Form>
-  );
+            <Form.Item>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    block
+                >
+                    Войти
+                </Button>
+            </Form.Item>
+            <Form.Item 
+                style={{ 
+                    textAlign: "center"}}
+                >
+                <Text>
+                    Не зарегистрированы? 
+                    <a 
+                    onClick={onSwitchToRegister}>
+                        Создать аккаунт
+                    </a>
+                </Text>
+            </Form.Item>
+        </Form>
+    );
 };
 
 export default LoginForm;

@@ -47,27 +47,37 @@ export const CreateUpdateScenario = ({
     }    
 
     return (
-        <Modal 
+        <Modal
             title={
                 mode === Mode.Create ? "Создать сценарий" : "Редактировать сценарий"
-            } 
-            open={isModalOpen} 
+            }
+            open={isModalOpen}
             onOk={handleOnOk}
             onCancel={handleCancel}
             cancelText={"Отменить"}
         >
             <div className="scenario_modal">
-                <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Название"
-                />
-                <TextArea 
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    autoSize={{ minRows: 3, maxRows: 3}}
-                    placeholder="Описание"
-                />
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                    <Input
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Название"
+                        variant="borderless"
+                    />
+                </div>
+                </div>
+                <div className="gradient-border-input">
+                    <div className="gradient-border-input-inner">
+                    <TextArea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        autoSize={{ minRows: 3, maxRows: 3 }}
+                        placeholder="Описание"
+                        variant="borderless"
+                    />
+                </div>
+                </div>
             </div>
         </Modal>
     )

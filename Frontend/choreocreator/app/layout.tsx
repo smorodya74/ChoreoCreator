@@ -7,7 +7,7 @@ import { Content, Footer, Header } from "antd/es/layout/layout";
 import { AuthProvider } from "./context/auth-context";
 import Link from "next/link";
 import HeaderRight from './components/Header';
-import logo from "@/public/logo.svg"
+import logo from "@/public/logo.png"
 import Image from "next/image";
 
 const LogoLink = () => (
@@ -18,7 +18,7 @@ const LogoLink = () => (
       width={50}
       height={50}
       priority
-      style={{ display: "block" }}
+      style={{ display: "block", marginRight: 600, marginLeft: 50}}
     />
   </Link>
 );
@@ -42,7 +42,7 @@ export default function RootLayout({
     <html lang="en">
       <body style={{ background: '#041527' }}>
         <AuthProvider>
-          <Layout style={{ minHeight: "100vh", background: 'transparent' }}>
+          <Layout style={{ minHeight: "100vh", justifyContent:"space-betweem", background: 'transparent' }}>
             <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <LogoLink />
               <Menu
