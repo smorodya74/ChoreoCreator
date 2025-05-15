@@ -136,10 +136,23 @@ const Scene: React.FC<SceneProps> = ({
                 stroke="#c83a77"
                 strokeWidth={2}
             />
-
-            {/* Подписи оси X */}
+            
+            {/* Подпись BACKSTAGE сверху по центру */}
+            <text
+                x={width / 2}
+                y={25} // отступ сверху
+                fill="rgba(200, 58, 119, 1)"
+                fontSize={20}
+                fontWeight="bold"
+                textAnchor="middle"
+                style={{ letterSpacing: 12 }}
+            >
+                BACKSTAGE
+            </text>
+            
+            {/* Подписи осей X */}
             {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
-                const x = minX + i;
+                const xMark = minX + i;
                 const px = i * CELL_SIZE;
                 return (
                     <text
@@ -147,10 +160,10 @@ const Scene: React.FC<SceneProps> = ({
                         x={px}
                         y={height - 10}
                         fill="#ffffff"
-                        fontSize={12}
+                        fontSize={10}
                         textAnchor="middle"
                     >
-                        {x}
+                        {xMark}
                     </text>
                 );
             })}
