@@ -113,3 +113,25 @@
 .btnTry:hover::before {
     opacity: 0.8; /* можно регулировать эффект при ховере */
 }
+
+.custom-scenarios-table {
+    border: 3px solid #c83a77;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.custom-scenarios-table .ant-table {
+    border: none;
+}
+
+.custom-scenarios-table .ant-table-container {
+    border: none;
+}
+
+.custom-scenarios-table table {
+    border-collapse: collapse;
+}
+
+.custom-scenarios-table .ant-table-tbody > tr > td {
+    border-bottom: 1px solid #c83a77;
+}

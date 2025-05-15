@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { createScenario, deleteScenario, getAllScenarios, ScenarioRequest, updateScenario } from "../services/scenarios";
 import Title from "antd/es/typography/Title";
 import { CreateUpdateScenario, Mode } from "../components/CreateUpdateScenario";
+import ScenariosTable from "../components/ScenariosTable";
+import { Scenario } from "../Models/Scenario";
 
 export default function ScenariosPage(){
     const defaultValues = {
@@ -92,7 +94,7 @@ export default function ScenariosPage(){
                     ghost
                     size="large"
                     onClick={openModal}
-
+                    style={{marginBottom: 20}}
                 >
                     Создать сценарий
                 </Button>
@@ -110,11 +112,13 @@ export default function ScenariosPage(){
             {loading ? (
                 <Title style={{color: '#FFFFFF', textAlign: 'center'}}>Загрузка...</Title>
             ) : (
-                <Scenarios 
-                    scenarios={scenarios} 
-                    handleOpen={openEditModal} 
-                    handleDelete={handleDeleteScenario}
-                />
+                <>
+                        <ScenariosTable
+                            scenarios={scenarios}
+                            handleOpen={openEditModal}
+                            handleDelete={handleDeleteScenario}
+                        />
+                </>
             )}
         </div>
     )
