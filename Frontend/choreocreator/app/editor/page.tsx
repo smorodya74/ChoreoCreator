@@ -135,13 +135,16 @@ export default function EditorPage() {
                 if (index === -1) return prev;
 
                 const formation = prev[index];
+                const dancers = formation.dancers;
 
-                // Удаление выбранного танцора
-                const updatedDancers = formation.dancers
-                    .filter(d => d.id !== selectedDancerId)
+                const deleteIndex = dancers.findIndex(d => d.id === selectedDancerId);
+                if (deleteIndex === -1) return prev;
+
+                const updatedDancers = dancers
+                    .filter((_, i) => i !== deleteIndex)
                     .map((d, idx) => ({
                         ...d,
-                        numberInFormation: idx + 1, // переиндексация
+                        numberInFormation: idx + 1,
                     }));
 
                 const updated = [...prev];
@@ -150,10 +153,14 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
+                // Выбрать предыдущего или следующего
+                const newSelectedIndex = deleteIndex > 0 ? deleteIndex - 1 : 0;
+                const newSelectedId = updatedDancers[newSelectedIndex]?.id || null;
+
+                setSelectedDancerId(newSelectedId);
+
                 return updated;
             });
-
-            setSelectedDancerId(null);
         }
     };
 
@@ -244,9 +251,9 @@ export default function EditorPage() {
             <Layout style={{background: '#041527'}}>
                 <Content 
                     style={{ 
-                        marginTop: 50, 
-                        marginLeft: 300,
-                        marginRight: 50, 
+                        marginTop: 25, 
+                        marginLeft: 275,
+                        marginRight: 25, 
                         padding: 0, 
                         background: '#041527' 
                     }}>

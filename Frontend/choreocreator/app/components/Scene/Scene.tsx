@@ -11,8 +11,8 @@ type SceneProps = {
     onSelectDancer: (id: string) => void;
 };
 
-const GRID_WIDTH = 32;
-const GRID_HEIGHT = 16;
+const GRID_WIDTH = 34;
+const GRID_HEIGHT = 18;
 const CELL_SIZE = 40;
 
 const Scene: React.FC<SceneProps> = ({
@@ -34,6 +34,13 @@ const Scene: React.FC<SceneProps> = ({
 
     const gridOffsetX = width / 2;
     const gridOffsetY = height / 2;
+
+    const VISIBLE_FRAME = {
+        x1: (-GRID_WIDTH / 2) + 1,
+        x2: (GRID_WIDTH / 2) - 1,
+        y1: (-GRID_HEIGHT / 2) + 1,
+        y2: (GRID_HEIGHT / 2) - 1,
+    };
 
     const gridToPx = (x: number, y: number) => ({
         x: x * CELL_SIZE + gridOffsetX,
@@ -87,8 +94,6 @@ const Scene: React.FC<SceneProps> = ({
             style={{
                 display: 'block',
                 backgroundColor: '#041527',
-                border: '2px solid #c83a77',
-                margin: 'auto',
             }}
         >
             {/* Сетка */}
@@ -121,6 +126,17 @@ const Scene: React.FC<SceneProps> = ({
                 );
             })}
 
+            {/* Рамка видимой части */}
+            <rect
+                x={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).x}
+                y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
+                width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
+                height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
+                fill="none"
+                stroke="#c83a77"
+                strokeWidth={2}
+            />
+
             {/* Подписи оси X */}
             {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
                 const x = minX + i;
@@ -129,7 +145,7 @@ const Scene: React.FC<SceneProps> = ({
                     <text
                         key={`x-label-${i}`}
                         x={px}
-                        y={height - 10}  // Поднимем подпись немного выше, чтобы она не перекрывала сетку
+                        y={height - 10}
                         fill="#ffffff"
                         fontSize={12}
                         textAnchor="middle"
@@ -143,7 +159,7 @@ const Scene: React.FC<SceneProps> = ({
             {dancers.map((dancer) => {
                 const { x, y } = gridToPx(dancer.position.x, dancer.position.y);
                 return (
-                    <g key={dancer.id} >
+                    <g key={dancer.id}>
                         <circle
                             cx={x}
                             cy={y}
@@ -155,7 +171,7 @@ const Scene: React.FC<SceneProps> = ({
                             onClick={() => onSelectDancer(dancer.id)}
                             style={{
                                 cursor: 'grab',
-                                transition: 'stroke 0.2s, stroke-width 0.2s' // Плавное изменение
+                                transition: 'stroke 0.2s, stroke-width 0.2s',
                             }}
                         />
                         <text
@@ -165,7 +181,7 @@ const Scene: React.FC<SceneProps> = ({
                             fontSize="14"
                             textAnchor="middle"
                             dominantBaseline="middle"
-                            pointerEvents="none" // Чтобы текст не перехватывал события мыши
+                            pointerEvents="none"
                         >
                             {dancer.numberInFormation}
                         </text>
