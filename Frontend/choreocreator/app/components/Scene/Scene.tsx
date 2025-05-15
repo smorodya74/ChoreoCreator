@@ -97,6 +97,15 @@ const Scene: React.FC<SceneProps> = ({
                 zIndex: 900
             }}
         >
+            {/* Подсвеченная область */}
+            <rect
+                x={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).x}
+                y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
+                width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
+                height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
+                fill="rgb(255, 255, 0, 0.02)"
+            />
+
             {/* Сетка */}
             {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
                 const x = i * CELL_SIZE;
