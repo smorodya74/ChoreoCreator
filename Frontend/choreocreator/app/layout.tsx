@@ -54,10 +54,31 @@ export default function RootLayout({
               <HeaderRight />
             </Header>
             {!noPadding
-              ? <Content style={{ padding: "0 48px", background: 'transparent' }}>{children}</Content>
-              : <Content style={{ padding: "0 0px", background: 'transparent' }}>{children}</Content>}
+              ? <Content
+                style={{
+                  padding: "0 48px",
+                  background: 'transparent'
+                }}
+              >
+                {children}
+              </Content>
+              : <Content
+                style={{
+                  padding: "0 0px",
+                  background: 'transparent'
+                }}
+              >
+                {children}
+              </Content>}
             {!hideFooter &&
-              <Footer style={{ borderTop: '1px solid #404040', textAlign: "center", background: 'transparent', color: '#FFFFFF' }}>
+              <Footer
+                style={{
+                  borderTop: '1px solid #404040',
+                  textAlign: "center",
+                  background: 'transparent',
+                  color: '#FFFFFF'
+                }}
+              >
                 © 2025 Choreo Creator. Created by Stepan Smorodnikov
               </Footer>}
           </Layout>

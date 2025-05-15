@@ -30,7 +30,9 @@ type EditorBarProps = {
     onSelectFormation: (id: string) => void;
     onAddFormation: () => void;
     onDeleteFormation: () => void;
-    onSave: () => void;
+    onSaveScenario: () => void;
+    onPublicScenario: () => void;
+    onExportScenario: () => void;
 };
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -66,7 +68,9 @@ const EditorBar: React.FC<EditorBarProps> = ({
     onSelectFormation,
     onAddFormation,
     onDeleteFormation,
-    onSave,
+    onSaveScenario,
+    onPublicScenario,
+    onExportScenario
 }) => {
     const [selectedMenuKey, setSelectedMenuKey] = useState("1");
 
@@ -125,19 +129,17 @@ const EditorBar: React.FC<EditorBarProps> = ({
                                     border: dancer.id === selectedDancerId ? '1px solid #C83A77' : 'none',
                                 }}
                             >
-                                <div
-                                    style={{
-                                        width: 16,
-                                        height: 16,
-                                        borderRadius: '50%',
-                                        backgroundColor: '#C83A77', // цвет танцора
-                                        marginRight: 8,
-                                    }}
-                                />
-                                <span>
-                                    {`Танцор ${index + 1}`}
-                                </span>
-                            </div>
+                                    <div
+                                        style={{
+                                            width: 16,
+                                            height: 16,
+                                            borderRadius: '50%',
+                                            backgroundColor: '#C83A77', // цвет танцора
+                                            marginRight: 8,
+                                        }}
+                                    />
+                                    <span>{`Танцор ${index + 1} (${dancer.position.x}, ${dancer.position.y})`}</span>
+                                </div>
                         ))}
                     </div>
                     <div style={{ position: 'absolute', bottom: 10, width: '100%', padding: 8 }}>
@@ -228,19 +230,34 @@ const EditorBar: React.FC<EditorBarProps> = ({
                     <div style={{ padding: 10 }}>
                         <Button
                             ghost
-                            color="primary"
+                            color="default"
                             variant="outlined"
-                            style={{ margin: 5, width: 220 }}
+                            style={{ marginTop: 5, paddingTop: 25, paddingBottom: 25 }}
+                            icon={<SaveOutlined />}
+                            block
+                            onClick={onSaveScenario}
+                        >
+                            Сохранить
+                        </Button>
+                        <Button
+                            ghost
+                            color="default"
+                            variant="outlined"
+                            style={{ marginTop: 15, paddingTop: 25, paddingBottom: 25 }}
                             icon={<CloudUploadOutlined />}
+                            block
+                            onClick={onPublicScenario}
                         >
                             Опубликовать
                         </Button>
                         <Button
                             ghost
-                            color="primary"
+                            color="default"
                             variant="outlined"
-                            style={{ margin: 5, width: 220 }}
+                            style={{ marginTop: 15, paddingTop: 25, paddingBottom: 25 }}
                             icon={<DownloadOutlined />}
+                            block
+                            onClick={onExportScenario}
                         >
                             Экспортировать
                         </Button>

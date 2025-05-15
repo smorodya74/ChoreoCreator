@@ -94,6 +94,7 @@ const Scene: React.FC<SceneProps> = ({
             style={{
                 display: 'block',
                 backgroundColor: '#041527',
+                zIndex: 900
             }}
         >
             {/* Сетка */}
@@ -136,7 +137,7 @@ const Scene: React.FC<SceneProps> = ({
                 stroke="#c83a77"
                 strokeWidth={2}
             />
-            
+
             {/* Подпись BACKSTAGE сверху по центру */}
             <text
                 x={width / 2}
