@@ -140,8 +140,8 @@ const Scene: React.FC<SceneProps> = ({
             {/* Подпись BACKSTAGE сверху по центру */}
             <text
                 x={width / 2}
-                y={25} // отступ сверху
-                fill="rgba(200, 58, 119, 1)"
+                y={67} // отступ сверху
+                fill="rgba(200, 58, 119, 0.9)"
                 fontSize={20}
                 fontWeight="bold"
                 textAnchor="middle"
