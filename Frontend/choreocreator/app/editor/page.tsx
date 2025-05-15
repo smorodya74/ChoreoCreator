@@ -241,9 +241,15 @@ export default function EditorPage() {
                 onSave={handleSave}
             />
 
-            <Layout>
-                <Header style={{ padding: 0, background: '#041527' }} />
-                <Content style={{ marginLeft: 250, padding: 0, background: '#041527' }}>
+            <Layout style={{background: '#041527'}}>
+                <Content 
+                    style={{ 
+                        marginTop: 50, 
+                        marginLeft: 300,
+                        marginRight: 50, 
+                        padding: 0, 
+                        background: '#041527' 
+                    }}>
                     <Scene 
                         dancers={dancers} 
                         onMove={handleUpdateDancer}
