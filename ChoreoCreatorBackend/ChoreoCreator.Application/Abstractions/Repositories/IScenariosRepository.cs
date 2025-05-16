@@ -4,8 +4,8 @@ namespace ChoreoCreator.Application.Abstractions.Repositories;
 
 public interface IScenariosRepository
 {
-    Task<Guid> Create(Scenario scenario);
-    Task<Guid> Delete(Guid id);
-    Task<List<Scenario>> Get();
-    Task<Guid> Update(Guid id, string title, string description, int dancerCount, Guid userId);
+    Task<List<Scenario>> GetAllAsync();
+    Task<Scenario?> GetByIdAsync(Guid id);
+    Task SaveAsync(Scenario scenario);
+    Task<bool> DeleteAsync(Guid id);
 }

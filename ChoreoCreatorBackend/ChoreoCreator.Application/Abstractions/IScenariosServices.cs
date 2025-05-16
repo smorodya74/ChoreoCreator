@@ -1,11 +1,13 @@
 ﻿using ChoreoCreator.Core.Models;
 
-namespace ChoreoCreator.Application.Abstractions;
-
-public interface IScenariosServices
+namespace ChoreoCreator.Application.Abstractions
 {
-    Task<Guid> CreateScenario(Scenario scenario);
-    Task<Guid> DeleteScenario(Guid id);
-    Task<List<Scenario>> GetAllScenarios();
-    Task<Guid> UpdateScenario(Guid id, string title, string description, int dancerCount, Guid userId);
+    public interface IScenariosServices
+    {
+        Task<List<Scenario>> GetAllScenarios();
+        Task<Scenario?> GetScenarioById(Guid id);
+        Task<Guid> CreateScenario(Scenario scenario);
+        Task<bool> DeleteScenario(Guid id);
+        Task<bool> UpdateScenario(Scenario scenario);
+    }
 }

@@ -22,81 +22,46 @@ namespace ChoreoCreator.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.DancerPositionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("DancerNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("FormationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<float>("X")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Y")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FormationId");
-
-                    b.ToTable("DancerPositions");
-                });
-
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.FormationEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("NumberOnScenario")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ScenarioId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScenarioId");
-
-                    b.ToTable("Formations");
-                });
-
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.ScenarioEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("DancerCount")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("FormationsJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("formations");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<Guid?>("UserEntityId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserEntityId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Scenarios");
+                    b.ToTable("t_scenarios", (string)null);
                 });
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.UserEntity", b =>
@@ -104,9 +69,6 @@ namespace ChoreoCreator.DataAccess.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -119,9 +81,6 @@ namespace ChoreoCreator.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
@@ -131,47 +90,19 @@ namespace ChoreoCreator.DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.DancerPositionEntity", b =>
-                {
-                    b.HasOne("ChoreoCreator.DataAccess.Entities.FormationEntity", "Formation")
-                        .WithMany("DancerPositions")
-                        .HasForeignKey("FormationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Formation");
-                });
-
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.FormationEntity", b =>
-                {
-                    b.HasOne("ChoreoCreator.DataAccess.Entities.ScenarioEntity", "Scenario")
-                        .WithMany("Formations")
-                        .HasForeignKey("ScenarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Scenario");
-                });
-
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.ScenarioEntity", b =>
                 {
-                    b.HasOne("ChoreoCreator.DataAccess.Entities.UserEntity", "User")
+                    b.HasOne("ChoreoCreator.DataAccess.Entities.UserEntity", null)
                         .WithMany("Scenarios")
+                        .HasForeignKey("UserEntityId");
+
+                    b.HasOne("ChoreoCreator.DataAccess.Entities.UserEntity", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.FormationEntity", b =>
-                {
-                    b.Navigation("DancerPositions");
-                });
-
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.ScenarioEntity", b =>
-                {
-                    b.Navigation("Formations");
                 });
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.UserEntity", b =>

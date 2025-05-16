@@ -6,10 +6,10 @@ using ChoreoCreator.Core.Services;
 using ChoreoCreator.Core.Settings;
 using ChoreoCreator.DataAccess;
 using ChoreoCreator.DataAccess.Repositories;
-using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Application.Services;
 using ChoreoCreator.Core.Contracts;
+using ChoreoCreator.Application.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,7 +82,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
 
 app.UseCors(x =>
 {
@@ -95,4 +94,5 @@ app.UseCors(x =>
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
 app.Run();
