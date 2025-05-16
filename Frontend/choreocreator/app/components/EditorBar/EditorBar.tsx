@@ -84,7 +84,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
             width={250}
             style={{
                 position: 'fixed',
-                top: 64,
+                top: 65,
                 bottom: 0,
                 left: 0,
                 zIndex: 10,
