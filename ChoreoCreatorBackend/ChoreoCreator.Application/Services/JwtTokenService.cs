@@ -10,7 +10,7 @@ namespace ChoreoCreator.Application.Services
 {
     public interface IJwtTokenService
     {
-        string GenerateToken(User user);    // Генерация токена
+        string GenerateToken(User user);
     }
 
     public class JwtTokenService : IJwtTokenService
@@ -42,7 +42,7 @@ namespace ChoreoCreator.Application.Services
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);  // Возвращаем JWT как строку
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

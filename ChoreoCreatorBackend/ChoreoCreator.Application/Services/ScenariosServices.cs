@@ -34,17 +34,14 @@ namespace ChoreoCreator.Application.Services
             var existing = await _scenariosRepository.GetByIdAsync(scenario.Id);
             if (existing == null)
                 return false;
-
-            // Обновляем только разрешённые поля
+            // TODO: ДОБАВИТЬ изменение Formation или DancerCount
             existing.UpdateTitle(scenario.Title);
             existing.UpdateDescription(scenario.Description);
 
-            // Обновим количество танцоров
             typeof(Scenario)
                 .GetProperty(nameof(Scenario.DancerCount))?
                 .SetValue(existing, scenario.DancerCount);
 
-            // Очистим старые формации и добавим новые
             typeof(Scenario)
                 .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?
                 .SetValue(existing, new List<Formation>());
