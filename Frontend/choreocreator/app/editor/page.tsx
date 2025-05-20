@@ -5,24 +5,37 @@ import { useEffect, useMemo, useState } from 'react';
 import EditorSidebar from '@/app/components/EditorBar/EditorBar';
 import { useAuth } from '../context/auth-context';
 import Scene from '../components/Scene/Scene';
-import { Formation } from '../Models/Types';
+import { Formation, ScenarioRequest } from '../Models/Types';
 import { v4 as uuidv4 } from 'uuid';
-import { getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
+import { DraftScenario, getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
 import AuthModal from '../components/AuthModal';
+import { Mode } from '../components/CreateUpdateScenario';
+import { getScenarioById, updateScenario } from '../services/scenarios';
 
 const { Content } = Layout;
 
 export default function EditorPage() {
+    const defaultValues = {
+        title: "Введите название",
+        description: "Введите описание",
+    } as ScenarioRequest
+    const [isScenarioModalVisible, setScenarioModalVisible] = useState(false);
+    const [scenarioMode, setScenarioMode] = useState<Mode>(Mode.Save);
+    const [pendingAction, setPendingAction] = useState<null | 'save' | 'publish' | 'export'>(null);
+
+
     const { user } = useAuth();
     const [isModalOpen, setModalOpen] = useState(false);
-    const [pendingAction, setPendingAction] = useState<null | 'save' | 'publish' | 'export'>(null);
+
+    const [scenarioId, setScenarioId] = useState<string | undefined>(undefined);
+    const [scenario, setScenario] = useState<DraftScenario | null>(null);
 
     const [formations, setFormations] = useState<Formation[]>([{
         id: uuidv4(),
         numberInScenario: 1,
-        dancers: [{ 
-            id: uuidv4(), 
-            numberInFormation: 1, 
+        dancers: [{
+            id: uuidv4(),
+            numberInFormation: 1,
             position: { x: 0, y: 0 },
         }]
     }]);
@@ -34,50 +47,77 @@ export default function EditorPage() {
         () => formations.find(f => f.id === selectedFormationId),
         [formations, selectedFormationId]
     );
-    
+
     const dancers = currentFormation?.dancers ?? [];
 
     useEffect(() => {
-        if (!user) {
-            console.log('[LOGGER] Гость: загружаем черновик или создаем новый...');
-
+        const loadScenario = async () => {
             const localDraft = getDraftFromLocalStorage();
 
+            // 1. Если есть localStorage — загружаем из него независимо от user
             if (localDraft) {
+                console.log('[LOGGER] Загружаем сценарий из localStorage...');
                 setFormations(localDraft.formations);
-                setSelectedFormationId(localDraft.formations[0].id);
-                setSelectedDancerId(localDraft.formations[0].dancers[0]?.id ?? null);
+                setScenarioId(localDraft.id);
+                setSelectedFormationId(localDraft.selectedFormationId ?? localDraft.formations[0].id);
+                setSelectedDancerId(localDraft.selectedDancerId ?? localDraft.formations[0].dancers[0]?.id ?? null);
                 return;
             }
-        } else {
-            console.log('[LOGGER] Авторизованный пользователь: загружаем сценарий из БД...');
-            // Тут позже будет загрузка с сервера
-            return;
-        }
 
-        // По умолчанию создаем новый сценарий
-        const initialFormationId = uuidv4();
-        const initialDancerId = uuidv4();
-        const defaultFormations = [{
-            id: initialFormationId,
-            numberInScenario: 1,
-            dancers: [{
-                id: initialDancerId,
-                numberInFormation: 1,
-                position: { x: 0, y: 0 },
-            }]
-        }];
+            // 2. Если пользователь авторизован — загрузи сценарий из БД
+            if (user) {
+                console.log('[LOGGER] Авторизованный пользователь — загрузи сценарий из БД');
 
-        setFormations(defaultFormations);
-        setSelectedFormationId(initialFormationId);
-        setSelectedDancerId(initialDancerId);
+                // Здесь нужно знать scenarioId, который хочешь загрузить
+                // Если у тебя нет scenarioId — можно получить "последний" сценарий пользователя, или создать новый
+                // Пока пример с фиксированным scenarioId — замени на реальный
+                const serverScenarioId = scenarioId ?? "тут_вставь_нужный_id_или получи сессией";
 
-        saveDraftToLocalStorage({
-            isPublished: false,
-            formations: defaultFormations,
-            dancerCount: 1
-        });
+                try {
+                    const scenarioFromServer = await getScenarioById(serverScenarioId);
+                    setFormations(scenarioFromServer.formations);
+                    setScenarioId(scenarioFromServer.id);
+                    setSelectedFormationId(scenarioFromServer.formations[0].id);
+                    setSelectedDancerId(scenarioFromServer.formations[0].dancers[0]?.id ?? null);
+                    return;
+                } catch (error) {
+                    console.error('[LOGGER] Ошибка загрузки сценария с сервера:', error);
+                    // Создаём новый, если загрузка не удалась
+                }
+            }
 
+            // 3. Если ничего нет — создаём новый сценарий
+            console.log('[LOGGER] Новый сценарий: создаём');
+            const generatedId = uuidv4();
+            const initialFormationId = uuidv4();
+            const initialDancerId = uuidv4();
+
+            const defaultFormations: Formation[] = [{
+                id: initialFormationId,
+                numberInScenario: 1,
+                dancers: [{
+                    id: initialDancerId,
+                    numberInFormation: 1,
+                    position: { x: 0, y: 0 },
+                }],
+            }];
+
+            setScenarioId(generatedId);
+            setFormations(defaultFormations);
+            setSelectedFormationId(initialFormationId);
+            setSelectedDancerId(initialDancerId);
+
+            saveDraftToLocalStorage({
+                id: generatedId,
+                formations: defaultFormations,
+                dancerCount: 1,
+                isPublished: false,
+                selectedFormationId: initialFormationId,
+                selectedDancerId: initialDancerId,
+            });
+        };
+
+        loadScenario();
     }, [user]);
 
     useEffect(() => {
@@ -88,12 +128,15 @@ export default function EditorPage() {
     }, [user]);
 
     useEffect(() => {
-        if (!user) {
+        if (!user && selectedFormationId && selectedDancerId) {
             const dancerCount = Math.max(...formations.map(f => f.dancers.length));
             saveDraftToLocalStorage({
+                id: scenarioId,
                 isPublished: false,
                 formations,
                 dancerCount,
+                selectedFormationId,
+                selectedDancerId
             });
         }
     }, [formations, user]);
@@ -127,12 +170,16 @@ export default function EditorPage() {
                             updatedFormation.dancers = [...updatedFormation.dancers, newDancer];
                             updated[index] = updatedFormation;
 
-                            saveDraftToLocalStorage({
-                                isPublished: false,
-                                formations: updated, // после setFormations
-                                dancerCount: Math.max(...updated.map(f => f.dancers.length))
-                            });
-
+                            if(!user && selectedFormationId && selectedDancerId)
+                            {
+                                saveDraftToLocalStorage({
+                                    isPublished: false,
+                                    formations: updated,
+                                    dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                                    selectedFormationId,
+                                    selectedDancerId
+                                });
+                            }
                             return updated;
                         });
 
@@ -162,11 +209,15 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
-                saveDraftToLocalStorage({
-                    isPublished: false,
-                    formations: updated, // после setFormations
-                    dancerCount: Math.max(...updated.map(f => f.dancers.length))
-                });
+                if (!user && selectedFormationId && selectedDancerId) {
+                    saveDraftToLocalStorage({
+                        isPublished: false,
+                        formations: updated,
+                        dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                        selectedFormationId,
+                        selectedDancerId
+                    });
+                }
 
                 return updated;
             })
@@ -206,11 +257,15 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
-                saveDraftToLocalStorage({
-                    isPublished: false,
-                    formations: updated, // после setFormations
-                    dancerCount: Math.max(...updated.map(f => f.dancers.length))
-                });
+                if (!user && selectedFormationId && selectedDancerId) {
+                    saveDraftToLocalStorage({
+                        isPublished: false,
+                        formations: updated,
+                        dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                        selectedFormationId,
+                        selectedDancerId
+                    });
+                }
 
                 // Выбрать предыдущего или следующего
                 const newSelectedIndex = deleteIndex > 0 ? deleteIndex - 1 : 0;
@@ -242,11 +297,16 @@ export default function EditorPage() {
 
         setFormations(prev => [...prev, newFormation]);
         const updatedFormations = [...formations, newFormation];
-        saveDraftToLocalStorage({
-            isPublished: false,
-            formations: updatedFormations,
-            dancerCount: Math.max(...updatedFormations.map(f => f.dancers.length))
-        });
+        if (!user && selectedFormationId && selectedDancerId) {
+            saveDraftToLocalStorage({
+                isPublished: false,
+                formations: updatedFormations,
+                dancerCount: Math.max(...updatedFormations.map(f => f.dancers.length)),
+                selectedFormationId,
+                selectedDancerId
+            });
+        }
+
         setSelectedFormationId(newFormation.id);
         setSelectedDancerId(null);
     };
@@ -268,11 +328,15 @@ export default function EditorPage() {
                 numberInScenario: index + 1,
             }));
 
-            saveDraftToLocalStorage({
-                isPublished: false,
-                formations: reIndexed,
-                dancerCount: Math.max(...reIndexed.map(f => f.dancers.length))
-            });
+            if (!user && selectedFormationId && selectedDancerId) {
+                saveDraftToLocalStorage({
+                    isPublished: false,
+                    formations: updated,
+                    dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                    selectedFormationId,
+                    selectedDancerId
+                });
+            }
 
             const newSelectedIndex = indexToDelete > 0 ? indexToDelete - 1 : 0;
 
@@ -295,41 +359,82 @@ export default function EditorPage() {
 
     // СОХРАНИТЬ
     const handleSaveScenario = () => {
+        // Если неавторизованный
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку');
             setPendingAction('save');
-            setModalOpen(true); // Твоя модалка
+            setModalOpen(true);
             return;
         }
 
+        // Если авторизованный
         console.log('[LOGGER] Авторизован: сохраняем в БД (POST или PUT)');
-        // TODO: отправить сценарий в БД
-    };  
-    
+
+        // Если сценария нет в БД — откроется CreateUpdateScenario (пользователь введёт title/description)
+        if (!scenarioId) {
+            setPendingAction('save');
+            setScenarioMode(Mode.Save);
+            setScenarioModalVisible(true); // После заполнения будет вызван createScenario()
+            return;
+        }
+
+        // Если сценарий уже есть в БД — сохраняем без модалки
+        const scenarioRequest: ScenarioRequest = {
+            title: defaultValues.title,
+            description: defaultValues.description,
+            formations,
+            dancerCount: Math.max(...formations.map(f => f.dancers.length)),
+            isPublished: false,
+        };
+
+        updateScenario(scenarioId, scenarioRequest);
+    };
+
     // ОПУБЛИКОВАТЬ
     const handlePublicScenario = () => {
+        // Если неавторизованный
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку');
             setPendingAction('publish');
-            setModalOpen(true); // Твоя модалка
+            setScenarioMode(Mode.Publish);
+            setModalOpen(true);
             return;
         }
 
+        // Если авторизованный
         console.log('[LOGGER] Авторизован: публикуем в БД (POST или PUT) isPublish = true');
-        // TODO: отправить сценарий в БД
-    };   
-    
+
+        // Если сценария нет в БД — откроется CreateUpdateScenario
+        if (!scenarioId) {
+            setPendingAction('publish');
+            setScenarioMode(Mode.Publish);
+            setScenarioModalVisible(true); // После заполнения будет вызван createScenario()
+            return;
+        }
+
+        // Если сценарий уже есть в БД — публикуем без модалки
+        const scenarioRequest: ScenarioRequest = {
+            title: defaultValues.title,
+            description: defaultValues.description,
+            formations,
+            dancerCount: Math.max(...formations.map(f => f.dancers.length)),
+            isPublished: true,
+        };
+
+        updateScenario(scenarioId, scenarioRequest);
+    };
+
     // ЭКСПОРТИРОВАТЬ
     const handleExportScenario = () => {
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку');
             setPendingAction('export');
-            setModalOpen(true); // Твоя модалка
+            setModalOpen(true);
             return;
         }
 
         console.log('[LOGGER] Авторизован: экспорт в PDF');
-        // TODO: отправить сценарий в БД
+        // TODO: Экспорт в PDF
     };
 
     return (

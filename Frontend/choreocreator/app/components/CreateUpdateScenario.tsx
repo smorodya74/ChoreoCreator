@@ -1,13 +1,12 @@
 import Modal from "antd/es/modal/Modal";
-import { ScenarioRequest } from "../services/scenarios";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import Input from "antd/es/input/Input";
-import { Scenario } from "../Models/Scenario";
+import { ScenarioRequest } from "../Models/Types";
 
 interface Props{
     mode: Mode;
-    values: Scenario;
+    values: ScenarioRequest & { id?: string };
     isModalOpen: boolean;
     handleCancel: () => void;
     handleCreate: (request: ScenarioRequest) => void;
@@ -15,8 +14,8 @@ interface Props{
 }
 
 export enum Mode {
-    Create,
-    Edit,
+    Save,
+    Publish,
 }
 
 export const CreateUpdateScenario = ({
@@ -30,28 +29,32 @@ export const CreateUpdateScenario = ({
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [dancerCount, setDancerCount] = useState<number>(1);
-    const [author, setAuthor] = useState<string>("Author");
 
     useEffect(() => {
-        setTitle(values.title)
-        setDescription(values.description)
-        setDancerCount(values.dancerCount=1)
-        setAuthor(values.author="Author")
+        setTitle(values.title || "");
+        setDescription(values.description || "");
+        setDancerCount(values.dancerCount || 1);
     }, [values]);
 
     const handleOnOk = async () => {
-        const scenarioRequest = { title, description, dancerCount, author };
+        const scenarioRequest: ScenarioRequest = {
+            title,
+            description,
+            dancerCount,
+            formations: values.formations,
+            isPublished: mode === Mode.Publish,
+        };
 
-        mode == Mode.Create
-            ? handleCreate(scenarioRequest) 
-            : handleUpdate(values.id, scenarioRequest)
-    }    
+        if (!values.id) {
+            handleCreate(scenarioRequest);
+        } else {
+            handleUpdate(values.id, scenarioRequest);
+        }
+    };    
 
     return (
         <Modal
-            title={
-                mode === Mode.Create ? "Создать сценарий" : "Редактировать сценарий"
-            }
+            title={ mode === Mode.Save ? "Создать сценарий" : "Опубликовать сценарий" }
             open={isModalOpen}
             onOk={handleOnOk}
             onCancel={handleCancel}

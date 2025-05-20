@@ -7,5 +7,28 @@ export type Formation = {
 export type Dancer = {
     id: string;
     numberInFormation: number;
-    position: { x: number; y: number };
+    position: Position;
 };
+
+export interface Position {
+    x: number;
+    y: number;
+}
+
+export interface ScenarioRequest {
+    title: string;
+    description: string;
+    dancerCount: number;
+    isPublished: boolean;
+    formations: Formation[];
+}
+
+export interface ScenarioResponse {
+    id: string;
+    title: string;
+    description: string;
+    dancerCount: number;
+    isPublished: boolean;
+    username: string;
+    formations: Formation[];
+}
