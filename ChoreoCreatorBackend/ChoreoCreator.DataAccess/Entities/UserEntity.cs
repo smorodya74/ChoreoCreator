@@ -8,7 +8,5 @@
         public string Username { get; set; } = string.Empty;
         public string ?PasswordHash { get; set; }
         public string Role { get; set; } = "User";
-
-        public ICollection<ScenarioEntity> Scenarios { get; set; } = new List<ScenarioEntity>();
     }
 }

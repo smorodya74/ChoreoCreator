@@ -20,7 +20,8 @@ namespace ChoreoCreator.DataAccess.Entities
         public bool IsPublished { get; set; }
 
         public Guid UserId { get; set; }
-        public UserEntity? User { get; set; }
+
+        public UserEntity User { get; set; }
 
         [Column(TypeName = "jsonb")]
         public string FormationsJson { get; set; } = "[]";
