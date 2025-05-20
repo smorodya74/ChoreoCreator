@@ -1,6 +1,4 @@
-﻿using ChoreoCreator.API.Contracts.DTOs;
-
-namespace ChoreoCreator.Contracts.DTOs
+﻿namespace ChoreoCreator.API.Contracts.DTOs
 {
     public record FormationResponse(
         Guid Id,

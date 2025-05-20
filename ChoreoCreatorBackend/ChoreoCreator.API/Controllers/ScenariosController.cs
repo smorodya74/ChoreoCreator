@@ -1,8 +1,7 @@
 ﻿using ChoreoCreator.API.Contracts.DTOs;
 using ChoreoCreator.API.Contracts.Scenario;
+using ChoreoCreator.API.Extensions;
 using ChoreoCreator.Application.Abstractions;
-using ChoreoCreator.Application.Services;
-using ChoreoCreator.Contracts.DTOs;
 using ChoreoCreator.Core.Models;
 using ChoreoCreator.Core.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +24,7 @@ namespace ChoreoCreator.API.Controllers
         // GET: api/scenarios
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ScenariosResponse>>> GetAll()
+        public async Task<ActionResult<List<ScenarioResponse>>> GetAll()
         {
             var scenarios = await _scenarioService.GetAllScenarios();
             var response = scenarios.Select(ToResponse).ToList();
@@ -35,7 +34,7 @@ namespace ChoreoCreator.API.Controllers
         // GET: api/scenarios/{id}
         [HttpGet("{id:guid}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ScenariosResponse>> GetById(Guid id)
+        public async Task<ActionResult<ScenarioResponse>> GetById(Guid id)
         {
             var scenario = await _scenarioService.GetScenarioById(id);
             if (scenario == null)
@@ -43,36 +42,47 @@ namespace ChoreoCreator.API.Controllers
             return Ok(ToResponse(scenario));
         }
 
-        [HttpGet("test-auth")]
-        [Authorize]
-        public IActionResult TestAuth() => Ok("Token is valid");
-
         // POST: api/scenarios
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<ScenarioDto>> CreateScenario(CreateScenarioDto dto)
+        public async Task<ActionResult<ScenarioResponse>> CreateScenario([FromBody] CreateScenarioRequest request)
         {
             var userId = User.GetUserId();
 
-            var formations = dto.Formations.Select(f =>
+            var (scenario, error) = Scenario.Create(
+                Guid.NewGuid(),
+                request.Title,
+                request.Description,
+                request.DancerCount,
+                userId
+            );
+
+            if (!string.IsNullOrEmpty(error))
+                return BadRequest(error);
+
+            foreach (var formationDto in request.Formations)
             {
-                var formation = new Formation(Guid.NewGuid(), f.NumberInScenario);
-                foreach (var d in f.DancerPositions)
+                var formation = new Formation(Guid.NewGuid(), formationDto.NumberInScenario);
+
+                foreach (var dancerDto in formationDto.DancerPositions)
                 {
-                    formation.AddDancerPosition(new DancerPosition(
-                        d.NumberInFormation,
-                        new Position(d.Position.X, d.Position.Y)
-                    ));
+                    var dancer = new DancerPosition(
+                        dancerDto.NumberInFormation,
+                        new Position(dancerDto.Position.X, dancerDto.Position.Y)
+                    );
+
+                    formation.AddDancerPosition(dancer);
                 }
-                return formation;
-            }).ToList();
 
-            var domainScenario = Scenario.Create(
-                dto.Title, dto.Description, dto.DancerCount, userId, formations);
+                scenario.AddFormation(formation);
+            }
 
-            await _scenarioService.CreateScenario(domainScenario);
+            if (request.IsPublished)
+                scenario.Publish();
 
-            return Ok(domainScenario.ToDto()); // этот ToDto можно вызвать уже из API-слоя
+            await _scenarioService.CreateScenario(scenario);
+
+            return Ok(scenario);
         }
 
         // PUT: api/scenarios/{id}
@@ -84,7 +94,7 @@ namespace ChoreoCreator.API.Controllers
             if (existing == null)
                 return NotFound();
 
-            var userId = GetUserIdFromClaims();
+            var userId = User.GetUserId();
             if (userId != existing.UserId)
                 return Forbid();
 
@@ -130,7 +140,7 @@ namespace ChoreoCreator.API.Controllers
             if (existing == null)
                 return NotFound();
 
-            var userId = GetUserIdFromClaims();
+            var userId = User.GetUserId();
             if (userId != existing.UserId)
                 return Forbid();
 
@@ -138,15 +148,15 @@ namespace ChoreoCreator.API.Controllers
             return NoContent();
         }
 
-        private static ScenariosResponse ToResponse(Scenario s)
+        private static ScenarioResponse ToResponse(Scenario s)
         {
-            return new ScenariosResponse(
+            return new ScenarioResponse(
                 s.Id,
                 s.Title,
                 s.Description,
                 s.DancerCount,
-                s.UserId,
                 s.IsPublished,
+                s.UserId.ToString(),
                 s.Formations.Select(f => new FormationResponse(
                     f.Id,
                     f.NumberInScenario,
@@ -156,12 +166,6 @@ namespace ChoreoCreator.API.Controllers
                     )).ToList()
                 )).ToList()
             );
-        }
-
-        private Guid GetUserIdFromClaims()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return Guid.TryParse(claim, out var id) ? id : throw new UnauthorizedAccessException("Невалидный UserID");
         }
     }
 }
