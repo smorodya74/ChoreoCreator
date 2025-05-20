@@ -39,6 +39,9 @@ namespace ChoreoCreator.DataAccess.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Email == email);
 
+            if (userEntity == null)
+                return null;
+
             var (user, error) = User.CreateDB(
                 userEntity.Id,
                 userEntity.Email,

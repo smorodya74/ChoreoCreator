@@ -6,7 +6,6 @@ using ChoreoCreator.Core.Models;
 using ChoreoCreator.Core.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ChoreoCreator.API.Controllers
 {

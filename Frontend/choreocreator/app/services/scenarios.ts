@@ -1,5 +1,7 @@
 import { mockScenarios } from "@/scr/mockData";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export interface ScenarioRequest {
     title: string;
     description: string;
@@ -12,7 +14,7 @@ export const getAllScenarios = async () => {
         return mockScenarios.list;
     }
     
-    const response = await fetch("http://localhost:5281/api/scenarios", {
+    const response = await fetch(`${API_URL}/scenarios`, {
         credentials: 'include',
     });
 
@@ -30,13 +32,13 @@ export const createScenario = async (scenarioRequest: ScenarioRequest) => {
         return mockScenarios.create(scenarioRequest);
     }
     
-    const response = await fetch("http://localhost:5281/api/scenarios", {
+    const response = await fetch(`${API_URL}/scenarios`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(scenarioRequest),
-        credentials: "include",  // Чтобы передавать cookie
+        credentials: "include",
     });
 
     if (!response.ok) {
@@ -48,13 +50,13 @@ export const createScenario = async (scenarioRequest: ScenarioRequest) => {
 };
 
 export const updateScenario = async (id: string, scenarioRequest: ScenarioRequest) => {
-    const response = await fetch(`http://localhost:5281/api/scenarios/${id}`, {
+    const response = await fetch(`${API_URL}/scenarios/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(scenarioRequest),
-        credentials: "include",  // Чтобы передавать cookie
+        credentials: "include",
     });
 
     if (!response.ok) {
@@ -66,7 +68,7 @@ export const updateScenario = async (id: string, scenarioRequest: ScenarioReques
 };
 
 export const deleteScenario = async (id: string) => {
-    const response = await fetch(`http://localhost:5281/api/scenarios/${id}`, {
+    const response = await fetch(`${API_URL}/scenarios/${id}`, {
         method: "DELETE",
         credentials: "include",
     });
