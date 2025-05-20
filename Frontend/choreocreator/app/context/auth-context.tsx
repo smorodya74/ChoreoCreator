@@ -13,8 +13,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, username: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (email: string, username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -46,8 +46,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await apiLogin({ email, password });
       const currentUser = await getMe();
       setUser(currentUser);
+      return true;
     } catch (e: any) {
       setError(e.message || 'Ошибка входа');
+      return false;
     }
   };
 
@@ -57,8 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await apiRegister({ email, username, password });
       const currentUser = await getMe();
       setUser(currentUser);
+      return true;
     } catch (e: any) {
       setError(e.message || 'Ошибка регистрации');
+      return false;
     }
   };
 

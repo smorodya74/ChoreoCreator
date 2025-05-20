@@ -19,8 +19,10 @@ const RegisterForm: React.FC<Props> = ({ onSwitchToLogin, onClose }) => {
     const onFinish = async (values: { email: string; username: string; password: string }) => {
         setLoading(true);
         try {
-            await register(values.email, values.username, values.password);
-            onClose();
+            const success = await register(values.email, values.username, values.password);
+            if (success) {
+                onClose();
+            }
         } catch {
         } finally {
             setLoading(false);
