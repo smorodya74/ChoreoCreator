@@ -1,7 +1,9 @@
 ﻿using ChoreoCreator.API.Contracts.DTOs;
 using ChoreoCreator.API.Contracts.Scenario;
 using ChoreoCreator.API.Extensions;
+using ChoreoCreator.API.Mappers;
 using ChoreoCreator.Application.Abstractions;
+using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
 using ChoreoCreator.Core.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
@@ -14,10 +16,12 @@ namespace ChoreoCreator.API.Controllers
     public class ScenariosController : ControllerBase
     {
         private readonly IScenariosServices _scenarioService;
+        private readonly IUsersRepository _usersRepository;
 
-        public ScenariosController(IScenariosServices scenariosService)
+        public ScenariosController(IScenariosServices scenariosService, IUsersRepository usersRepository)
         {
             _scenarioService = scenariosService;
+            _usersRepository = usersRepository;
         }
 
         // GET: api/scenarios
@@ -26,8 +30,13 @@ namespace ChoreoCreator.API.Controllers
         public async Task<ActionResult<List<ScenarioResponse>>> GetAll()
         {
             var scenarios = await _scenarioService.GetAllScenarios();
-            var response = scenarios.Select(ToResponse).ToList();
-            return Ok(response);
+
+            var responseTasks = scenarios
+                .Select(s => ScenarioMapper.ToResponseAsync(s, _usersRepository));
+
+            var responses = await Task.WhenAll(responseTasks);
+
+            return Ok(responses);
         }
 
         // GET: api/scenarios/{id}
@@ -38,7 +47,9 @@ namespace ChoreoCreator.API.Controllers
             var scenario = await _scenarioService.GetScenarioById(id);
             if (scenario == null)
                 return NotFound();
-            return Ok(ToResponse(scenario));
+
+            var response = await ScenarioMapper.ToResponseAsync(scenario, _usersRepository);
+            return Ok(response);
         }
 
         // POST: api/scenarios
@@ -81,7 +92,8 @@ namespace ChoreoCreator.API.Controllers
 
             await _scenarioService.CreateScenario(scenario);
 
-            return Ok(scenario);
+            var response = await ScenarioMapper.ToResponseAsync(scenario, _usersRepository);
+            return Ok(response);
         }
 
         // PUT: api/scenarios/{id}
@@ -100,11 +112,7 @@ namespace ChoreoCreator.API.Controllers
             // Применяем изменения
             existing.UpdateTitle(request.Title);
             existing.UpdateDescription(request.Description ?? string.Empty);
-
-            // К сожалению, DancerCount у нас нет публичного метода, можно через рефлексию или добавить UpdateDancerCount
-            typeof(Scenario)
-                .GetProperty(nameof(Scenario.DancerCount))!
-                .SetValue(existing, request.DancerCount);
+            existing.UpdateDancerCount(request.DancerCount);
 
             // Перезаписываем формирования
             // Можно сначала очистить, потом добавить новые
@@ -127,7 +135,9 @@ namespace ChoreoCreator.API.Controllers
                 existing.Publish();
 
             await _scenarioService.UpdateScenario(existing);
-            return NoContent();
+            
+            var response = await ScenarioMapper.ToResponseAsync(existing, _usersRepository);
+            return Ok(response);
         }
 
         // DELETE: api/scenarios/{id}
@@ -145,26 +155,6 @@ namespace ChoreoCreator.API.Controllers
 
             await _scenarioService.DeleteScenario(id);
             return NoContent();
-        }
-
-        private static ScenarioResponse ToResponse(Scenario s)
-        {
-            return new ScenarioResponse(
-                s.Id,
-                s.Title,
-                s.Description,
-                s.DancerCount,
-                s.IsPublished,
-                s.UserId.ToString(),
-                s.Formations.Select(f => new FormationResponse(
-                    f.Id,
-                    f.NumberInScenario,
-                    f.DancerPositions.Select(d => new DancerPositionResponse(
-                        d.NumberInFormation,
-                        new PositionResponse(d.Position.X, d.Position.Y)
-                    )).ToList()
-                )).ToList()
-            );
         }
     }
 }
