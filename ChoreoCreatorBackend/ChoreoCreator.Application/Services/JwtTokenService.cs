@@ -10,7 +10,7 @@ namespace ChoreoCreator.Application.Services
 {
     public interface IJwtTokenService
     {
-        string GenerateToken(User user);    // Генерация токена
+        string GenerateToken(User user);
     }
 
     public class JwtTokenService : IJwtTokenService
@@ -26,7 +26,7 @@ namespace ChoreoCreator.Application.Services
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
                 new Claim(ClaimTypes.Email, user.Email.Value),
                 new Claim(ClaimTypes.Role, user.Role)
             };
@@ -42,7 +42,7 @@ namespace ChoreoCreator.Application.Services
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);  // Возвращаем JWT как строку
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

@@ -1,54 +1,39 @@
-﻿namespace ChoreoCreator.Core.Models
+﻿using ChoreoCreator.Core.ValueObjects;
+
+namespace ChoreoCreator.Core.Models;
+
+public class Formation
 {
-    public class Formation
+    public Formation(Guid id, int numberInScenario)
     {
-        public Formation(Guid id, Guid scenarioId, int numberOnScenario)
-        {
-            Id = id;
-            ScenarioId = scenarioId;
-            NumberOnScenario = numberOnScenario;
-        }
+        Id = id;
+        NumberInScenario = numberInScenario;
+    }
 
-        public Guid Id { get; }
-        public Guid ScenarioId { get; }
-        public int NumberOnScenario { get; private set; }
+    public Guid Id { get; private set; }
+    public int NumberInScenario { get; private set; }
 
-        private readonly List<DancerPosition> _dancerPositions = [];
+    private readonly List<DancerPosition> _dancerPositions = new();
+    public IReadOnlyCollection<DancerPosition> DancerPositions => _dancerPositions;
 
-        public IReadOnlyCollection<DancerPosition> DancerPositions => _dancerPositions.AsReadOnly();
+    public void AddDancerPosition(DancerPosition dancerPosition)
+    {
+        _dancerPositions.Add(dancerPosition ?? throw new ArgumentNullException(nameof(dancerPosition)));
+    }
 
-        public static (Formation Formation, string Error) Create(Guid id, Guid scenarioId, int numberOnScenario)
-        {
-            if (numberOnScenario < 1 || numberOnScenario > 16)
-                return (null!, "Порядковый номер слайда не может быть меньше 1");
+    public void RemoveDancerPosition(int numberInFormation)
+    {
+        var target = _dancerPositions.FirstOrDefault(dp => dp.NumberInFormation == numberInFormation);
+        if (target != null)
+            _dancerPositions.Remove(target);
+    }
 
-            var formation = new Formation(id, scenarioId, numberOnScenario);
+    public void UpdateDancerPosition(int numberInFormation, Position newPosition)
+    {
+        var index = _dancerPositions.FindIndex(dp => dp.NumberInFormation == numberInFormation);
+        if (index == -1)
+            throw new ArgumentException("Танцор не найден");
 
-            return (formation, string.Empty);
-        }
-
-
-        public void AddDancerPosition(DancerPosition position)
-        {
-            if (position == null)
-                throw new ArgumentNullException(nameof(position));
-
-            _dancerPositions.Add(position);
-        }
-
-        public void RemoveDancerByNumber(int dancerNumber)
-        {
-            var position = _dancerPositions.FirstOrDefault(p => p.DancerNumber == dancerNumber);
-
-            if (position != null)
-                _dancerPositions.Remove(position);
-        }
-
-        public void UpdateDancerPosition(int dancerNumber, float x, float y)
-        {
-            var position = _dancerPositions.FirstOrDefault(p => p.DancerNumber == dancerNumber);
-
-            position?.UpdatePosition(x, y);
-        }
+        _dancerPositions[index] = new DancerPosition(numberInFormation, newPosition);
     }
 }

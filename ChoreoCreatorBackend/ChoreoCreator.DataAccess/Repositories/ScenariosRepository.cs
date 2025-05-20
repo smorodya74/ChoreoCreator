@@ -1,6 +1,6 @@
 ﻿using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
-using ChoreoCreator.DataAccess.Entities;
+using ChoreoCreator.DataAccess.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreoCreator.DataAccess.Repositories
@@ -14,55 +14,58 @@ namespace ChoreoCreator.DataAccess.Repositories
             _context = context;
         }
 
-        public async Task<List<Scenario>> Get()
+        public async Task<Scenario?> GetByIdAsync(Guid id)
         {
-            var scenarioEntities = await _context.Scenarios
+            var entity = await _context.Scenarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            return entity?.ToDomain();
+        }
+
+        public async Task<List<Scenario>> GetAllAsync()
+        {
+            var entities = await _context.Scenarios
                 .AsNoTracking()
                 .ToListAsync();
 
-            var scenarios = scenarioEntities
-                .Select(b => Scenario.Create(b.Id, b.Title, b.Description, b.DancerCount, b.UserId).Scenario)
-                .ToList();
-
-            return scenarios;
+            return entities.Select(e => e.ToDomain()).ToList();
         }
 
-        public async Task<Guid> Create(Scenario scenario)
+        public async Task SaveAsync(Scenario scenario)
         {
-            var scenarioEntity = new ScenarioEntity
+            var entity = await _context.Scenarios
+                .FirstOrDefaultAsync(s => s.Id == scenario.Id);
+
+            if (entity == null)
             {
-                Id = scenario.Id,
-                Title = scenario.Title,
-                Description = scenario.Description,
-                DancerCount = scenario.DancerCount,
-                UserId = scenario.UserId
-            };
+                _context.Scenarios.Add(scenario.ToEntity());
+            }
+            else
+            {
+                // обновляем существующую запись
+                var updated = scenario.ToEntity();
 
-            await _context.Scenarios.AddAsync(scenarioEntity);
+                entity.Title = updated.Title;
+                entity.Description = updated.Description;
+                entity.DancerCount = updated.DancerCount;
+                entity.IsPublished = updated.IsPublished;
+                entity.UserId = updated.UserId;
+                entity.FormationsJson = updated.FormationsJson;
+            }
+
             await _context.SaveChangesAsync();
-
-            return scenarioEntity.Id;
         }
 
-        public async Task<Guid> Update(Guid id, string title, string description, int dancerCount, Guid userId)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            await _context.Scenarios
-                .Where(s => s.Id == id)
-                .ExecuteUpdateAsync(s => s
-                    .SetProperty(s => s.Title, s => title)
-                    .SetProperty(s => s.Description, s => description)
-                    .SetProperty(s => s.DancerCount, s => dancerCount));
+            var entity = await _context.Scenarios.FindAsync(id);
+            if (entity == null)
+                return false;
 
-            return id;
-        }
-
-        public async Task<Guid> Delete(Guid id)
-        {
-            await _context.Scenarios
-                .Where(s => s.Id == id)
-                .ExecuteDeleteAsync();
-
-            return id;
+            _context.Scenarios.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

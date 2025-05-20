@@ -1,4 +1,5 @@
-﻿using ChoreoCreator.DataAccess.Entities;
+﻿using ChoreoCreator.DataAccess.Configurations;
+using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreoCreator.DataAccess
@@ -11,8 +12,13 @@ namespace ChoreoCreator.DataAccess
         }
 
         public DbSet<ScenarioEntity> Scenarios { get; set; }
-        public DbSet<UserEntity> Users { get; set; } = null!;
-        public DbSet<FormationEntity> Formations { get; set; }
-        public DbSet<DancerPositionEntity> DancerPositions { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ScenarioConfiguration());
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

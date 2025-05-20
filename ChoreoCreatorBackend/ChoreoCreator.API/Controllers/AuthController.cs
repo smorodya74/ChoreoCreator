@@ -12,7 +12,7 @@ namespace ChoreoCreator.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUsersService _userService;
-        private readonly IJwtTokenService _jwtTokenService;  // Сервис для работы с токенами
+        private readonly IJwtTokenService _jwtTokenService;
 
         public AuthController(IUsersService userService, IJwtTokenService jwtTokenService)
         {
@@ -36,21 +36,18 @@ namespace ChoreoCreator.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            // Валидируем логин и пароль
             var user = await _userService.ValidateCredentials(request.Email, request.Password);
             if (user == null)
                 return Unauthorized("Неверный логин или пароль");
 
-            // Генерируем JWT
             var token = _jwtTokenService.GenerateToken(user);
 
-            // Сохраняем токен в cookie с флагом HttpOnly
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,  // Для продакшн-среды
+                Secure = true,
                 SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(60) // Время жизни токена
+                Expires = DateTimeOffset.UtcNow.AddMinutes(60)
             });
 
             return Ok(new { Message = "Успешный вход" });
@@ -59,7 +56,7 @@ namespace ChoreoCreator.API.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("jwt");  // Удаляем cookie при выходе
+            Response.Cookies.Delete("jwt");
             return Ok(new { Message = "Выход выполнен" });
         }
 

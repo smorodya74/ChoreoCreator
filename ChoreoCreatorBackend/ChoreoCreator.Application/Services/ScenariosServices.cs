@@ -15,22 +15,49 @@ namespace ChoreoCreator.Application.Services
 
         public async Task<List<Scenario>> GetAllScenarios()
         {
-            return await _scenariosRepository.Get();
+            return await _scenariosRepository.GetAllAsync();
+        }
+
+        public async Task<Scenario?> GetScenarioById(Guid id)
+        {
+            return await _scenariosRepository.GetByIdAsync(id);
         }
 
         public async Task<Guid> CreateScenario(Scenario scenario)
         {
-            return await _scenariosRepository.Create(scenario);
+            await _scenariosRepository.SaveAsync(scenario);
+            return scenario.Id;
         }
 
-        public async Task<Guid> UpdateScenario(Guid id, string title, string description, int dancerCount, Guid userId)
+        public async Task<bool> UpdateScenario(Scenario scenario)
         {
-            return await _scenariosRepository.Update(id, title, description, dancerCount, userId);
+            var existing = await _scenariosRepository.GetByIdAsync(scenario.Id);
+            if (existing == null)
+                return false;
+            // TODO: ДОБАВИТЬ изменение Formation или DancerCount
+            existing.UpdateTitle(scenario.Title);
+            existing.UpdateDescription(scenario.Description);
+
+            typeof(Scenario)
+                .GetProperty(nameof(Scenario.DancerCount))?
+                .SetValue(existing, scenario.DancerCount);
+
+            typeof(Scenario)
+                .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?
+                .SetValue(existing, new List<Formation>());
+
+            foreach (var formation in scenario.Formations)
+            {
+                existing.AddFormation(formation);
+            }
+
+            await _scenariosRepository.SaveAsync(existing);
+            return true;
         }
 
-        public async Task<Guid> DeleteScenario(Guid id)
+        public async Task<bool> DeleteScenario(Guid id)
         {
-            return await _scenariosRepository.Delete(id);
+            return await _scenariosRepository.DeleteAsync(id);
         }
     }
 }
