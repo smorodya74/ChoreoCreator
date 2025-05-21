@@ -9,7 +9,6 @@ import { Formation, ScenarioRequest } from '../Models/Types';
 import { v4 as uuidv4 } from 'uuid';
 import { DraftScenario, getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
 import AuthModal from '../components/AuthModal';
-import { Mode } from '../components/CreateUpdateScenario';
 import { getMyScenario, getScenarioById, updateScenario } from '../services/scenarios';
 
 const { Content } = Layout;
@@ -20,7 +19,6 @@ export default function EditorPage() {
         description: "Введите описание",
     } as ScenarioRequest
     const [isScenarioModalVisible, setScenarioModalVisible] = useState(false);
-    const [scenarioMode, setScenarioMode] = useState<Mode>(Mode.Save);
     const [pendingAction, setPendingAction] = useState<null | 'save' | 'publish' | 'export'>(null);
 
 
@@ -357,7 +355,6 @@ export default function EditorPage() {
         if (!scenarioId) {
             console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка');
             setPendingAction('save');
-            setScenarioMode(Mode.Save);
             setScenarioModalVisible(true); // После зчёлнения будет вызван createScenario()
             return;
         }
@@ -381,7 +378,6 @@ export default function EditorPage() {
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
             setPendingAction('publish');
-            setScenarioMode(Mode.Publish);
             setModalOpen(true);
             return;
         }
@@ -390,7 +386,6 @@ export default function EditorPage() {
         if (!scenarioId) {
             console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка с isPublish = true');
             setPendingAction('publish');
-            setScenarioMode(Mode.Publish);
             setScenarioModalVisible(true); // После заполнения будет вызван createScenario()
             return;
         }
