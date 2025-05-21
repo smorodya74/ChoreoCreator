@@ -156,5 +156,19 @@ namespace ChoreoCreator.API.Controllers
             await _scenarioService.DeleteScenario(id);
             return NoContent();
         }
+
+        [HttpGet("mine")]
+        [Authorize]
+        public async Task<ActionResult<ScenarioResponse>> GetMyScenario()
+        {
+            var userId = User.GetUserId();
+
+            var scenario = await _scenarioService.GetScenarioByUserId(userId);
+            if (scenario == null)
+                return NotFound();
+
+            var response = await ScenarioMapper.ToResponseAsync(scenario, _usersRepository);
+            return Ok(response);
+        }
     }
 }
