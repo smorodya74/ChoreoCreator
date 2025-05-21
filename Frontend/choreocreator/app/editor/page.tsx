@@ -9,7 +9,8 @@ import { Formation, ScenarioRequest } from '../Models/Types';
 import { v4 as uuidv4 } from 'uuid';
 import { DraftScenario, getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
 import AuthModal from '../components/AuthModal';
-import { getMyScenario, updateScenario } from '../services/scenarios';
+import { createScenario, getMyScenario, updateScenario } from '../services/scenarios';
+import { CreateUpdateScenario } from '../components/CreateUpdateScenario';
 
 const { Content } = Layout;
 
@@ -27,6 +28,10 @@ export default function EditorPage() {
 
     const [scenarioId, setScenarioId] = useState<string | undefined>(undefined);
     const [scenario, setScenario] = useState<DraftScenario | null>(null);
+
+    const [localScenarioId, setLocalScenarioId] = useState<string>(() => uuidv4()); // генерируем локально при инициализации
+    const [dbScenarioId, setDbScenarioId] = useState<string | null>(null); // null пока не сохранили на сервере
+
 
     const [formations, setFormations] = useState<Formation[]>([{
         id: uuidv4(),
@@ -61,6 +66,7 @@ export default function EditorPage() {
                     setScenarioId(scenarioFromServer.id);
                     setSelectedFormationId(scenarioFromServer.formations[0].id);
                     setSelectedDancerId(scenarioFromServer.formations[0].dancerPositions[0]?.id ?? null);
+
                     return;
                 } catch (error) {
                     console.error('[LOGGER] Ошибка загрузки сценария с сервера:', error);
@@ -352,15 +358,15 @@ export default function EditorPage() {
         }
 
         // Если сценария нет в БД — откроется CreateUpdateScenario (пользователь введёт title/description)
-        if (!scenarioId) {
+        if (!dbScenarioId) {
             console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка');
             setPendingAction('save');
-            setScenarioModalVisible(true); // После зчёлнения будет вызван createScenario()
+            setScenarioModalVisible(true); // После будет вызван createScenario()
             return;
         }
 
         // Если сценарий уже есть в БД — сохраняем без модалки
-        console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT');
+        console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT', scenarioId);
         const scenarioRequest: ScenarioRequest = {
             title: defaultValues.title,
             description: defaultValues.description,
@@ -369,7 +375,7 @@ export default function EditorPage() {
             isPublished: false,
         };
 
-        updateScenario(scenarioId, scenarioRequest);
+        updateScenario(dbScenarioId, scenarioRequest);
     };
 
     // ОПУБЛИКОВАТЬ
@@ -416,6 +422,27 @@ export default function EditorPage() {
         // TODO: Экспорт в PDF
     };
 
+    const handleCreateScenario = async (data: { title: string; description: string }) => {
+        const dancerCount = Math.max(...formations.map(f => f.dancerPositions.length));
+
+        const request: ScenarioRequest = {
+            ...data,
+            formations,
+            dancerCount,
+            isPublished: pendingAction === "publish",
+        };
+
+        try {
+            const response = await createScenario(request); // допустим, возвращает { id: string, ... }
+            setDbScenarioId(response.id); // сохраняем ID из БД
+            setScenarioModalVisible(false);
+            setPendingAction(null);
+        } catch (error) {
+            console.error('Ошибка создания сценария:', error);
+        }
+    };
+
+
     return (
         <>
             <Layout style={{ height: 'calc(100vh - 128px)' }}>
@@ -456,6 +483,14 @@ export default function EditorPage() {
                 </Layout>
             </Layout>
             <AuthModal open={isModalOpen} onClose={() => setModalOpen(false)} />
+            <CreateUpdateScenario
+                isModalOpen={isScenarioModalVisible}
+                handleCancel={() => {
+                    setScenarioModalVisible(false);
+                    setPendingAction(null);
+                }}
+                handleCreate={handleCreateScenario}
+            />
         </>
     );
 }
