@@ -121,7 +121,7 @@ export default function EditorPage() {
     }, [user]);
 
     useEffect(() => {
-        if (!user && selectedFormationId && selectedDancerId) {
+        if (selectedFormationId && selectedDancerId) {
             const dancerCount = Math.max(...formations.map(f => f.dancers.length));
             saveDraftToLocalStorage({
                 id: scenarioId,
@@ -163,7 +163,7 @@ export default function EditorPage() {
                             updatedFormation.dancers = [...updatedFormation.dancers, newDancer];
                             updated[index] = updatedFormation;
 
-                            if(!user && selectedFormationId && selectedDancerId)
+                            if(selectedFormationId && selectedDancerId)
                             {
                                 saveDraftToLocalStorage({
                                     isPublished: false,
@@ -202,7 +202,7 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
-                if (!user && selectedFormationId && selectedDancerId) {
+                if (selectedFormationId && selectedDancerId) {
                     saveDraftToLocalStorage({
                         isPublished: false,
                         formations: updated,
@@ -248,7 +248,7 @@ export default function EditorPage() {
                     dancers: updatedDancers,
                 };
 
-                if (!user && selectedFormationId && selectedDancerId) {
+                if (selectedFormationId && selectedDancerId) {
                     saveDraftToLocalStorage({
                         isPublished: false,
                         formations: updated,
@@ -286,7 +286,7 @@ export default function EditorPage() {
 
         setFormations(prev => [...prev, newFormation]);
         const updatedFormations = [...formations, newFormation];
-        if (!user && selectedFormationId && selectedDancerId) {
+        if (selectedFormationId && selectedDancerId) {
             saveDraftToLocalStorage({
                 isPublished: false,
                 formations: updatedFormations,
@@ -315,7 +315,7 @@ export default function EditorPage() {
                 numberInScenario: index + 1,
             }));
 
-            if (!user && selectedFormationId && selectedDancerId) {
+            if (selectedFormationId && selectedDancerId) {
                 saveDraftToLocalStorage({
                     isPublished: false,
                     formations: updated,
