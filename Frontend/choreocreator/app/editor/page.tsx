@@ -9,7 +9,7 @@ import { Formation, ScenarioRequest } from '../Models/Types';
 import { v4 as uuidv4 } from 'uuid';
 import { DraftScenario, getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
 import AuthModal from '../components/AuthModal';
-import { getMyScenario, getScenarioById, updateScenario } from '../services/scenarios';
+import { getMyScenario, updateScenario } from '../services/scenarios';
 
 const { Content } = Layout;
 
@@ -31,7 +31,7 @@ export default function EditorPage() {
     const [formations, setFormations] = useState<Formation[]>([{
         id: uuidv4(),
         numberInScenario: 1,
-        dancers: [{
+        dancerPositions: [{
             id: uuidv4(),
             numberInFormation: 1,
             position: { x: 0, y: 0 },
@@ -46,7 +46,7 @@ export default function EditorPage() {
         [formations, selectedFormationId]
     );
 
-    const dancers = currentFormation?.dancers ?? [];
+    const dancerPositions = currentFormation?.dancerPositions ?? [];
 
     useEffect(() => {
         const loadScenario = async () => {
@@ -60,7 +60,7 @@ export default function EditorPage() {
                     setFormations(scenarioFromServer.formations);
                     setScenarioId(scenarioFromServer.id);
                     setSelectedFormationId(scenarioFromServer.formations[0].id);
-                    setSelectedDancerId(scenarioFromServer.formations[0].dancers[0]?.id ?? null);
+                    setSelectedDancerId(scenarioFromServer.formations[0].dancerPositions[0]?.id ?? null);
                     return;
                 } catch (error) {
                     console.error('[LOGGER] Ошибка загрузки сценария с сервера:', error);
@@ -73,7 +73,7 @@ export default function EditorPage() {
                 setFormations(localDraft.formations);
                 setScenarioId(localDraft.id);
                 setSelectedFormationId(localDraft.selectedFormationId ?? localDraft.formations[0].id);
-                setSelectedDancerId(localDraft.selectedDancerId ?? localDraft.formations[0].dancers[0]?.id ?? null);
+                setSelectedDancerId(localDraft.selectedDancerId ?? localDraft.formations[0].dancerPositions[0]?.id ?? null);
                 return;
             }
             
@@ -86,7 +86,7 @@ export default function EditorPage() {
             const defaultFormations: Formation[] = [{
                 id: initialFormationId,
                 numberInScenario: 1,
-                dancers: [{
+                dancerPositions: [{
                     id: initialDancerId,
                     numberInFormation: 1,
                     position: { x: 0, y: 0 },
@@ -120,7 +120,7 @@ export default function EditorPage() {
 
     useEffect(() => {
         if (selectedFormationId && selectedDancerId) {
-            const dancerCount = Math.max(...formations.map(f => f.dancers.length));
+            const dancerCount = Math.max(...formations.map(f => f.dancerPositions.length));
             saveDraftToLocalStorage({
                 id: scenarioId,
                 isPublished: false,
@@ -134,7 +134,7 @@ export default function EditorPage() {
 
     // ДОБАВИТЬ ТАНЦОРА
     const handleAddDancer = () => {
-        if (currentFormation && dancers.length < 16) {
+        if (currentFormation && dancerPositions.length < 16) {
             const GRID_WIDTH = 32;
             const GRID_HEIGHT = 16;
             const minX = -GRID_WIDTH / 2;
@@ -144,11 +144,11 @@ export default function EditorPage() {
 
             for (let y = maxY; y >= minY; y--) {
                 for (let x = minX; x <= maxX; x++) {
-                    const taken = dancers.some(d => d.position.x === x && d.position.y === y);
+                    const taken = dancerPositions.some(d => d.position.x === x && d.position.y === y);
                     if (!taken) {
                         const newDancer = {
                             id: uuidv4(),
-                            numberInFormation: dancers.length + 1,
+                            numberInFormation: dancerPositions.length + 1,
                             position: { x, y },
                         };
 
@@ -158,7 +158,7 @@ export default function EditorPage() {
 
                             const updated = [...prev];
                             const updatedFormation = { ...updated[index] };
-                            updatedFormation.dancers = [...updatedFormation.dancers, newDancer];
+                            updatedFormation.dancerPositions = [...updatedFormation.dancerPositions, newDancer];
                             updated[index] = updatedFormation;
 
                             if(selectedFormationId && selectedDancerId)
@@ -166,7 +166,7 @@ export default function EditorPage() {
                                 saveDraftToLocalStorage({
                                     isPublished: false,
                                     formations: updated,
-                                    dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                                    dancerCount: Math.max(...updated.map(f => f.dancerPositions.length)),
                                     selectedFormationId,
                                     selectedDancerId
                                 });
@@ -190,21 +190,21 @@ export default function EditorPage() {
                 if (index === -1) return prev;
 
                 const formation = prev[index];
-                const updatedDancers = formation.dancers.map(d =>
+                const updatedDancers = formation.dancerPositions.map(d =>
                     d.id === id ? { ...d, position: newPosition } : d
                 );
 
                 const updated = [...prev];
                 updated[index] = {
                     ...formation,
-                    dancers: updatedDancers,
+                    dancerPositions: updatedDancers,
                 };
 
                 if (selectedFormationId && selectedDancerId) {
                     saveDraftToLocalStorage({
                         isPublished: false,
                         formations: updated,
-                        dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                        dancerCount: Math.max(...updated.map(f => f.dancerPositions.length)),
                         selectedFormationId,
                         selectedDancerId
                     });
@@ -222,18 +222,18 @@ export default function EditorPage() {
 
     // УДАЛИТЬ ТАНЦОРА
     const handleDeleteDancer = () => {
-        if (selectedDancerId && dancers.length > 1) {
+        if (selectedDancerId && dancerPositions.length > 1) {
             setFormations(prev => {
                 const index = prev.findIndex(f => f.id === selectedFormationId);
                 if (index === -1) return prev;
 
                 const formation = prev[index];
-                const dancers = formation.dancers;
+                const dancerPositions = formation.dancerPositions;
 
-                const deleteIndex = dancers.findIndex(d => d.id === selectedDancerId);
+                const deleteIndex = dancerPositions.findIndex(d => d.id === selectedDancerId);
                 if (deleteIndex === -1) return prev;
 
-                const updatedDancers = dancers
+                const updatedDancers = dancerPositions
                     .filter((_, i) => i !== deleteIndex)
                     .map((d, idx) => ({
                         ...d,
@@ -243,14 +243,14 @@ export default function EditorPage() {
                 const updated = [...prev];
                 updated[index] = {
                     ...formation,
-                    dancers: updatedDancers,
+                    dancerPositions: updatedDancers,
                 };
 
                 if (selectedFormationId && selectedDancerId) {
                     saveDraftToLocalStorage({
                         isPublished: false,
                         formations: updated,
-                        dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                        dancerCount: Math.max(...updated.map(f => f.dancerPositions.length)),
                         selectedFormationId,
                         selectedDancerId
                     });
@@ -275,7 +275,7 @@ export default function EditorPage() {
         const newFormation: Formation = {
             id: uuidv4(),
             numberInScenario: lastFormation.numberInScenario + 1,
-            dancers: lastFormation.dancers.map((d, index) => ({
+            dancerPositions: lastFormation.dancerPositions.map((d, index) => ({
                 id: uuidv4(),
                 numberInFormation: index + 1,
                 position: { ...d.position },
@@ -288,7 +288,7 @@ export default function EditorPage() {
             saveDraftToLocalStorage({
                 isPublished: false,
                 formations: updatedFormations,
-                dancerCount: Math.max(...updatedFormations.map(f => f.dancers.length)),
+                dancerCount: Math.max(...updatedFormations.map(f => f.dancerPositions.length)),
                 selectedFormationId,
                 selectedDancerId
             });
@@ -317,7 +317,7 @@ export default function EditorPage() {
                 saveDraftToLocalStorage({
                     isPublished: false,
                     formations: updated,
-                    dancerCount: Math.max(...updated.map(f => f.dancers.length)),
+                    dancerCount: Math.max(...updated.map(f => f.dancerPositions.length)),
                     selectedFormationId,
                     selectedDancerId
                 });
@@ -365,7 +365,7 @@ export default function EditorPage() {
             title: defaultValues.title,
             description: defaultValues.description,
             formations,
-            dancerCount: Math.max(...formations.map(f => f.dancers.length)),
+            dancerCount: Math.max(...formations.map(f => f.dancerPositions.length)),
             isPublished: false,
         };
 
@@ -396,7 +396,7 @@ export default function EditorPage() {
             title: defaultValues.title,
             description: defaultValues.description,
             formations,
-            dancerCount: Math.max(...formations.map(f => f.dancers.length)),
+            dancerCount: Math.max(...formations.map(f => f.dancerPositions.length)),
             isPublished: true,
         };
 
@@ -420,8 +420,8 @@ export default function EditorPage() {
         <>
             <Layout style={{ height: 'calc(100vh - 128px)' }}>
                 <EditorSidebar
-                    dancerCount={dancers.length}
-                    dancers={dancers}
+                    dancerCount={dancerPositions.length}
+                    dancerPositions={dancerPositions}
                     selectedDancerId={selectedDancerId}
                     onSelectDancer={handleSelectDancer}
                     onAddDancer={handleAddDancer}
@@ -447,7 +447,7 @@ export default function EditorPage() {
                             background: '#041527'
                         }}>
                         <Scene
-                            dancers={dancers}
+                            dancerPositions={dancerPositions}
                             onMove={handleUpdateDancer}
                             onSelectDancer={handleSelectDancer}
                             selectedDancerId={selectedDancerId}

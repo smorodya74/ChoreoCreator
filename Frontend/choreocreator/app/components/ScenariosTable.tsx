@@ -3,7 +3,7 @@
 import React from 'react';
 import { Table, Space, Button } from 'antd';
 import type { TableProps } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { ScenarioResponse } from '../Models/Types';
 
 interface ScenariosTableProps {

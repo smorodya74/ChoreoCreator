@@ -1,10 +1,10 @@
 export type Formation = {
     id: string;
     numberInScenario: number;
-    dancers: Dancer[];
+    dancerPositions: DancerPosition[];
 }
 
-export type Dancer = {
+export type DancerPosition = {
     id: string;
     numberInFormation: number;
     position: Position;
