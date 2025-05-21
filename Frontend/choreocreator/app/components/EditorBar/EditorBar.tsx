@@ -11,7 +11,7 @@ import {
     DiffOutlined
 } from '@ant-design/icons';
 import { Button, Layout, MenuProps, Typography } from 'antd';
-import { Dancer, Formation } from '../../Models/Types';
+import { DancerPosition, Formation } from '../../Models/Types';
 import Menu from 'antd/es/menu/menu';
 
 const { Sider } = Layout;
@@ -19,7 +19,7 @@ const { Title } = Typography;
 
 type EditorBarProps = {
     dancerCount: number;
-    dancers: Dancer[];
+    dancerPositions: DancerPosition[];
     selectedDancerId: string | null;
     onSelectDancer: (id: string) => void;
     onAddDancer: () => void;
@@ -57,7 +57,7 @@ const items: MenuItem[] = [
 
 const EditorBar: React.FC<EditorBarProps> = ({
     dancerCount,
-    dancers,
+    dancerPositions,
     selectedDancerId,
     onSelectDancer,
     onAddDancer,
@@ -115,18 +115,18 @@ const EditorBar: React.FC<EditorBarProps> = ({
                     </div>
 
                     <div style={{ overflowY: 'auto', paddingBottom: 5 }}>
-                        {dancers.map((dancer, index) => (
+                        {dancerPositions.map((dancerPosition, index) => (
                             <div
-                                key={dancer.id}
-                                onClick={() => onSelectDancer(dancer.id)}
+                                key={dancerPosition.id}
+                                onClick={() => onSelectDancer(dancerPosition.id)}
                                 style={{
                                     padding: '8px',
-                                    background: dancer.id === selectedDancerId ? '#2D2D2D' : 'transparent',
+                                    background: dancerPosition.id === selectedDancerId ? '#2D2D2D' : 'transparent',
                                     color: '#FFFFFF',
                                     display: 'flex',
                                     alignItems: 'center',
                                     cursor: 'pointer',
-                                    border: dancer.id === selectedDancerId ? '1px solid #C83A77' : 'none',
+                                    border: dancerPosition.id === selectedDancerId ? '1px solid #C83A77' : 'none',
                                 }}
                             >
                                     <div
@@ -138,7 +138,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
                                             marginRight: 8,
                                         }}
                                     />
-                                    <span>{`Танцор ${index + 1} (${dancer.position.x}, ${dancer.position.y})`}</span>
+                                    <span>{`Танцор ${index + 1} (${dancerPosition.position.x}, ${dancerPosition.position.y})`}</span>
                                 </div>
                         ))}
                     </div>

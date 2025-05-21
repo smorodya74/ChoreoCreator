@@ -21,7 +21,7 @@ export default function HomePage() {
             formations: [{
                 id: uuidv4(),
                 numberInScenario: 1,
-                dancers: [{
+                dancerPositions: [{
                     id: uuidv4(),
                     numberInFormation: 1,
                     position: { x: 0, y: 0 }

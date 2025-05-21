@@ -78,6 +78,11 @@
             Description = newDescription ?? string.Empty;
         }
 
+        public void UpdateDancerCount(int count)
+        {
+            DancerCount = count;
+        }
+
         public void AddFormation(Formation formation)
         {
             ArgumentNullException.ThrowIfNull(formation);

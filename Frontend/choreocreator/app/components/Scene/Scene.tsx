@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Dancer } from '@/app/Models/Types';
+import { DancerPosition } from '@/app/Models/Types';
 
 type SceneProps = {
-    dancers: Dancer[];
+    dancerPositions: DancerPosition[];
     onMove: (id: string, position: { x: number; y: number }) => void;
     selectedDancerId: string | null;
     onSelectDancer: (id: string) => void;
@@ -15,7 +15,7 @@ const GRID_HEIGHT = 18;
 const CELL_SIZE = 40;
 
 const Scene: React.FC<SceneProps> = ({
-    dancers,
+    dancerPositions,
     onMove,
     selectedDancerId,
     onSelectDancer
@@ -178,19 +178,19 @@ const Scene: React.FC<SceneProps> = ({
             })}
 
             {/* Танцоры */}
-            {dancers.map((dancer) => {
-                const { x, y } = gridToPx(dancer.position.x, dancer.position.y);
+            {dancerPositions.map((dancerPosition) => {
+                const { x, y } = gridToPx(dancerPosition.position.x, dancerPosition.position.y);
                 return (
-                    <g key={dancer.id}>
+                    <g key={dancerPosition.id}>
                         <circle
                             cx={x}
                             cy={y}
                             r={16}
                             fill="#c83a77"
-                            stroke={dancer.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
-                            strokeWidth={dancer.id === selectedDancerId ? 2 : 1}
-                            onMouseDown={(e) => handleMouseDown(e, dancer.id)}
-                            onClick={() => onSelectDancer(dancer.id)}
+                            stroke={dancerPosition.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
+                            strokeWidth={dancerPosition.id === selectedDancerId ? 2 : 1}
+                            onMouseDown={(e) => handleMouseDown(e, dancerPosition.id)}
+                            onClick={() => onSelectDancer(dancerPosition.id)}
                             style={{
                                 cursor: 'grab',
                                 transition: 'stroke 0.2s, stroke-width 0.2s',
@@ -205,7 +205,7 @@ const Scene: React.FC<SceneProps> = ({
                             dominantBaseline="middle"
                             pointerEvents="none"
                         >
-                            {dancer.numberInFormation}
+                            {dancerPosition.numberInFormation}
                         </text>
                     </g>
                 );

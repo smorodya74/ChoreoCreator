@@ -1,7 +1,6 @@
 ﻿using ChoreoCreator.API.Contracts.DTOs;
 using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
-using ChoreoCreator.DataAccess.Repositories;
 
 namespace ChoreoCreator.API.Mappers;
 

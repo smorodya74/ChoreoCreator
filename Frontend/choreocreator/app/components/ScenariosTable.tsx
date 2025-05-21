@@ -3,17 +3,16 @@
 import React from 'react';
 import { Table, Space, Button } from 'antd';
 import type { TableProps } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import type { Scenario } from '@/app/Models/Scenario'; // если у тебя есть тип Scenario
+import { DeleteOutlined } from '@ant-design/icons';
+import { ScenarioResponse } from '../Models/Types';
 
 interface ScenariosTableProps {
-    scenarios: Scenario[];
-    handleOpen: (scenario: Scenario) => void;
+    scenarios: ScenarioResponse[];
     handleDelete: (id: string) => void;
 }
 
-const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleOpen, handleDelete }) => {
-    const columns: TableProps<Scenario>['columns'] = [
+const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleDelete }) => {
+    const columns: TableProps<ScenarioResponse>['columns'] = [
         {
             title: 'Танцоры',
             dataIndex: 'dancerCount',
@@ -46,14 +45,6 @@ const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleOpen, 
             align: 'center',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button
-                    ghost
-                        type='primary'
-                        icon={<EditOutlined />}
-                        onClick={() => handleOpen(record)}
-                    >
-                        Редактировать
-                    </Button>
                     <Button
                         ghost
                         danger

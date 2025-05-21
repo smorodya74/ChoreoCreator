@@ -6,6 +6,7 @@ namespace ChoreoCreator.Application.Abstractions
     {
         Task<List<Scenario>> GetAllScenarios();
         Task<Scenario?> GetScenarioById(Guid id);
+        Task<Scenario?> GetScenarioByUserId(Guid userId);
         Task<Guid> CreateScenario(Scenario scenario);
         Task<bool> DeleteScenario(Guid id);
         Task<bool> UpdateScenario(Scenario scenario);

@@ -1,5 +1,6 @@
 ﻿using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
+using ChoreoCreator.DataAccess.Entities;
 using ChoreoCreator.DataAccess.Mapping;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,15 @@ namespace ChoreoCreator.DataAccess.Repositories
             var entity = await _context.Scenarios
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id);
+
+            return entity?.ToDomain();
+        }
+
+        public async Task<Scenario?> GetByUserIdAsync(Guid userId)
+        {
+            var entity = await _context.Scenarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.UserId == userId);
 
             return entity?.ToDomain();
         }

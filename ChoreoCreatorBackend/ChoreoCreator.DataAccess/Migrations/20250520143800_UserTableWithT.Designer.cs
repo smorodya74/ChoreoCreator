@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChoreoCreator.DataAccess.Migrations
 {
     [DbContext(typeof(ChoreoCreatorDbContext))]
-    [Migration("20250516153523_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250520143800_UserTableWithT")]
+    partial class UserTableWithT
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,15 +52,10 @@ namespace ChoreoCreator.DataAccess.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<Guid?>("UserEntityId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserEntityId");
 
                     b.HasIndex("UserId");
 
@@ -95,10 +90,6 @@ namespace ChoreoCreator.DataAccess.Migrations
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.ScenarioEntity", b =>
                 {
-                    b.HasOne("ChoreoCreator.DataAccess.Entities.UserEntity", null)
-                        .WithMany("Scenarios")
-                        .HasForeignKey("UserEntityId");
-
                     b.HasOne("ChoreoCreator.DataAccess.Entities.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -106,11 +97,6 @@ namespace ChoreoCreator.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.UserEntity", b =>
-                {
-                    b.Navigation("Scenarios");
                 });
 #pragma warning restore 612, 618
         }

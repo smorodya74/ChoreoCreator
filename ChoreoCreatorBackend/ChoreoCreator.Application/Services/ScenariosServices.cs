@@ -23,6 +23,11 @@ namespace ChoreoCreator.Application.Services
             return await _scenariosRepository.GetByIdAsync(id);
         }
 
+        public async Task<Scenario?> GetScenarioByUserId(Guid userId)
+        {
+            return await _scenariosRepository.GetByUserIdAsync(userId);
+        }
+
         public async Task<Guid> CreateScenario(Scenario scenario)
         {
             await _scenariosRepository.SaveAsync(scenario);
