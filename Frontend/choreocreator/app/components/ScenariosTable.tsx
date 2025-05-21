@@ -8,11 +8,10 @@ import { ScenarioResponse } from '../Models/Types';
 
 interface ScenariosTableProps {
     scenarios: ScenarioResponse[];
-    handleEdit: (scenario: ScenarioResponse) => void;
     handleDelete: (id: string) => void;
 }
 
-const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleEdit, handleDelete }) => {
+const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleDelete }) => {
     const columns: TableProps<ScenarioResponse>['columns'] = [
         {
             title: 'Танцоры',
@@ -46,14 +45,6 @@ const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleEdit, 
             align: 'center',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button
-                    ghost
-                        type='primary'
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(record)}
-                    >
-                        Редактировать
-                    </Button>
                     <Button
                         ghost
                         danger

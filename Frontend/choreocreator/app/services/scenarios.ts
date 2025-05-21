@@ -89,3 +89,16 @@ export const deleteScenario = async (id: string) => {
 
     return response.json();
 };
+
+export const getMyScenario = async (): Promise<ScenarioResponse> => {
+    const response = await fetch(`${API_URL}/scenarios/mine`, {
+        credentials: 'include'
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Не удалось получить сценарий для текущего пользователя: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}

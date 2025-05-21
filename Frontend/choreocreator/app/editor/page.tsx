@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DraftScenario, getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
 import AuthModal from '../components/AuthModal';
 import { Mode } from '../components/CreateUpdateScenario';
-import { getScenarioById, updateScenario } from '../services/scenarios';
+import { getMyScenario, getScenarioById, updateScenario } from '../services/scenarios';
 
 const { Content } = Layout;
 
@@ -54,7 +54,22 @@ export default function EditorPage() {
         const loadScenario = async () => {
             const localDraft = getDraftFromLocalStorage();
 
-            // 1. Если есть localStorage — загружаем из него независимо от user
+            if (user) {
+                console.log('[LOGGER] Авторизованный пользователь — загрузим сценарий из БД');
+
+                try {
+                    const scenarioFromServer = await getMyScenario();
+                    setFormations(scenarioFromServer.formations);
+                    setScenarioId(scenarioFromServer.id);
+                    setSelectedFormationId(scenarioFromServer.formations[0].id);
+                    setSelectedDancerId(scenarioFromServer.formations[0].dancers[0]?.id ?? null);
+                    return;
+                } catch (error) {
+                    console.error('[LOGGER] Ошибка загрузки сценария с сервера:', error);
+                }
+            }
+            
+            // 2. Если есть localStorage — загрузим из него
             if (localDraft) {
                 console.log('[LOGGER] Загружаем сценарий из localStorage...');
                 setFormations(localDraft.formations);
@@ -63,29 +78,7 @@ export default function EditorPage() {
                 setSelectedDancerId(localDraft.selectedDancerId ?? localDraft.formations[0].dancers[0]?.id ?? null);
                 return;
             }
-
-            // 2. Если пользователь авторизован — загрузи сценарий из БД
-            if (user) {
-                console.log('[LOGGER] Авторизованный пользователь — загрузи сценарий из БД');
-
-                // Здесь нужно знать scenarioId, который хочешь загрузить
-                // Если у тебя нет scenarioId — можно получить "последний" сценарий пользователя, или создать новый
-                // Пока пример с фиксированным scenarioId — замени на реальный
-                const serverScenarioId = scenarioId ?? "тут_вставь_нужный_id_или получи сессией";
-
-                try {
-                    const scenarioFromServer = await getScenarioById(serverScenarioId);
-                    setFormations(scenarioFromServer.formations);
-                    setScenarioId(scenarioFromServer.id);
-                    setSelectedFormationId(scenarioFromServer.formations[0].id);
-                    setSelectedDancerId(scenarioFromServer.formations[0].dancers[0]?.id ?? null);
-                    return;
-                } catch (error) {
-                    console.error('[LOGGER] Ошибка загрузки сценария с сервера:', error);
-                    // Создаём новый, если загрузка не удалась
-                }
-            }
-
+            
             // 3. Если ничего нет — создаём новый сценарий
             console.log('[LOGGER] Новый сценарий: создаём');
             const generatedId = uuidv4();
@@ -123,7 +116,7 @@ export default function EditorPage() {
     useEffect(() => {
         if (user && pendingAction) {
             console.log(`[LOGGER] Пользователь вошёл, но нужно нажать кнопку "${pendingAction}" ещё раз`);
-            setPendingAction(null); // сбрасываем, чтобы не повторилось
+            setPendingAction(null);
         }
     }, [user]);
 
@@ -224,12 +217,10 @@ export default function EditorPage() {
         };
     };
 
-
     // ВЫБРАТЬ ТАНЦОРА
     const handleSelectDancer = (id: string) => {
         setSelectedDancerId(id);
     };
-
 
     // УДАЛИТЬ ТАНЦОРА
     const handleDeleteDancer = () => {
@@ -267,7 +258,6 @@ export default function EditorPage() {
                     });
                 }
 
-                // Выбрать предыдущего или следующего
                 const newSelectedIndex = deleteIndex > 0 ? deleteIndex - 1 : 0;
                 const newSelectedId = updatedDancers[newSelectedIndex]?.id || null;
 
@@ -277,7 +267,6 @@ export default function EditorPage() {
             });
         }
     };
-
 
     // ДОБАВИТЬ СЛАЙД
     const handleAddFormation = () => {
@@ -311,7 +300,6 @@ export default function EditorPage() {
         setSelectedDancerId(null);
     };
 
-
     // УДАЛИТЬ СЛАЙД
     const handleDeleteFormation = () => {
         if (!selectedFormationId || formations.length <= 1) return;
@@ -322,7 +310,6 @@ export default function EditorPage() {
 
             const updated = prev.filter((_, i) => i !== indexToDelete);
 
-            // Переиндексация numberInScenario
             const reIndexed = updated.map((f, index) => ({
                 ...f,
                 numberInScenario: index + 1,
@@ -347,7 +334,6 @@ export default function EditorPage() {
         });
     };
 
-
     // ВЫБРАТЬ СЛАЙД
     const handleSelectFormation = (id: string) => {
         const formationExists = formations.some(f => f.id === id);
@@ -361,24 +347,23 @@ export default function EditorPage() {
     const handleSaveScenario = () => {
         // Если неавторизованный
         if (!user) {
-            console.log('[LOGGER] Не авторизован: открываем модалку');
+            console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
             setPendingAction('save');
             setModalOpen(true);
             return;
         }
 
-        // Если авторизованный
-        console.log('[LOGGER] Авторизован: сохраняем в БД (POST или PUT)');
-
         // Если сценария нет в БД — откроется CreateUpdateScenario (пользователь введёт title/description)
         if (!scenarioId) {
+            console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка');
             setPendingAction('save');
             setScenarioMode(Mode.Save);
-            setScenarioModalVisible(true); // После заполнения будет вызван createScenario()
+            setScenarioModalVisible(true); // После зчёлнения будет вызван createScenario()
             return;
         }
 
         // Если сценарий уже есть в БД — сохраняем без модалки
+        console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT');
         const scenarioRequest: ScenarioRequest = {
             title: defaultValues.title,
             description: defaultValues.description,
@@ -394,18 +379,16 @@ export default function EditorPage() {
     const handlePublicScenario = () => {
         // Если неавторизованный
         if (!user) {
-            console.log('[LOGGER] Не авторизован: открываем модалку');
+            console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
             setPendingAction('publish');
             setScenarioMode(Mode.Publish);
             setModalOpen(true);
             return;
         }
-
-        // Если авторизованный
-        console.log('[LOGGER] Авторизован: публикуем в БД (POST или PUT) isPublish = true');
-
+        
         // Если сценария нет в БД — откроется CreateUpdateScenario
         if (!scenarioId) {
+            console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка с isPublish = true');
             setPendingAction('publish');
             setScenarioMode(Mode.Publish);
             setScenarioModalVisible(true); // После заполнения будет вызван createScenario()
@@ -413,6 +396,7 @@ export default function EditorPage() {
         }
 
         // Если сценарий уже есть в БД — публикуем без модалки
+        console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT с isPublish = true');
         const scenarioRequest: ScenarioRequest = {
             title: defaultValues.title,
             description: defaultValues.description,
@@ -427,7 +411,7 @@ export default function EditorPage() {
     // ЭКСПОРТИРОВАТЬ
     const handleExportScenario = () => {
         if (!user) {
-            console.log('[LOGGER] Не авторизован: открываем модалку');
+            console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
             setPendingAction('export');
             setModalOpen(true);
             return;

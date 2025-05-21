@@ -24,17 +24,12 @@ export default function ScenariosPage(){
         getScenarios();
     }, [])
 
-    const handleEditScenario = async () => {
-        // TODO: сделать обработчик, который получает сценарий и открывает его в EDITOR
-    }
-
     const handleDeleteScenario = async (id: string) => {
         await deleteScenario(id);
 
         const scenarios = await getAllScenarios();
         setScenarios(scenarios);
     }
-
 
     return (
         <div>
@@ -69,7 +64,6 @@ export default function ScenariosPage(){
                 <>
                         <ScenariosTable
                             scenarios={scenarios}
-                            handleEdit={handleEditScenario}
                             handleDelete={handleDeleteScenario}
                         />
                 </>
