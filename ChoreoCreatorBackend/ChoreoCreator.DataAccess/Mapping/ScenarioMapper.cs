@@ -20,9 +20,11 @@ namespace ChoreoCreator.DataAccess.Mapping
                 UserId = domain.UserId,
                 Formations = domain.Formations.Select(f => new FormationDto
                 {
+                    Id = f.Id,
                     NumberInScenario = f.NumberInScenario,
                     DancerPositions = f.DancerPositions.Select(d => new DancerPositionDto
                     {
+                        Id = d.Id,
                         NumberInFormation = d.NumberInFormation,
                         Position = new PositionDto
                         {
@@ -51,7 +53,7 @@ namespace ChoreoCreator.DataAccess.Mapping
                 foreach (var d in f.DancerPositions)
                 {
                     var pos = new Position(d.Position.X, d.Position.Y);
-                    var dancerPosition = new DancerPosition(d.NumberInFormation, pos);
+                    var dancerPosition = new DancerPosition(d.Id, d.NumberInFormation, pos);
                     formation.AddDancerPosition(dancerPosition);
                 }
 

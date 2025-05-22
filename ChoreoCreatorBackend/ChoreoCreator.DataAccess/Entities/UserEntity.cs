@@ -1,5 +1,8 @@
-﻿namespace ChoreoCreator.DataAccess.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ChoreoCreator.DataAccess.Entities
 {
+    [Table("t_Users")]
     public class UserEntity
     {
         public Guid Id { get; set; }

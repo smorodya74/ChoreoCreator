@@ -5,6 +5,6 @@
         public Guid Id { get; set; }
         public int NumberInScenario { get; set; }
 
-        public List<DancerPositionDto> DancerPositions { get; set; } = new();
+        public List<DancerPositionDto> DancerPositions { get; set; } = [];
     }
 }

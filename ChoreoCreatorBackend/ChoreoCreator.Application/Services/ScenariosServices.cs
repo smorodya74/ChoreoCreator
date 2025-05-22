@@ -39,13 +39,10 @@ namespace ChoreoCreator.Application.Services
             var existing = await _scenariosRepository.GetByIdAsync(scenario.Id);
             if (existing == null)
                 return false;
-            // TODO: ДОБАВИТЬ изменение Formation или DancerCount
+
             existing.UpdateTitle(scenario.Title);
             existing.UpdateDescription(scenario.Description);
-
-            typeof(Scenario)
-                .GetProperty(nameof(Scenario.DancerCount))?
-                .SetValue(existing, scenario.DancerCount);
+            existing.UpdateDancerCount(scenario.DancerCount);
 
             typeof(Scenario)
                 .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?
@@ -55,6 +52,9 @@ namespace ChoreoCreator.Application.Services
             {
                 existing.AddFormation(formation);
             }
+
+            if (scenario.IsPublished)
+                existing.Publish();
 
             await _scenariosRepository.SaveAsync(existing);
             return true;
