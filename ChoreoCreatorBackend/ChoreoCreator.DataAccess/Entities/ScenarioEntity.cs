@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChoreoCreator.DataAccess.Entities
 {
+    [Table("t_Scenarios")]
     public class ScenarioEntity
     {
         [Key]

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChoreoCreator.DataAccess.Migrations
 {
     [DbContext(typeof(ChoreoCreatorDbContext))]
-    [Migration("20250520143800_UserTableWithT")]
-    partial class UserTableWithT
+    [Migration("20250522091350_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,7 @@ namespace ChoreoCreator.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("t_scenarios", (string)null);
+                    b.ToTable("t_Scenarios");
                 });
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.UserEntity", b =>
@@ -85,7 +85,7 @@ namespace ChoreoCreator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("t_Users");
                 });
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.ScenarioEntity", b =>

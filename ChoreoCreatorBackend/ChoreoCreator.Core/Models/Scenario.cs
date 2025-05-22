@@ -34,7 +34,7 @@
         public Guid UserId { get; }
         public bool IsPublished { get; private set; }
 
-        private readonly List<Formation> _formations = new();
+        private readonly List<Formation> _formations = [];
         public IReadOnlyCollection<Formation> Formations => _formations;
 
 
@@ -60,7 +60,8 @@
             return (scenario, error);
         }
 
-        public void Publish() => IsPublished = true;
+        public void Publish() => 
+            IsPublished = true;
 
         public void UpdateTitle(string newTitle)
         {
@@ -90,22 +91,9 @@
             _formations.Add(formation);
         }
 
-        public void RemoveFormation(Guid formationId)
-        {
-            var formation = _formations.FirstOrDefault(f => f.Id == formationId);
-            if (formation != null)
-                _formations.Remove(formation);
-        }
-
         public byte[] ExportToPdf()
         {
             throw new NotImplementedException("Реализация в Application слое");
-        }
-
-        public void ReplaceFormations(IEnumerable<Formation> newFormations)
-        {
-            _formations.Clear();
-            _formations.AddRange(newFormations ?? Enumerable.Empty<Formation>());
         }
     }
 }

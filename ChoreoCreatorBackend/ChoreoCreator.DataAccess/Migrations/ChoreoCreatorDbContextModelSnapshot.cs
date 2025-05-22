@@ -56,7 +56,7 @@ namespace ChoreoCreator.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("t_scenarios", (string)null);
+                    b.ToTable("t_Scenarios");
                 });
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.UserEntity", b =>
@@ -82,7 +82,7 @@ namespace ChoreoCreator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("t_Users");
                 });
 
             modelBuilder.Entity("ChoreoCreator.DataAccess.Entities.ScenarioEntity", b =>

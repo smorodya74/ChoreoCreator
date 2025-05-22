@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChoreoCreator.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class UserTableWithT : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "t_Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -23,11 +23,11 @@ namespace ChoreoCreator.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_t_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "t_scenarios",
+                name: "t_Scenarios",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -40,18 +40,18 @@ namespace ChoreoCreator.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_t_scenarios", x => x.Id);
+                    table.PrimaryKey("PK_t_Scenarios", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_t_scenarios_Users_UserId",
+                        name: "FK_t_Scenarios_t_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "t_Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_t_scenarios_UserId",
-                table: "t_scenarios",
+                name: "IX_t_Scenarios_UserId",
+                table: "t_Scenarios",
                 column: "UserId");
         }
 
@@ -59,10 +59,10 @@ namespace ChoreoCreator.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "t_scenarios");
+                name: "t_Scenarios");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "t_Users");
         }
     }
 }

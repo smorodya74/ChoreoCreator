@@ -1,5 +1,4 @@
-﻿using ChoreoCreator.Core.Models;
-using ChoreoCreator.DataAccess.Entities;
+﻿using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,8 +8,6 @@ namespace ChoreoCreator.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
-            builder.ToTable("t_users");
-
             builder.HasKey(u => u.Id);
 
             builder.Property(u => u.Email)

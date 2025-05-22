@@ -1,8 +1,6 @@
-﻿using ChoreoCreator.Core.Models;
-using ChoreoCreator.DataAccess.Entities;
+﻿using ChoreoCreator.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Text.Json;
 
 namespace ChoreoCreator.DataAccess.Configurations
 {
@@ -10,8 +8,6 @@ namespace ChoreoCreator.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<ScenarioEntity> builder)
         {
-            builder.ToTable("t_scenarios");
-
             builder.HasKey(s => s.Id);
 
             builder.Property(s => s.Title)

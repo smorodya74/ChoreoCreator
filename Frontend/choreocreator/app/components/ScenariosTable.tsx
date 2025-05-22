@@ -35,8 +35,8 @@ const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleDelete
         },
         {
             title: 'Автор',
-            dataIndex: 'author',
-            key: 'author',
+            dataIndex: 'username',
+            key: 'username',
             align: 'center'
         },
         {

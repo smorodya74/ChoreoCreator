@@ -34,7 +34,12 @@ namespace ChoreoCreator.API.Controllers
             var responseTasks = scenarios
                 .Select(s => ScenarioMapper.ToResponseAsync(s, _usersRepository));
 
-            var responses = await Task.WhenAll(responseTasks);
+            var responses = new List<ScenarioResponse>();
+            foreach (var s in scenarios)
+            {
+                var response = await ScenarioMapper.ToResponseAsync(s, _usersRepository);
+                responses.Add(response);
+            }
 
             return Ok(responses);
         }
@@ -77,8 +82,11 @@ namespace ChoreoCreator.API.Controllers
                 foreach (var dancerDto in formationDto.DancerPositions)
                 {
                     var dancer = new DancerPosition(
+                        dancerDto.Id,
                         dancerDto.NumberInFormation,
-                        new Position(dancerDto.Position.X, dancerDto.Position.Y)
+                        new Position(
+                            dancerDto.Position.X, 
+                            dancerDto.Position.Y)
                     );
 
                     formation.AddDancerPosition(dancer);
@@ -115,7 +123,6 @@ namespace ChoreoCreator.API.Controllers
             existing.UpdateDancerCount(request.DancerCount);
 
             // Перезаписываем формирования
-            // Можно сначала очистить, потом добавить новые
             typeof(Scenario)
                 .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
                 .SetValue(existing, new List<Formation>());
@@ -126,13 +133,15 @@ namespace ChoreoCreator.API.Controllers
                 foreach (var d in f.DancerPositions)
                 {
                     var pos = new Position(d.Position.X, d.Position.Y);
-                    formation.AddDancerPosition(new DancerPosition(d.NumberInFormation, pos));
+                    formation.AddDancerPosition(new DancerPosition(d.Id, d.NumberInFormation, pos));
                 }
                 existing.AddFormation(formation);
             }
 
-            if (request.IsPublished)
+            if (request.IsPublished && !existing.IsPublished)
+            {
                 existing.Publish();
+            }
 
             await _scenarioService.UpdateScenario(existing);
             
