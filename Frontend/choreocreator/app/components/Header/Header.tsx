@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import { Layout, Menu, Button, Dropdown, Space, MenuProps } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
@@ -10,8 +10,10 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import AuthModal from '../AuthModal';
 import styles from '@/app/components/Header/Header.module.css';
+import { clearDraftFromLocalStorage } from '@/app/utils/localStorageScenario';
 
 const { Header } = Layout;
+
 
 const menuItems = [
     { key: 'home', label: <Link href="/">Главная</Link> },
@@ -36,6 +38,7 @@ const AppHeader = () => {
             label: 'Выход',
             onClick: async () => {
                 await logout();
+                clearDraftFromLocalStorage();
             },
         },
     ];

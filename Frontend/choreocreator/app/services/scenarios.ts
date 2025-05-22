@@ -14,8 +14,8 @@ export const getAllScenarios = async (): Promise<ScenarioResponse[]> => {
 
     if (!response.ok) {
         const errorText = await response.text();
-        console.error("Failed to fetch scenarios", response.status, errorText);
-        throw new Error(`Failed to fetch scenarios: ${response.status}`);
+        console.error("[ERROR] Сценарии не найдены", response.status, errorText);
+        throw new Error(`Сценарии не найдены: ${response.status}`);
     }
 
     return response.json();
@@ -65,9 +65,9 @@ export const updateScenario = async (id: string, scenarioRequest: ScenarioReques
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(scenarioRequest),
-        credentials: "include",
+        credentials: "include"
     });
-
+    console.log('[LOGGER] PUT-запрос:', scenarioRequest);
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Ошибка при обновлении сценария: ${response.status} ${errorText}`);

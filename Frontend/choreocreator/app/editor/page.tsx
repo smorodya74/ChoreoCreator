@@ -7,18 +7,14 @@ import { useAuth } from '../context/auth-context';
 import Scene from '../components/Scene/Scene';
 import { Formation, ScenarioRequest } from '../Models/Types';
 import { v4 as uuidv4 } from 'uuid';
-import { DraftScenario, getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
+import { getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/localStorageScenario';
 import AuthModal from '../components/AuthModal';
-import { createScenario, getMyScenario, updateScenario } from '../services/scenarios';
+import { createScenario, getMyScenario, getScenarioById, updateScenario } from '../services/scenarios';
 import { CreateUpdateScenario } from '../components/CreateUpdateScenario';
 
 const { Content } = Layout;
 
 export default function EditorPage() {
-    const defaultValues = {
-        title: "Введите название",
-        description: "Введите описание",
-    } as ScenarioRequest
     const [isScenarioModalVisible, setScenarioModalVisible] = useState(false);
     const [pendingAction, setPendingAction] = useState<null | 'save' | 'publish' | 'export'>(null);
 
@@ -27,10 +23,8 @@ export default function EditorPage() {
     const [isModalOpen, setModalOpen] = useState(false);
 
     const [scenarioId, setScenarioId] = useState<string | undefined>(undefined);
-    const [scenario, setScenario] = useState<DraftScenario | null>(null);
 
-    const [localScenarioId, setLocalScenarioId] = useState<string>(() => uuidv4()); // генерируем локально при инициализации
-    const [dbScenarioId, setDbScenarioId] = useState<string | null>(null); // null пока не сохранили на сервере
+    const [localScenarioId, setLocalScenarioId] = useState<string | undefined>(undefined);
 
 
     const [formations, setFormations] = useState<Formation[]>([{
@@ -77,7 +71,7 @@ export default function EditorPage() {
             if (localDraft) {
                 console.log('[LOGGER] Загружаем сценарий из localStorage...');
                 setFormations(localDraft.formations);
-                setScenarioId(localDraft.id);
+                setLocalScenarioId(localDraft.id);
                 setSelectedFormationId(localDraft.selectedFormationId ?? localDraft.formations[0].id);
                 setSelectedDancerId(localDraft.selectedDancerId ?? localDraft.formations[0].dancerPositions[0]?.id ?? null);
                 return;
@@ -128,7 +122,7 @@ export default function EditorPage() {
         if (selectedFormationId && selectedDancerId) {
             const dancerCount = Math.max(...formations.map(f => f.dancerPositions.length));
             saveDraftToLocalStorage({
-                id: scenarioId,
+                id: localScenarioId,
                 isPublished: false,
                 formations,
                 dancerCount,
@@ -348,7 +342,8 @@ export default function EditorPage() {
     };
 
     // СОХРАНИТЬ
-    const handleSaveScenario = () => {
+    const handleSaveScenario = async () => {
+        console.log("scenarioId: ", scenarioId)
         // Если неавторизованный
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
@@ -357,29 +352,35 @@ export default function EditorPage() {
             return;
         }
 
-        // Если сценария нет в БД — откроется CreateUpdateScenario (пользователь введёт title/description)
-        if (!dbScenarioId) {
+        // Если сценария нет в БД — откроется CreateUpdateScenario
+        if (!scenarioId) {
             console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка');
             setPendingAction('save');
-            setScenarioModalVisible(true); // После будет вызван createScenario()
+            setScenarioModalVisible(true);
             return;
         }
 
         // Если сценарий уже есть в БД — сохраняем без модалки
-        console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT', scenarioId);
-        const scenarioRequest: ScenarioRequest = {
-            title: defaultValues.title,
-            description: defaultValues.description,
-            formations,
-            dancerCount: Math.max(...formations.map(f => f.dancerPositions.length)),
-            isPublished: false,
-        };
+        try {
+            const existingScenario = await getScenarioById(scenarioId); // получить из БД атрибуты
+            console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT');
 
-        updateScenario(dbScenarioId, scenarioRequest);
+            const scenarioRequest: ScenarioRequest = {
+                title: existingScenario.title,
+                description: existingScenario.description,
+                formations,
+                dancerCount: Math.max(...formations.map(f => f.dancerPositions.length)),
+                isPublished: existingScenario.isPublished,
+            };
+
+            updateScenario(scenarioId, scenarioRequest);
+        } catch (error) {
+            console.error('Ошибка при обновлении сценария:', error);
+        }
     };
 
     // ОПУБЛИКОВАТЬ
-    const handlePublicScenario = () => {
+    const handlePublicScenario = async () => {
         // Если неавторизованный
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
@@ -392,21 +393,27 @@ export default function EditorPage() {
         if (!scenarioId) {
             console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка с isPublish = true');
             setPendingAction('publish');
-            setScenarioModalVisible(true); // После заполнения будет вызван createScenario()
+            setScenarioModalVisible(true);
             return;
         }
 
-        // Если сценарий уже есть в БД — публикуем без модалки
-        console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT с isPublish = true');
-        const scenarioRequest: ScenarioRequest = {
-            title: defaultValues.title,
-            description: defaultValues.description,
-            formations,
-            dancerCount: Math.max(...formations.map(f => f.dancerPositions.length)),
-            isPublished: true,
-        };
+        // Если сценарий уже есть в БД — сохраняем без модалки
+        try {
+            console.log('[LOGGER] Сценарий присутствует в БД, отправляется PUT');
+            const existingScenario = await getScenarioById(scenarioId); // получить из БД атрибуты
 
-        updateScenario(scenarioId, scenarioRequest);
+            const scenarioRequest: ScenarioRequest = {
+                title: existingScenario.title,
+                description: existingScenario.description,
+                formations,
+                dancerCount: Math.max(...formations.map(f => f.dancerPositions.length)),
+                isPublished: true
+            };
+
+            updateScenario(scenarioId, scenarioRequest);
+        } catch (error) {
+            console.error('Ошибка при обновлении сценария:', error);
+        }
     };
 
     // ЭКСПОРТИРОВАТЬ
@@ -427,14 +434,15 @@ export default function EditorPage() {
 
         const request: ScenarioRequest = {
             ...data,
-            formations,
             dancerCount,
             isPublished: pendingAction === "publish",
+            formations,
         };
 
         try {
-            const response = await createScenario(request); // допустим, возвращает { id: string, ... }
-            setDbScenarioId(response.id); // сохраняем ID из БД
+            const response = await createScenario(request); // возвращает { id: string, ... }
+            console.log('[LOGGER] Сценарий создан, id из БД:', response.id);
+            setScenarioId(response.id); // сохраняем ID из БД
             setScenarioModalVisible(false);
             setPendingAction(null);
         } catch (error) {
