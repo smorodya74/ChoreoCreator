@@ -62,7 +62,9 @@ const ScenariosTable: React.FC<ScenariosTableProps> = ({ scenarios, handleDelete
         <Table
             className="custom-scenarios-table"
             columns={columns}
-            dataSource={scenarios.map(s => ({ ...s, key: s.id }))}
+            dataSource={scenarios
+                .filter(s => s.isPublished)
+                .map(s => ({ ...s, key: s.id }))}
             pagination={false}
         />
     );
