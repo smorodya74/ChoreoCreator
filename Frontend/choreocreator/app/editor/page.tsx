@@ -11,6 +11,7 @@ import { getDraftFromLocalStorage, saveDraftToLocalStorage } from '../utils/loca
 import AuthModal from '../components/AuthModal';
 import { createScenario, getMyScenario, getScenarioById, updateScenario } from '../services/scenarios';
 import { CreateUpdateScenario } from '../components/CreateUpdateScenario';
+import { exportScenarioToPdf } from '../utils/exportScenarioToPdf';
 
 const { Content } = Layout;
 
@@ -417,7 +418,7 @@ export default function EditorPage() {
     };
 
     // ЭКСПОРТИРОВАТЬ
-    const handleExportScenario = () => {
+    const handleExportScenario = async () => {
         if (!user) {
             console.log('[LOGGER] Не авторизован: открываем модалку авторизации');
             setPendingAction('export');
@@ -425,10 +426,27 @@ export default function EditorPage() {
             return;
         }
 
-        console.log('[LOGGER] Авторизован: экспорт в PDF');
-        // TODO: Экспорт в PDF
+        if (!scenarioId) {
+            console.log('[LOGGER] Сценарий отсутствует в БД, открывается модалочка');
+            setPendingAction('export');
+            setScenarioModalVisible(true);
+            return;
+        }
+
+        try {
+            console.log('[LOGGER] Сценарий есть в БД, получаем данные и экспортируем');
+            const existingScenario = await getScenarioById(scenarioId);
+
+            exportScenarioToPdf({
+                title: existingScenario.title,
+                formations: existingScenario.formations,
+            });
+        } catch (error) {
+            console.error('Ошибка при экспорте сценария:', error);
+        }
     };
 
+    // СОЗДАНИЕ СЦЕНАРИЯ
     const handleCreateScenario = async (data: { title: string; description: string }) => {
         const dancerCount = Math.max(...formations.map(f => f.dancerPositions.length));
 
@@ -442,8 +460,20 @@ export default function EditorPage() {
         try {
             const response = await createScenario(request); // возвращает { id: string, ... }
             console.log('[LOGGER] Сценарий создан, id из БД:', response.id);
-            setScenarioId(response.id); // сохраняем ID из БД
+            setScenarioId(response.id);
             setScenarioModalVisible(false);
+
+            if (pendingAction === "export") {
+                console.log('[LOGGER] После создания — экспортируем в PDF');
+
+                // Если createScenario возвращает весь сценарий — используем его
+                // Иначе передаем request (как fallback)
+                exportScenarioToPdf({
+                    title: request.title,
+                    formations: request.formations,
+                });
+            }
+
             setPendingAction(null);
         } catch (error) {
             console.error('Ошибка создания сценария:', error);

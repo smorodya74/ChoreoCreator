@@ -13,6 +13,7 @@ import {
 import { Button, Layout, MenuProps, Typography } from 'antd';
 import { DancerPosition, Formation } from '../../Models/Types';
 import Menu from 'antd/es/menu/menu';
+import { exportScenarioToPdf } from '../../utils/exportScenarioToPdf';
 
 const { Sider } = Layout;
 const { Title } = Typography;
