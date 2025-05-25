@@ -2,6 +2,27 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { DancerPosition } from '@/app/Models/Types';
+import {
+    CELL_SIZE,
+    GRID_WIDTH,
+    GRID_HEIGHT,
+    minX,
+    maxX,
+    minY,
+    maxY,
+    VISIBLE_FRAME,
+    width,
+    height,
+    gridToPx,
+    pxToGrid,
+} from './gridUtils';
+
+import { Grid } from './Grid';
+import { HighlightArea } from './HighlightArea';
+import { BorderFrame } from './BorderFrame';
+import { BackstageLabel } from './BackstageLabel';
+import { XLabels } from './XLabels';
+import { DancerMarkers } from './DancerMarkers';
 
 type SceneProps = {
     dancerPositions: DancerPosition[];
@@ -10,206 +31,64 @@ type SceneProps = {
     onSelectDancer: (id: string) => void;
 };
 
-const GRID_WIDTH = 34;
-const GRID_HEIGHT = 18;
-const CELL_SIZE = 40;
-
 const Scene: React.FC<SceneProps> = ({
     dancerPositions,
     onMove,
     selectedDancerId,
-    onSelectDancer
+    onSelectDancer,
 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
 
-    const minX = -GRID_WIDTH / 2;
-    const maxX = GRID_WIDTH / 2;
-    const minY = -GRID_HEIGHT / 2;
-    const maxY = GRID_HEIGHT / 2;
+    useEffect(() => {
+        function handleMouseUp() {
+            setDraggingId(null);
+        }
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => window.removeEventListener('mouseup', handleMouseUp);
+    }, []);
 
-    const width = GRID_WIDTH * CELL_SIZE;
-    const height = GRID_HEIGHT * CELL_SIZE;
-
-    const gridOffsetX = width / 2;
-    const gridOffsetY = height / 2;
-
-    const VISIBLE_FRAME = {
-        x1: (-GRID_WIDTH / 2) + 1,
-        x2: (GRID_WIDTH / 2) - 1,
-        y1: (-GRID_HEIGHT / 2) + 1,
-        y2: (GRID_HEIGHT / 2) - 1,
-    };
-
-    const gridToPx = (x: number, y: number) => ({
-        x: x * CELL_SIZE + gridOffsetX,
-        y: -y * CELL_SIZE + gridOffsetY,
-    });
-
-    const pxToGrid = (px: number, py: number) => {
-        const x = Math.round((px - gridOffsetX) / CELL_SIZE);
-        const y = -Math.round((py - gridOffsetY) / CELL_SIZE);
-        return { x, y };
-    };
-
-    const handleMouseDown = (e: React.MouseEvent, id: string) => {
+    function handleMouseDown(e: React.MouseEvent, id: string) {
         e.preventDefault();
         setDraggingId(id);
-    };
+    }
 
-    const handleMouseMove = (e: MouseEvent) => {
+    function handleMouseMove(e: React.MouseEvent) {
         if (!draggingId || !svgRef.current) return;
 
         const svgRect = svgRef.current.getBoundingClientRect();
         const mouseX = e.clientX - svgRect.left;
         const mouseY = e.clientY - svgRect.top;
 
-        const { x, y } = pxToGrid(mouseX, mouseY);
+        let { x, y } = pxToGrid(mouseX, mouseY);
 
-        // Гарантия, что координаты в пределах сцены
-        if (x < minX || x > maxX || y < minY || y > maxY) return;
+        if (x < minX) x = minX;
+        if (x > maxX) x = maxX;
+        if (y < minY) y = minY;
+        if (y > maxY) y = maxY;
 
         onMove(draggingId, { x, y });
-    };
-
-    const handleMouseUp = () => {
-        setDraggingId(null);
-    };
-
-    useEffect(() => {
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [draggingId]);
+    }
 
     return (
         <svg
             ref={svgRef}
             width={width}
             height={height}
-            style={{
-                display: 'block',
-                backgroundColor: '#041527',
-                zIndex: 900
-            }}
+            onMouseMove={handleMouseMove}
+            style={{ userSelect: 'none' }}
         >
-            {/* Подсвеченная область */}
-            <rect
-                x={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).x}
-                y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
-                width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
-                height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
-                fill="rgb(255, 255, 0, 0.05)"
+            <Grid />
+            <HighlightArea />
+            <BorderFrame />
+            <BackstageLabel />
+            <XLabels labelColor='white'/>
+            <DancerMarkers
+                dancerPositions={dancerPositions}
+                selectedDancerId={selectedDancerId}
+                onSelectDancer={onSelectDancer}
+                onMouseDown={handleMouseDown}
             />
-
-            {/* Сетка */}
-            {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
-                const x = i * CELL_SIZE;
-                return (
-                    <line
-                        key={`v-${i}`}
-                        x1={x}
-                        y1={0}
-                        x2={x}
-                        y2={height}
-                        stroke="#404040"
-                        strokeWidth={1}
-                    />
-                );
-            })}
-            {Array.from({ length: GRID_HEIGHT + 1 }, (_, i) => {
-                const y = i * CELL_SIZE;
-                return (
-                    <line
-                        key={`h-${i}`}
-                        x1={0}
-                        y1={y}
-                        x2={width}
-                        y2={y}
-                        stroke="#404040"
-                        strokeWidth={1}
-                    />
-                );
-            })}
-
-            {/* Рамка видимой части */}
-            <rect
-                x={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).x}
-                y={gridToPx(VISIBLE_FRAME.x1, VISIBLE_FRAME.y2).y}
-                width={(VISIBLE_FRAME.x2 - VISIBLE_FRAME.x1) * CELL_SIZE}
-                height={(VISIBLE_FRAME.y2 - VISIBLE_FRAME.y1) * CELL_SIZE}
-                fill="none"
-                stroke="#c83a77"
-                strokeWidth={2}
-            />
-
-            {/* Подпись BACKSTAGE сверху по центру */}
-            <text
-                x={width / 2}
-                y={67} // отступ сверху
-                fill="rgba(200, 58, 119, 0.9)"
-                fontSize={20}
-                fontWeight="bold"
-                textAnchor="middle"
-                style={{ letterSpacing: 12 }}
-            >
-                BACKSTAGE
-            </text>
-            
-            {/* Подписи осей X */}
-            {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
-                const xMark = minX + i;
-                const px = i * CELL_SIZE;
-                return (
-                    <text
-                        key={`x-label-${i}`}
-                        x={px}
-                        y={height - 10}
-                        fill="#ffffff"
-                        fontSize={10}
-                        textAnchor="middle"
-                    >
-                        {xMark}
-                    </text>
-                );
-            })}
-
-            {/* Танцоры */}
-            {dancerPositions.map((dancerPosition) => {
-                const { x, y } = gridToPx(dancerPosition.position.x, dancerPosition.position.y);
-                return (
-                    <g key={dancerPosition.id}>
-                        <circle
-                            cx={x}
-                            cy={y}
-                            r={16}
-                            fill="#c83a77"
-                            stroke={dancerPosition.id === selectedDancerId ? '#FFFFFF' : "#c83a77"}
-                            strokeWidth={dancerPosition.id === selectedDancerId ? 2 : 1}
-                            onMouseDown={(e) => handleMouseDown(e, dancerPosition.id)}
-                            onClick={() => onSelectDancer(dancerPosition.id)}
-                            style={{
-                                cursor: 'grab',
-                                transition: 'stroke 0.2s, stroke-width 0.2s',
-                            }}
-                        />
-                        <text
-                            x={x}
-                            y={y}
-                            fill="white"
-                            fontSize="14"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            pointerEvents="none"
-                        >
-                            {dancerPosition.numberInFormation}
-                        </text>
-                    </g>
-                );
-            })}
         </svg>
     );
 };
