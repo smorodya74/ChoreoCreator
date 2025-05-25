@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logo from '@/public/logo.png';
 import { useAuth } from '../../context/auth-context';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import AuthModal from '../AuthModal';
 import styles from '@/app/components/Header/Header.module.css';
@@ -23,6 +23,7 @@ const menuItems = [
 
 const AppHeader = () => {
     const pathname = usePathname();
+    const router = useRouter();
     const selectedKey = pathname.split('/')[1] || 'home';
     const { user, logout } = useAuth();
     const [isModalOpen, setModalOpen] = useState(false);
@@ -30,7 +31,8 @@ const AppHeader = () => {
     const authMenuItems: MenuProps['items'] = [
         {
             key: 'profile',
-            label: 'Профиль'
+            label: 'Профиль',
+            onClick: () => router.push('/profile'),  // переход по клику на "Профиль"
         },
         { type: 'divider' },
         {
@@ -61,7 +63,14 @@ const AppHeader = () => {
             <div className={styles.right}>
                 {user ? (
                     <Dropdown menu={{ items: authMenuItems }}>
-                        <a onClick={(e) => e.preventDefault()} style={{ color: 'white' }}>
+                        <a onClick={(e) => {
+                            e.preventDefault();
+                            router.push('/profile');
+                        }}
+                            style={{
+                                color: 'white'
+                            }}
+                        >
                             <Space>
                                 {user.username}
                                 <DownOutlined />
