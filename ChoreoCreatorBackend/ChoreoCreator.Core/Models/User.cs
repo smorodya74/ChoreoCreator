@@ -23,6 +23,7 @@ namespace ChoreoCreator.Core.Models
         public Username Username { get; private set; }
         public HashUserPassword PasswordHash { get; private set; }
         public string Role { get; private set; }
+        public bool IsBlocked { get; private set; }
 
         // CREATE для Регистрации
         public static User Create(UserEmail userEmail, Username username, HashUserPassword userPassword)
@@ -90,5 +91,9 @@ namespace ChoreoCreator.Core.Models
             Role = newRole;
         }
 
+        public void ChangeBlockStatus(bool isBlocked)
+        {
+            IsBlocked = isBlocked;
+        }
     }
 }

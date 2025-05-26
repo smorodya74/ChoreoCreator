@@ -113,11 +113,15 @@ namespace ChoreoCreator.DataAccess.Repositories
                     .SetProperty(u => u.Role, u => user.Role));
         }
 
-        public async Task Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            await _context.Users
-                .Where(u => u.Id == id)
-                .ExecuteDeleteAsync();
+            var entity = await _context.Users.FindAsync(id);
+            if (entity == null)
+                return false;
+
+            _context.Users.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
