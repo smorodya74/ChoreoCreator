@@ -9,13 +9,15 @@ namespace ChoreoCreator.Core.Models
             UserEmail email, 
             Username username, 
             HashUserPassword passwordHash, 
-            string role)
+            string role,
+            bool isBlocked)
         {
             Id = id;
             Email = email;
             Username = username;
             PasswordHash = passwordHash;
             Role = role;
+            IsBlocked = isBlocked;
         }
 
         public UserId Id { get; }
@@ -37,7 +39,8 @@ namespace ChoreoCreator.Core.Models
                 userEmail,
                 username,
                 userPassword,
-                "Choreographer"
+                "Choreographer",
+                false
             );
         }
 
@@ -47,7 +50,8 @@ namespace ChoreoCreator.Core.Models
             string email,
             string username,
             string passwordHash,
-            string role)
+            string role,
+            bool isBlocked)
         {
             try
             {
@@ -56,7 +60,8 @@ namespace ChoreoCreator.Core.Models
                     UserEmail.From(email),
                     Username.From(username),
                     HashUserPassword.From(passwordHash),
-                    role
+                    role,
+                    isBlocked
                 );
 
                 return (user, null);
