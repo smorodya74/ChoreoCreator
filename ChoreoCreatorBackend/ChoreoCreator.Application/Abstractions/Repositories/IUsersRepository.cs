@@ -5,7 +5,7 @@ namespace ChoreoCreator.Application.Abstractions.Repositories;
 public interface IUsersRepository
 {
     Task<Guid> Create(User user);
-    Task Delete(Guid id);
+    Task<bool> Delete(Guid id);
     Task<bool> ExistsByEmail(string email);
     Task<List<User>> GetAll();
     Task<User?> GetByEmail(string email);

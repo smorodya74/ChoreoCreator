@@ -7,6 +7,7 @@ import Title from "antd/es/typography/Title";
 import ScenariosTable from "../components/ScenariosTable";
 import { ScenarioResponse } from "../Models/Types";
 import { useRouter } from "next/navigation";
+import message from "antd/es/message";
 
 export default function ScenariosPage(){
     
@@ -25,10 +26,18 @@ export default function ScenariosPage(){
     }, [])
 
     const handleDeleteScenario = async (id: string) => {
-        await deleteScenario(id);
-
-        const scenarios = await getAllScenarios();
-        setScenarios(scenarios);
+        try {
+            await deleteScenario(id);
+            message.success("Сценарий успешно удалён");
+            const scenarios = await getAllScenarios();
+            setScenarios(scenarios);
+        } catch (error) {
+            message.error(
+                error instanceof Error
+                    ? error.message
+                    : "Произошла ошибка при удалении сценария"
+            );
+        }
     }
 
     return (
@@ -41,7 +50,7 @@ export default function ScenariosPage(){
                 }}
                 level={1}
             >
-                CHOREO DATABASE
+                База сценариев
             </Title>
             <div
                 style={{

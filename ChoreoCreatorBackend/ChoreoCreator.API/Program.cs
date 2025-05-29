@@ -10,6 +10,7 @@ using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Application.Services;
 using ChoreoCreator.Core.Contracts;
 using ChoreoCreator.Application.Abstractions;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+
+        RoleClaimType = ClaimTypes.Role
     };
 
     // Чтение JWT из cookie

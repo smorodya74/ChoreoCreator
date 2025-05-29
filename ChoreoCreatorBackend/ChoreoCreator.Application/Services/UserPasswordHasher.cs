@@ -23,17 +23,15 @@ namespace ChoreoCreator.Application.Services
         public PasswordVerificationResult VerifyHashedPassword(HashUserPassword hashedPassword, UserPassword providedPassword)
         {
             // Используем наш собственный тип результата
-            var verificationResult = _passwordHasher.VerifyHashedPassword(new UserPassword(providedPassword.Value), hashedPassword.Value, providedPassword.Value);
+            var verificationResult = _passwordHasher.VerifyHashedPassword(
+                null, 
+                hashedPassword.Value, 
+                providedPassword.Value);
 
             // Преобразуем результат из Identity в наш собственный тип
-            if (verificationResult == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success)
-            {
-                return PasswordVerificationResult.Success;
-            }
-            else
-            {
-                return PasswordVerificationResult.Failed;
-            }
+            return verificationResult == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success
+                ? PasswordVerificationResult.Success
+                : PasswordVerificationResult.Failed;
         }
     }
 }

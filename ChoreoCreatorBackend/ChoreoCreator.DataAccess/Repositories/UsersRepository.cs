@@ -27,7 +27,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                 userEntity.Email,
                 userEntity.Username,
                 userEntity.PasswordHash,
-                userEntity.Role
+                userEntity.Role,
+                userEntity.IsBlocked
             );
 
             return user;
@@ -47,7 +48,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                 userEntity.Email,
                 userEntity.Username,
                 userEntity.PasswordHash,
-                userEntity.Role
+                userEntity.Role,
+                userEntity.IsBlocked
             );
 
             return user;
@@ -68,7 +70,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                     userEntity.Email,
                     userEntity.Username,
                     userEntity.PasswordHash,
-                    userEntity.Role
+                    userEntity.Role,
+                    userEntity.IsBlocked
                 );
 
                 if (user != null)
@@ -93,7 +96,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                 Email = user.Email.Value,
                 Username = user.Username.Value,
                 PasswordHash = user.PasswordHash.Value,
-                Role = user.Role
+                Role = user.Role,
+                IsBlocked = user.IsBlocked
             };
 
             await _context.Users.AddAsync(userEntity);
@@ -110,14 +114,19 @@ namespace ChoreoCreator.DataAccess.Repositories
                     .SetProperty(u => u.Email, u => user.Email.Value)
                     .SetProperty(u => u.Username, u => user.Username.Value)
                     .SetProperty(u => u.PasswordHash, u => user.PasswordHash.Value)
-                    .SetProperty(u => u.Role, u => user.Role));
+                    .SetProperty(u => u.Role, u => user.Role)
+                    .SetProperty(u => u.IsBlocked, u => user.IsBlocked));
         }
 
-        public async Task Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            await _context.Users
-                .Where(u => u.Id == id)
-                .ExecuteDeleteAsync();
+            var entity = await _context.Users.FindAsync(id);
+            if (entity == null)
+                return false;
+
+            _context.Users.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -87,6 +87,9 @@ export const deleteScenario = async (id: string) => {
         throw new Error(`Ошибка при удалении сценария: ${response.status} ${errorText}`);
     }
 
+    // Если 204 — тело пустое
+    if (response.status === 204) return;
+
     return response.json();
 };
 

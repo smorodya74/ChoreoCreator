@@ -11,5 +11,6 @@ namespace ChoreoCreator.DataAccess.Entities
         public string Username { get; set; } = string.Empty;
         public string ?PasswordHash { get; set; }
         public string Role { get; set; } = "Choreographer";
+        public bool IsBlocked { get; set; } = false;
     }
 }

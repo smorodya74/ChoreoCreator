@@ -9,13 +9,15 @@ namespace ChoreoCreator.Core.Models
             UserEmail email, 
             Username username, 
             HashUserPassword passwordHash, 
-            string role)
+            string role,
+            bool isBlocked)
         {
             Id = id;
             Email = email;
             Username = username;
             PasswordHash = passwordHash;
             Role = role;
+            IsBlocked = isBlocked;
         }
 
         public UserId Id { get; }
@@ -23,6 +25,7 @@ namespace ChoreoCreator.Core.Models
         public Username Username { get; private set; }
         public HashUserPassword PasswordHash { get; private set; }
         public string Role { get; private set; }
+        public bool IsBlocked { get; private set; }
 
         // CREATE для Регистрации
         public static User Create(UserEmail userEmail, Username username, HashUserPassword userPassword)
@@ -36,7 +39,8 @@ namespace ChoreoCreator.Core.Models
                 userEmail,
                 username,
                 userPassword,
-                "Choreographer"
+                "Choreographer",
+                false
             );
         }
 
@@ -46,7 +50,8 @@ namespace ChoreoCreator.Core.Models
             string email,
             string username,
             string passwordHash,
-            string role)
+            string role,
+            bool isBlocked)
         {
             try
             {
@@ -55,7 +60,8 @@ namespace ChoreoCreator.Core.Models
                     UserEmail.From(email),
                     Username.From(username),
                     HashUserPassword.From(passwordHash),
-                    role
+                    role,
+                    isBlocked
                 );
 
                 return (user, null);
@@ -90,5 +96,9 @@ namespace ChoreoCreator.Core.Models
             Role = newRole;
         }
 
+        public void ChangeBlockStatus(bool isBlocked)
+        {
+            IsBlocked = isBlocked;
+        }
     }
 }

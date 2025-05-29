@@ -154,12 +154,14 @@ namespace ChoreoCreator.API.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var existing = await _scenarioService.GetScenarioById(id);
-            if (existing == null)
+            var scenario = await _scenarioService.GetScenarioById(id);
+            var userId = User.GetUserId();
+            var userRole = _usersRepository.GetById(userId).Result?.Role;
+            
+            if (scenario == null)
                 return NotFound();
 
-            var userId = User.GetUserId();
-            if (userId != existing.UserId)
+            if (userRole != "Admin" && userId != scenario.UserId)
                 return Forbid();
 
             await _scenarioService.DeleteScenario(id);
