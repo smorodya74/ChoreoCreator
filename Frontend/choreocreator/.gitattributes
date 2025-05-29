@@ -1,0 +1,2 @@
+*.mjs linguist-documentation
+*.cs linguist-language=C#
