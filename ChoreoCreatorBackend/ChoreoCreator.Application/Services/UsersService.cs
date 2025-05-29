@@ -101,7 +101,7 @@ namespace ChoreoCreator.Application.Services
             {
                 return false;
             }
-
+            
             // Хешируем новый пароль и меняем
             var newHashed = _passwordHasher.HashPassword(newPassword);
             user.ChangePassword(newHashed);

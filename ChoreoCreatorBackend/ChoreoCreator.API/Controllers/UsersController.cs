@@ -1,4 +1,5 @@
 ﻿using ChoreoCreator.API.Contracts.DTOs;
+using ChoreoCreator.API.Extensions;
 using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
@@ -54,7 +55,7 @@ namespace ChoreoCreator.API.Controllers
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/users/change-password
@@ -62,10 +63,12 @@ namespace ChoreoCreator.API.Controllers
         [Authorize] // доступен и обычным пользователям
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
+            var userId = User.GetUserId(); // получаем ID из токена
+
             var currentPassword = new UserPassword(request.CurrentPassword);
             var newPassword = new UserPassword(request.NewPassword);
 
-            var result = await _usersService.ChangePassword(request.UserId, currentPassword, newPassword);
+            var result = await _usersService.ChangePassword(userId, currentPassword, newPassword);
 
             return result ? Ok() : BadRequest("Неверный текущий пароль");
         }
