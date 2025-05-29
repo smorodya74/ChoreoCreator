@@ -1,0 +1,23 @@
+*.mjs linguist-documentation
+*.cs linguist-language=C#
+
+# Исключить конфигурационные файлы (не код)
+/.env.local linguist-documentation
+/next-env.d.ts linguist-generated
+/tsconfig.json linguist-documentation
+/eslint.config.mjs linguist-documentation
+/next.config.ts linguist-documentation
+/package.json linguist-documentation
+/package-lock.json linguist-documentation
+/README.md linguist-documentation
+
+# Исключить всю папку Scene из статистики GitHub
+components/Scene/** linguist-documentation
+
+# Исключить папки с зависимостями и билдами
+/node_modules/** linguist-vendored
+/public/** linguist-vendored
+/scr/** linguist-vendored
+
+# Исключить сгенерированные/сконфигурированные файлы
+*.d.ts linguist-generated
