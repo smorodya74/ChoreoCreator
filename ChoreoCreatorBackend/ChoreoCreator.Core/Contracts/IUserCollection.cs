@@ -1,7 +1,4 @@
-﻿using ChoreoCreator.Core.Models;
-using ChoreoCreator.Core.ValueObjects;
-
-namespace ChoreoCreator.Core.Contracts;
+﻿namespace ChoreoCreator.Core.Contracts;
 
 /// <summary>
 /// Имплементация на уровне инфраструктуры или application

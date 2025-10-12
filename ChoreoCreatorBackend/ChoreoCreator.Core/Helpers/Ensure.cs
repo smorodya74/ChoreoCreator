@@ -7,7 +7,7 @@ public static class Ensure
     {
         if (value < 0)
         {
-            throw new ArgumentOutOfRangeException(paramName, value, "Value cannot be negative.");
+            throw new ArgumentOutOfRangeException(paramName, value, "Значение не может быть отрицательным");
         }
     }
 
@@ -37,7 +37,7 @@ public static class Ensure
 
         if (value!.Length == 0)
         {
-            throw new ArgumentException("Value cannot be empty.", paramName);
+            throw new ArgumentException("Значение не может быть пустым", paramName);
         }
     }
     
@@ -46,7 +46,7 @@ public static class Ensure
     {
         if (value < 0)
         {
-            throw new ArgumentOutOfRangeException(paramName, value, "Value cannot be negative.");
+            throw new ArgumentOutOfRangeException(paramName, value, "Значение не может быть отрицательным");
         }
     }
 }
