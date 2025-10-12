@@ -1,32 +1,20 @@
+using ChoreoCreator.Infrastructure;
+using ChoreoCreator.Core.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using ChoreoCreator.Core.Services;
-using ChoreoCreator.Core.Settings;
-using ChoreoCreator.DataAccess;
-using ChoreoCreator.DataAccess.Repositories;
-using ChoreoCreator.Application.Abstractions.Repositories;
-using ChoreoCreator.Application.Services;
-using ChoreoCreator.Core.Contracts;
-using ChoreoCreator.Application.Abstractions;
 using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<ChoreoCreatorDbContext>(
-    options => 
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ChoreoCreatorDbContext)));
-    });
-
+// JWT Settings
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
 var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
 
+// Auth
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -44,11 +32,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
-
         RoleClaimType = ClaimTypes.Role
     };
-
-    // Чтение JWT из cookie
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -61,22 +46,16 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IUsersService, UsersService>();
-builder.Services.AddScoped<UserRegistrationService>();
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-builder.Services.AddScoped<IUserPasswordHasher, UserPasswordHasher>();
-builder.Services.AddScoped<IUserCollection, UserCollection>();
-builder.Services.AddScoped<IScenariosServices, ScenariosServices>();
-builder.Services.AddScoped<IScenariosRepository, ScenariosRepository>();
+// DI registrations
+builder.Services.AddProjectServices(builder.Configuration);
 
+// Controllers, Swagger, etc.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -84,7 +63,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 
 app.UseCors(x =>
 {
