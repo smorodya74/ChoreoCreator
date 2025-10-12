@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChoreoCreator.Application\ChoreoCreator.Application.csproj" />
-    <ProjectReference Include="..\ChoreoCreator.DataAccess\ChoreoCreator.DataAccess.csproj" />
+    <ProjectReference Include="..\ChoreoCreator.Infrastructure\ChoreoCreator.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
