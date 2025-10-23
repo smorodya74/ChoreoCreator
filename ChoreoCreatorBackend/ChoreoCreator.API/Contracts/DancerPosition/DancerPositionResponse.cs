@@ -1,4 +1,4 @@
-﻿namespace ChoreoCreator.API.Contracts.DTOs
+﻿namespace ChoreoCreator.API.Contracts.DancerPosition
 {
     public record DancerPositionResponse(
         Guid Id,

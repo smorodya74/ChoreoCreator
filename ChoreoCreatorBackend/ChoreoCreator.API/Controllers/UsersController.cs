@@ -1,4 +1,5 @@
 ﻿using ChoreoCreator.API.Contracts.DTOs;
+using ChoreoCreator.API.Contracts.User;
 using ChoreoCreator.API.Extensions;
 using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.ValueObjects;
@@ -41,7 +42,7 @@ namespace ChoreoCreator.API.Controllers
         public async Task<IActionResult> ChangeBlockStatus([FromBody] ChangeBlockStatusRequest request)
         {
             var result = await _usersService.ChangeBlockStatus(request.UserId, request.IsBlocked);
-            return result ? Ok() : NotFound();
+            return result ? NoContent() : NotFound();
         }
 
         // DELETE: api/users/{id}
@@ -55,7 +56,7 @@ namespace ChoreoCreator.API.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return NoContent();
         }
 
         // POST: api/users/change-password

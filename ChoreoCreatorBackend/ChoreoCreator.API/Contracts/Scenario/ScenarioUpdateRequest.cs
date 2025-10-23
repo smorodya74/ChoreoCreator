@@ -1,4 +1,4 @@
-﻿using ChoreoCreator.API.Contracts.DTOs;
+﻿using ChoreoCreator.API.Contracts.Formation;
 
 namespace ChoreoCreator.API.Contracts.Scenario;
 

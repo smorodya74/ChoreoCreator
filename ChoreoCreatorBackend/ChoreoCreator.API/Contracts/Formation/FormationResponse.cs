@@ -1,4 +1,6 @@
-﻿namespace ChoreoCreator.API.Contracts.DTOs
+﻿using ChoreoCreator.API.Contracts.DancerPosition;
+
+namespace ChoreoCreator.API.Contracts.Formation
 {
     public record FormationResponse(
         Guid Id,

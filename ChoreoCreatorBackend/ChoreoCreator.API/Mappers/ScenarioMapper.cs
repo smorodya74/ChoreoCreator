@@ -1,4 +1,6 @@
-﻿using ChoreoCreator.API.Contracts.DTOs;
+﻿using ChoreoCreator.API.Contracts.DancerPosition;
+using ChoreoCreator.API.Contracts.Formation;
+using ChoreoCreator.API.Contracts.Scenario;
 using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
 

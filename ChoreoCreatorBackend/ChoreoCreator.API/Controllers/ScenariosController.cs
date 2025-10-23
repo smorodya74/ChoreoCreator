@@ -1,5 +1,4 @@
-﻿using ChoreoCreator.API.Contracts.DTOs;
-using ChoreoCreator.API.Contracts.Scenario;
+﻿using ChoreoCreator.API.Contracts.Scenario;
 using ChoreoCreator.API.Extensions;
 using ChoreoCreator.API.Mappers;
 using ChoreoCreator.Application.Abstractions;
