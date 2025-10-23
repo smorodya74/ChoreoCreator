@@ -17,6 +17,7 @@ const { Header } = Layout;
 
 const menuItems = [
     { key: 'home', label: <Link href="/">Главная</Link> },
+    { key: 'prices', label: <Link href="/prices">Тарифы</Link> },
     { key: 'scenarios', label: <Link href="/scenarios">Шаблоны</Link> },
     { key: 'editor', label: <Link href="/editor">Редактор</Link> },
 ];
@@ -47,7 +48,10 @@ const AppHeader = () => {
 
     return (
         <Header className={styles.header}>
-            <Link href="/" className={styles.logo}>
+            <Link href="/" 
+                className={styles.logo} 
+                style={{ marginLeft: 30 }}
+            >
                 <Image src={logo} alt="Logo" width={40} height={40} priority />
                 <span className={styles.logoText}>ChoreoCreator</span>
             </Link>
@@ -60,7 +64,9 @@ const AppHeader = () => {
                 className={styles.menu}
             />
 
-            <div className={styles.right}>
+            <div className={styles.right} 
+                style={{marginRight: 30}}
+            >
                 {user ? (
                     <Dropdown menu={{ items: authMenuItems }}>
                         <a onClick={(e) => {

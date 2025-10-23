@@ -1,12 +1,10 @@
 'use client'
-import { Button, Typography } from 'antd';
+import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/auth-context';
 import './globals.css';
 import { saveDraftToLocalStorage } from './utils/localStorageScenario';
 import { v4 as uuidv4 } from 'uuid';
-
-const { Title } = Typography;
 
 export default function HomePage() {
     const router = useRouter();
@@ -39,7 +37,7 @@ export default function HomePage() {
 
     return (
         <div className="home-container">
-            <Title style={{ color: '#FFFFFF' }} level={1}>Создайте свою хореографию</Title>
+            <h1 style={{ color: '#FFFFFF' }}>Создайте свою хореографию</h1>
             <Button
                 className="btnTry"
                 size="large"
