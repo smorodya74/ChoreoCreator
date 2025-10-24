@@ -16,6 +16,7 @@ import { exportScenarioToPdf } from '../utils/exportScenarioToPdf';
 const { Content } = Layout;
 
 export default function EditorPage() {
+    const DEFAULT_DANCER_COLOR = '#C83A77';
     const [isScenarioModalVisible, setScenarioModalVisible] = useState(false);
     const [pendingAction, setPendingAction] = useState<null | 'save' | 'publish' | 'export'>(null);
 
@@ -35,6 +36,7 @@ export default function EditorPage() {
             id: uuidv4(),
             numberInFormation: 1,
             position: { x: 0, y: 0 },
+            color: DEFAULT_DANCER_COLOR,
         }]
     }]);
 
@@ -91,6 +93,7 @@ export default function EditorPage() {
                     id: initialDancerId,
                     numberInFormation: 1,
                     position: { x: 0, y: 0 },
+                    color: DEFAULT_DANCER_COLOR,
                 }],
             }];
 
@@ -151,6 +154,7 @@ export default function EditorPage() {
                             id: uuidv4(),
                             numberInFormation: dancerPositions.length + 1,
                             position: { x, y },
+                            color: DEFAULT_DANCER_COLOR,
                         };
 
                         setFormations(prev => {
@@ -214,6 +218,39 @@ export default function EditorPage() {
                 return updated;
             })
         };
+    };
+
+    // ОБНОВИТЬ ЦВЕТ ТАНЦОРА
+    const handleUpdateDancerColor = (id: string, color: string) => {
+        if (selectedFormationId) {
+            setFormations(prev => {
+                const index = prev.findIndex(f => f.id === selectedFormationId);
+                if (index === -1) return prev;
+
+                const formation = prev[index];
+                const updatedDancers = formation.dancerPositions.map(d =>
+                    d.id === id ? { ...d, color } : d
+                );
+
+                const updated = [...prev];
+                updated[index] = {
+                    ...formation,
+                    dancerPositions: updatedDancers,
+                };
+
+                if (selectedFormationId && selectedDancerId) {
+                    saveDraftToLocalStorage({
+                        isPublished: false,
+                        formations: updated,
+                        dancerCount: Math.max(...updated.map(f => f.dancerPositions.length)),
+                        selectedFormationId,
+                        selectedDancerId
+                    });
+                }
+
+                return updated;
+            });
+        }
     };
 
     // ВЫБРАТЬ ТАНЦОРА
@@ -280,6 +317,7 @@ export default function EditorPage() {
                 id: uuidv4(),
                 numberInFormation: index + 1,
                 position: { ...d.position },
+                color: d.color ?? DEFAULT_DANCER_COLOR,
             })),
         };
 
@@ -500,6 +538,7 @@ export default function EditorPage() {
                     onSaveScenario={handleSaveScenario}
                     onPublicScenario={handlePublicScenario}
                     onExportScenario={handleExportScenario}
+                    onUpdateDancerColor={handleUpdateDancerColor}
                 />
 
                 <Layout style={{ background: '#041527', paddingLeft: 250 }}>

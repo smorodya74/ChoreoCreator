@@ -10,7 +10,7 @@ import {
     DownloadOutlined,
     DiffOutlined
 } from '@ant-design/icons';
-import { Button, Layout, MenuProps, Typography } from 'antd';
+import { Button, Layout, MenuProps, Typography, ColorPicker } from 'antd';
 import { DancerPosition, Formation } from '../../Models/Types';
 import Menu from 'antd/es/menu/menu';
 import { exportScenarioToPdf } from '../../utils/exportScenarioToPdf';
@@ -34,6 +34,7 @@ type EditorBarProps = {
     onSaveScenario: () => void;
     onPublicScenario: () => void;
     onExportScenario: () => void;
+    onUpdateDancerColor?: (id: string, color: string) => void;
 };
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -72,6 +73,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
     onSaveScenario,
     onPublicScenario,
     onExportScenario
+    , onUpdateDancerColor
 }) => {
     const [selectedMenuKey, setSelectedMenuKey] = useState("1");
 
@@ -116,32 +118,38 @@ const EditorBar: React.FC<EditorBarProps> = ({
                     </div>
 
                     <div style={{ overflowY: 'auto', paddingBottom: 5 }}>
-                        {dancerPositions.map((dancerPosition, index) => (
-                            <div
-                                key={dancerPosition.id}
-                                onClick={() => onSelectDancer(dancerPosition.id)}
-                                style={{
-                                    padding: '8px',
-                                    background: dancerPosition.id === selectedDancerId ? '#2D2D2D' : 'transparent',
-                                    color: '#FFFFFF',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    cursor: 'pointer',
-                                    border: dancerPosition.id === selectedDancerId ? '1px solid #C83A77' : 'none',
-                                }}
-                            >
-                                    <div
-                                        style={{
-                                            width: 16,
-                                            height: 16,
-                                            borderRadius: '50%',
-                                            backgroundColor: '#C83A77', // цвет танцора
-                                            marginRight: 8,
-                                        }}
-                                    />
+                        {dancerPositions.map((dancerPosition, index) => {
+                            const dancerColor = dancerPosition.color ?? '#C83A77';
+                            return (
+                                <div
+                                    key={dancerPosition.id}
+                                    onClick={() => onSelectDancer(dancerPosition.id)}
+                                    style={{
+                                        padding: '8px',
+                                        background: dancerPosition.id === selectedDancerId ? '#2D2D2D' : 'transparent',
+                                        color: '#FFFFFF',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        cursor: 'pointer',
+                                        border: dancerPosition.id === selectedDancerId ? '1px solid #C83A77' : 'none',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <div style={{ marginRight: 8 }} onClick={e => e.stopPropagation()}>
+                                        <ColorPicker
+                                            value={dancerColor}
+                                            onChange={(val) => {
+                                                const hex = typeof val === 'string'
+                                                    ? val
+                                                    : (val && (val as any).toHexString ? (val as any).toHexString() : String(val));
+                                                if (onUpdateDancerColor) onUpdateDancerColor(dancerPosition.id, hex || dancerColor);
+                                            }}
+                                        />
+                                    </div>
                                     <span>{`Танцор ${index + 1} (${dancerPosition.position.x}, ${dancerPosition.position.y})`}</span>
                                 </div>
-                        ))}
+                            );
+                        })}
                     </div>
                     <div style={{ position: 'absolute', bottom: 10, width: '100%', padding: 8 }}>
                         <Button

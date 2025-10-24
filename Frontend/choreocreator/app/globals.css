@@ -172,3 +172,55 @@
 .btnChangePassword:hover::before {
     opacity: 0.8; 
 }
+
+/* Стеклянная панель между фоном и контентом */
+.glass-panel {
+    width: min(40%);
+    height: min(40%);
+    padding: 36px 48px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+
+    /* радиальный фон: плотное стекло в центре, к краю — прозрачнее */
+    background: radial-gradient(circle at center,
+        rgba(255,255,255,0.14) 10%,
+        rgba(255,255,255,0.10) 35%,
+        rgba(255,255,255,0.06) 60%,
+        rgba(255,255,255,0.00) 100%);
+
+    /* размытие фона за панелью остаётся */
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    backdrop-filter: blur(10px) saturate(120%);
+
+    /* лёгкая обводка и тень для глубины */
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 1.00);
+}
+
+/* Лучше видимость заголовка на стекле */
+.glass-panel h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 48px;
+    line-height: 1.1;
+    text-shadow: 2 2px 3px rgba(0,0,0,0.45);
+}
+
+/* Уменьшаем паддинги кнопок внутри стекла на мобильных */
+@media (max-width: 480px) {
+    .glass-panel h1 {
+        padding: 20px;
+        font-size: 24px;
+    }
+
+    .btnTry {
+        padding: 18px 28px;
+        font-size: 16px;
+    }
+}

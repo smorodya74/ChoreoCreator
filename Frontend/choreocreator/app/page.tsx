@@ -22,7 +22,8 @@ export default function HomePage() {
                 dancerPositions: [{
                     id: uuidv4(),
                     numberInFormation: 1,
-                    position: { x: 0, y: 0 }
+                    position: { x: 0, y: 0 },
+                    color: '#C83A77'
                 }]
             }],
             dancerCount: 1,
@@ -37,14 +38,16 @@ export default function HomePage() {
 
     return (
         <div className="home-container">
-            <h1 style={{ color: '#FFFFFF' }}>Создайте свою хореографию</h1>
-            <Button
-                className="btnTry"
-                size="large"
-                onClick={handleTryClick}
-            >
-                Попробовать
-            </Button>
+            <div className="glass-panel">
+                <h1 style={{ color: '#FFFFFF' }}>Создайте свою хореографию</h1>
+                <Button
+                    className="btnTry"
+                    size="large"
+                    onClick={handleTryClick}
+                >
+                    Попробовать
+                </Button>
+            </div>
         </div>
     );
 }

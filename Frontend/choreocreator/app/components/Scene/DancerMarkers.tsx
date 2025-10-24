@@ -24,8 +24,8 @@ export const DancerMarkers: React.FC<DancerMarkersProps> = ({
                         cx={x}
                         cy={y}
                         r={16}
-                        fill="#c83a77"
-                        stroke={dancerPosition.id === selectedDancerId ? '#FFFFFF' : '#c83a77'}
+                        fill={dancerPosition.color ?? '#c83a77'}
+                        stroke={dancerPosition.id === selectedDancerId ? '#FFFFFF' : (dancerPosition.color ?? '#c83a77')}
                         strokeWidth={dancerPosition.id === selectedDancerId ? 2 : 1}
                         onMouseDown={onMouseDown ? (e) => onMouseDown(e, dancerPosition.id) : undefined}
                         onClick={onSelectDancer ? () => onSelectDancer(dancerPosition.id) : undefined}
