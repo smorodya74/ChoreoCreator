@@ -26,6 +26,7 @@ public static class ScenarioMapper
                 f.DancerPositions.Select(d => new DancerPositionResponse(
                     d.Id,
                     d.NumberInFormation,
+                    d.DancerColor,
                     new PositionResponse(d.Position.X, d.Position.Y)
                 )).ToList()
             )).ToList()

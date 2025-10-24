@@ -2,6 +2,7 @@
 {
     public record DancerPositionRequest(
         Guid Id,
-        int NumberInFormation, 
+        int NumberInFormation,
+        string DancerColor,
         PositionRequest Position);
 }

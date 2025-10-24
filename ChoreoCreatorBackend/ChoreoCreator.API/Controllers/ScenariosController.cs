@@ -83,6 +83,7 @@ namespace ChoreoCreator.API.Controllers
                     var dancer = new DancerPosition(
                         dancerDto.Id,
                         dancerDto.NumberInFormation,
+                        dancerDto.DancerColor,
                         new Position(
                             dancerDto.Position.X, 
                             dancerDto.Position.Y)
@@ -132,7 +133,7 @@ namespace ChoreoCreator.API.Controllers
                 foreach (var d in f.DancerPositions)
                 {
                     var pos = new Position(d.Position.X, d.Position.Y);
-                    formation.AddDancerPosition(new DancerPosition(d.Id, d.NumberInFormation, pos));
+                    formation.AddDancerPosition(new DancerPosition(d.Id, d.NumberInFormation, d.DancerColor, pos));
                 }
                 existing.AddFormation(formation);
             }

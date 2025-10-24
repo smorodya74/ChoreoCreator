@@ -26,6 +26,7 @@ namespace ChoreoCreator.DataAccess.Mapping
                     {
                         Id = d.Id,
                         NumberInFormation = d.NumberInFormation,
+                        DancerColor = d.DancerColor,
                         Position = new PositionDto
                         {
                             X = d.Position.X,
@@ -53,7 +54,7 @@ namespace ChoreoCreator.DataAccess.Mapping
                 foreach (var d in f.DancerPositions)
                 {
                     var pos = new Position(d.Position.X, d.Position.Y);
-                    var dancerPosition = new DancerPosition(d.Id, d.NumberInFormation, pos);
+                    var dancerPosition = new DancerPosition(d.Id, d.NumberInFormation, d.DancerColor, pos);
                     formation.AddDancerPosition(dancerPosition);
                 }
 
