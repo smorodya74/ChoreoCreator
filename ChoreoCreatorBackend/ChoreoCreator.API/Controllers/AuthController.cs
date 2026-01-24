@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace ChoreoCreator.API.Controllers
 {
+    /// <summary>
+    /// Аутентификация и управление сессионным JWT.
+    /// </summary>
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
@@ -20,6 +23,14 @@ namespace ChoreoCreator.API.Controllers
             _jwtTokenService = jwtTokenService;
         }
 
+        // POST: api/auth/register
+        /// <summary>
+        /// Регистрирует нового пользователя по email, имени пользователя и паролю.
+        /// </summary>
+        /// <param name="request">Данные для регистрации пользователя.</param>
+        /// <param name="ct">Токен отмены запроса.</param>
+        /// <response code="200">Пользователь зарегистрирован, возвращён идентификатор.</response>
+        /// <response code="400">Некорректные данные или ошибка регистрации.</response>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken ct)
         {
@@ -33,6 +44,13 @@ namespace ChoreoCreator.API.Controllers
             return Ok(new { userId = result.Value.Value });
         }
 
+        // POST: api/auth/login
+        /// <summary>
+        /// Выполняет вход и устанавливает JWT в HttpOnly cookie.
+        /// </summary>
+        /// <param name="request">Учетные данные пользователя.</param>
+        /// <response code="200">Вход выполнен, JWT сохранён в cookie.</response>
+        /// <response code="401">Неверный логин или пароль.</response>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -53,6 +71,11 @@ namespace ChoreoCreator.API.Controllers
             return Ok(new { Message = "Успешный вход" });
         }
 
+        // POST: api/auth/logout
+        /// <summary>
+        /// Завершает сессию, удаляя JWT cookie.
+        /// </summary>
+        /// <response code="200">Cookie удалена.</response>
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -60,6 +83,13 @@ namespace ChoreoCreator.API.Controllers
             return Ok(new { Message = "Выход выполнен" });
         }
 
+        // POST: api/auth/me
+        /// <summary>
+        /// Возвращает данные текущего пользователя из токена.
+        /// </summary>
+        /// <remarks>Требуется аутентификация по JWT cookie.</remarks>
+        /// <response code="200">Данные текущего пользователя.</response>
+        /// <response code="401">Пользователь не аутентифицирован или данные токена недоступны.</response>
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> Me()

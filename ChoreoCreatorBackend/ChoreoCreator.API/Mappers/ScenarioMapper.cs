@@ -1,6 +1,4 @@
-﻿using ChoreoCreator.API.Contracts.DancerPosition;
-using ChoreoCreator.API.Contracts.Formation;
-using ChoreoCreator.API.Contracts.Scenario;
+﻿using ChoreoCreator.API.Contracts.DTOs;
 using ChoreoCreator.Application.Abstractions.Repositories;
 using ChoreoCreator.Core.Models;
 
@@ -26,7 +24,6 @@ public static class ScenarioMapper
                 f.DancerPositions.Select(d => new DancerPositionResponse(
                     d.Id,
                     d.NumberInFormation,
-                    d.DancerColor,
                     new PositionResponse(d.Position.X, d.Position.Y)
                 )).ToList()
             )).ToList()

@@ -7,7 +7,6 @@ export type Formation = {
 export type DancerPosition = {
     id: string;
     numberInFormation: number;
-    color: string;
     position: Position;
 };
 

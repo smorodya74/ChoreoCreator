@@ -8,20 +8,40 @@ using System.Text;
 
 namespace ChoreoCreator.Application.Services
 {
+    /// <summary>
+    /// Сервис генерации JWT для пользователей.
+    /// </summary>
     public interface IJwtTokenService
     {
+        /// <summary>
+        /// Создаёт подписанный JWT для пользователя.
+        /// </summary>
+        /// <param name="user">Пользователь, для которого создаётся токен.</param>
+        /// <returns>JWT в виде строки.</returns>
         string GenerateToken(User user);
     }
 
+    /// <summary>
+    /// Реализация генерации JWT на основе настроек приложения.
+    /// </summary>
     public class JwtTokenService : IJwtTokenService
     {
         private readonly JwtSettings _settings;
 
+        /// <summary>
+        /// Инициализирует сервис токенов с параметрами JWT.
+        /// </summary>
+        /// <param name="options">Параметры JWT.</param>
         public JwtTokenService(IOptions<JwtSettings> options)
         {
             _settings = options.Value;
         }
 
+        /// <summary>
+        /// Создаёт подписанный JWT для пользователя.
+        /// </summary>
+        /// <param name="user">Пользователь, для которого создаётся токен.</param>
+        /// <returns>JWT в виде строки.</returns>
         public string GenerateToken(User user)
         {
             var claims = new[]

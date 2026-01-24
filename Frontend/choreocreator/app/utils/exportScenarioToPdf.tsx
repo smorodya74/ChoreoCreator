@@ -13,7 +13,6 @@ interface DancerPosition {
     id: string;
     numberInFormation: number;
     position: Position;
-    color: string;
 }
 
 interface Formation {
@@ -90,7 +89,7 @@ export async function exportScenarioToPdf({ title, formations, orientation = 'l'
 
         ReactDOM.createRoot(div).render(
             <FormationSvg 
-                dancerPositions={f.dancerPositions.map(d => ({ ...d, color: (d as any).color ?? '#C83A77' }))} 
+                dancerPositions={f.dancerPositions} 
                 width={availableWidth} 
                 height={calculatedHeight}
                 isForPdf={true} 

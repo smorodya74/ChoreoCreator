@@ -1,10 +1,12 @@
 'use client'
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/auth-context';
 import './globals.css';
 import { saveDraftToLocalStorage } from './utils/localStorageScenario';
 import { v4 as uuidv4 } from 'uuid';
+
+const { Title } = Typography;
 
 export default function HomePage() {
     const router = useRouter();
@@ -22,8 +24,7 @@ export default function HomePage() {
                 dancerPositions: [{
                     id: uuidv4(),
                     numberInFormation: 1,
-                    position: { x: 0, y: 0 },
-                    color: '#C83A77'
+                    position: { x: 0, y: 0 }
                 }]
             }],
             dancerCount: 1,
@@ -38,16 +39,14 @@ export default function HomePage() {
 
     return (
         <div className="home-container">
-            <div className="glass-panel">
-                <h1 style={{ color: '#FFFFFF' }}>Создайте свою хореографию</h1>
-                <Button
-                    className="btnTry"
-                    size="large"
-                    onClick={handleTryClick}
-                >
-                    Попробовать
-                </Button>
-            </div>
+            <Title style={{ color: '#FFFFFF' }} level={1}>Создайте свою хореографию</Title>
+            <Button
+                className="btnTry"
+                size="large"
+                onClick={handleTryClick}
+            >
+                Попробовать
+            </Button>
         </div>
     );
 }

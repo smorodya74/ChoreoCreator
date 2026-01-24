@@ -1,0 +1,103 @@
+name: Post-merge Pipeline
+
+on:
+  push:
+    branches: [dev, main]
+
+concurrency:
+  group: post-merge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (.NET) build & test (Postgres)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: choreocrestordb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d choreocrestordb"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      ASPNETCORE_ENVIRONMENT: CI
+      ConnectionStrings__ChoreoCreatorDbContext: Host=localhost;Port=5432;Database=choreocrestordb;Username=postgres;Password=${{ secrets.POSTGRES_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install postgres client (pg_isready)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres -d choreocrestordb; then
+              echo "Postgres is ready"
+              exit 0
+            fi
+            echo "Waiting for Postgres..."
+            sleep 2
+          done
+          echo "Postgres did not become ready in time"
+          exit 1
+
+      - name: Restore
+        run: dotnet restore ChoreoCreatorBackend/ChoreoCreatorBackend.sln
+
+      - name: Build
+        run: dotnet build ChoreoCreatorBackend/ChoreoCreatorBackend.sln -c Release --no-restore
+
+      - name: Test (skip if no test projects)
+        shell: bash
+        run: |
+          set -e
+          if find ChoreoCreatorBackend -name "*Tests*.csproj" -o -name "*Test*.csproj" | grep -q .; then
+            dotnet test ChoreoCreatorBackend/ChoreoCreatorBackend.sln -c Release --no-build
+          else
+            echo "No test projects found. Skipping dotnet test."
+          fi
+
+  frontend:
+    name: Frontend (Next.js) build & lint
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Frontend/choreocreator
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Frontend/choreocreator/package-lock.json
+
+      - name: Install
+        run: npm ci
+      
+      # TODO: После внедрения линтинга в проект раскомментировать этот шаг
+      # - name: Lint
+      #   run: npm run lint
+
+      - name: Build
+        run: npm run build

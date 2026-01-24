@@ -3,6 +3,7 @@ using ChoreoCreator.Core.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,7 +53,20 @@ builder.Services.AddProjectServices(builder.Configuration);
 // Controllers, Swagger, etc.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var apiXmlPath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+    if (File.Exists(apiXmlPath))
+    {
+        options.IncludeXmlComments(apiXmlPath);
+    }
+
+    var applicationXmlPath = Path.Combine(AppContext.BaseDirectory, "ChoreoCreator.Application.xml");
+    if (File.Exists(applicationXmlPath))
+    {
+        options.IncludeXmlComments(applicationXmlPath);
+    }
+});
 
 var app = builder.Build();
 

@@ -17,7 +17,7 @@ export default function RootLayout({
   const noPadding = pathname === '/editor';
 
   return (
-    <html lang="ru">
+    <html lang="en">
       <body style={{ background: '#041527' }}>
         <AuthProvider>
           <Layout style={{ minHeight: "100vh", justifyContent:"space-betweem", background: 'transparent' }}>

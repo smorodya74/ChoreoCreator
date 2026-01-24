@@ -1,5 +1,4 @@
 ﻿using ChoreoCreator.API.Contracts.DTOs;
-using ChoreoCreator.API.Contracts.User;
 using ChoreoCreator.API.Extensions;
 using ChoreoCreator.Application.Abstractions;
 using ChoreoCreator.Core.ValueObjects;
@@ -8,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChoreoCreator.API.Controllers
 {
-    
+    /// <summary>
+    /// Администрирование пользователей и управление паролями.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
@@ -21,6 +22,13 @@ namespace ChoreoCreator.API.Controllers
         }
 
         // GET: api/users
+        /// <summary>
+        /// Возвращает список всех пользователей.
+        /// </summary>
+        /// <remarks>Доступно только администраторам.</remarks>
+        /// <response code="200">Список пользователей.</response>
+        /// <response code="401">Пользователь не аутентифицирован.</response>
+        /// <response code="403">Нет прав администратора.</response>
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<UserResponse>>> GetAllUsers()
@@ -38,14 +46,29 @@ namespace ChoreoCreator.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Изменяет статус блокировки пользователя.
+        /// </summary>
+        /// <param name="request">Данные пользователя и требуемый статус блокировки.</param>
+        /// <response code="200">Статус блокировки обновлён.</response>
+        /// <response code="404">Пользователь не найден.</response>
         [HttpPost("change-block-status")]
         public async Task<IActionResult> ChangeBlockStatus([FromBody] ChangeBlockStatusRequest request)
         {
             var result = await _usersService.ChangeBlockStatus(request.UserId, request.IsBlocked);
-            return result ? NoContent() : NotFound();
+            return result ? Ok() : NotFound();
         }
 
         // DELETE: api/users/{id}
+        /// <summary>
+        /// Удаляет пользователя по идентификатору.
+        /// </summary>
+        /// <remarks>Доступно только администраторам.</remarks>
+        /// <param name="id">Идентификатор пользователя.</param>
+        /// <response code="200">Пользователь удалён.</response>
+        /// <response code="401">Пользователь не аутентифицирован.</response>
+        /// <response code="403">Нет прав администратора.</response>
+        /// <response code="404">Пользователь не найден.</response>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(Guid id)
@@ -56,10 +79,18 @@ namespace ChoreoCreator.API.Controllers
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/users/change-password
+        /// <summary>
+        /// Меняет пароль текущего пользователя.
+        /// </summary>
+        /// <remarks>Требуется аутентификация.</remarks>
+        /// <param name="request">Текущий и новый пароль.</param>
+        /// <response code="200">Пароль изменён.</response>
+        /// <response code="400">Текущий пароль неверный.</response>
+        /// <response code="401">Пользователь не аутентифицирован.</response>
         [HttpPost("change-password")]
         [Authorize] // доступен и обычным пользователям
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
