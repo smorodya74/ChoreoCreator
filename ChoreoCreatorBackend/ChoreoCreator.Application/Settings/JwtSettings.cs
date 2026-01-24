@@ -1,10 +1,28 @@
 ﻿namespace ChoreoCreator.Core.Settings
 {
+    /// <summary>
+    /// Параметры JWT для аутентификации.
+    /// </summary>
     public class JwtSettings
     {
-        public string SecretKey { get; set; } = string.Empty;  // Ключ для подписи токенов
-        public string Issuer { get; set; } = string.Empty;      // Кто выпускает токен
-        public string Audience { get; set; } = string.Empty;    // Кто является аудиторией
-        public int ExpiresInMinutes { get; set; } = 60;         // Время жизни токена
+        /// <summary>
+        /// Секретный ключ для подписи токенов.
+        /// </summary>
+        public string SecretKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Издатель токена (issuer).
+        /// </summary>
+        public string Issuer { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Аудитория токена (audience).
+        /// </summary>
+        public string Audience { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Время жизни токена в минутах.
+        /// </summary>
+        public int ExpiresInMinutes { get; set; } = 60;
     }
 }

@@ -1,4 +1,4 @@
-import { mockScenarios } from "@/scr/mockData";
+import { mockScenarios } from "@/app/utils/mockData";
 import { ScenarioRequest, ScenarioResponse } from "../Models/Types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
