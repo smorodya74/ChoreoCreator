@@ -9,6 +9,8 @@ import { BackstageLabel } from './Scene/BackstageLabel';
 import { XLabels } from './Scene/XLabels';
 import { DancerMarkers } from './Scene/DancerMarkers';
 import { Grid } from './Scene/Grid';
+import { defaultSceneTheme, pdfSceneTheme } from './Scene/sceneTheme';
+import { width as sceneWidth, height as sceneHeight } from './Scene/gridUtils';
 
 interface FormationSvgProps {
     dancerPositions: DancerPosition[];
@@ -18,7 +20,7 @@ interface FormationSvgProps {
 }
 
 const FormationSvg: React.FC<FormationSvgProps> = ({ dancerPositions, width, height, isForPdf }) => {
-    const labelColor = isForPdf ? '#000000' : '#FFFFFF'; // тёмный или белый
+    const sceneTheme = isForPdf ? pdfSceneTheme : defaultSceneTheme;
 
     return (
         <svg 
@@ -27,17 +29,22 @@ const FormationSvg: React.FC<FormationSvgProps> = ({ dancerPositions, width, hei
             style={{ userSelect: 'none' }}
             viewBox="0 0 1360 720"
         >
-            <Grid />
-            <HighlightArea />
-            <BorderFrame />
-            <BackstageLabel />
-            <XLabels labelColor={labelColor} />
+            <rect width={sceneWidth} height={sceneHeight} fill={sceneTheme.background} pointerEvents="none" />
+            <Grid stroke={sceneTheme.grid} />
+            <HighlightArea fill={sceneTheme.highlight} />
+            <BorderFrame stroke={sceneTheme.border} />
+            <BackstageLabel color={sceneTheme.backstage} />
+            <XLabels color={sceneTheme.label} />
             {/* Танцоров рендерим без обработчиков и выделения */}
             <DancerMarkers
                 dancerPositions={dancerPositions}
                 selectedDancerId={null}
                 onSelectDancer={undefined}
                 onMouseDown={undefined}
+                fill={sceneTheme.dancerFill}
+                stroke={sceneTheme.dancerStroke}
+                selectedStroke={sceneTheme.dancerSelectedStroke}
+                textColor={sceneTheme.dancerText}
             />
         </svg>
     );

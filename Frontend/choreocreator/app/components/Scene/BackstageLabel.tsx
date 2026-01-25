@@ -1,11 +1,15 @@
 import React from 'react';
 import { width } from './gridUtils';
 
-export const BackstageLabel: React.FC = () => (
+type BackstageLabelProps = {
+    color: string;
+};
+
+export const BackstageLabel: React.FC<BackstageLabelProps> = ({ color }) => (
     <text
         x={width / 2}
         y={67}
-        fill="rgba(200, 58, 119, 0.9)"
+        fill={color}
         fontSize={20}
         fontWeight="bold"
         textAnchor="middle"

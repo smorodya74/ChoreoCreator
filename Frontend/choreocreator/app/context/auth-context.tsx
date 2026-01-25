@@ -47,8 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const currentUser = await getMe();
       setUser(currentUser);
       return true;
-    } catch (e: any) {
-      setError(e.message || 'Ошибка входа');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Ошибка входа');
       return false;
     }
   };
@@ -60,8 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const currentUser = await getMe();
       setUser(currentUser);
       return true;
-    } catch (e: any) {
-      setError(e.message || 'Ошибка регистрации');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Ошибка регистрации');
       return false;
     }
   };

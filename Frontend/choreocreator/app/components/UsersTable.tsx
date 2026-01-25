@@ -16,18 +16,14 @@ interface User {
 
 const UsersTable: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
                 const data = await getAllUsers();
                 setUsers(data);
             } catch (error) {
                 console.error('Ошибка загрузки пользователей:', error);
-            } finally {
-                setLoading(false);
             }
         };
 

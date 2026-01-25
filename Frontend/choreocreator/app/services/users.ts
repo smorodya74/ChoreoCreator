@@ -15,7 +15,7 @@ export const getAllUsers = async (): Promise<UserDto[]> => {
 
     if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Ошибка при загрузке пользователей ${response.status}`);
+        throw new Error(errorText || `Ошибка при загрузке пользователей ${response.status}`);
     }
 
     return response.json();

@@ -1,7 +1,7 @@
 "use client"
 
-import { Layout, Menu, Button, Dropdown, Space, MenuProps } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button, Dropdown, Space, MenuProps, Switch, Tooltip } from 'antd';
+import { DownOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '@/public/logo.png';
@@ -11,6 +11,7 @@ import { useState } from 'react';
 import AuthModal from '../AuthModal';
 import styles from '@/app/components/Header/Header.module.css';
 import { clearDraftFromLocalStorage } from '@/app/utils/localStorageScenario';
+import { useTheme } from '@/app/context/theme-context';
 
 const { Header } = Layout;
 
@@ -27,6 +28,8 @@ const AppHeader = () => {
     const selectedKey = pathname.split('/')[1] || 'home';
     const { user, logout } = useAuth();
     const [isModalOpen, setModalOpen] = useState(false);
+    const { mode, toggleTheme } = useTheme();
+    const isDark = mode === 'dark';
 
     const authMenuItems: MenuProps['items'] = [
         {
@@ -53,7 +56,7 @@ const AppHeader = () => {
             </Link>
 
             <Menu
-                theme="dark"
+                theme={isDark ? 'dark' : 'light'}
                 mode="horizontal"
                 items={menuItems}
                 selectedKeys={[selectedKey]}
@@ -61,30 +64,41 @@ const AppHeader = () => {
             />
 
             <div className={styles.right}>
-                {user ? (
-                    <Dropdown menu={{ items: authMenuItems }}>
-                        <a onClick={(e) => {
-                            e.preventDefault();
-                            router.push('/profile');
-                        }}
-                            style={{
-                                color: 'white'
+                <Space size="middle">
+                    <Tooltip title={isDark ? 'Тёмная тема' : 'Светлая тема'}>
+                        <Switch
+                            checked={isDark}
+                            onChange={() => toggleTheme()}
+                            checkedChildren={<MoonOutlined />}
+                            unCheckedChildren={<SunOutlined />}
+                            aria-label="Переключить тему"
+                        />
+                    </Tooltip>
+                    {user ? (
+                        <Dropdown menu={{ items: authMenuItems }}>
+                            <a onClick={(e) => {
+                                e.preventDefault();
+                                router.push('/profile');
                             }}
-                        >
-                            <Space>
-                                {user.username}
-                                <DownOutlined />
-                            </Space>
-                        </a>
-                    </Dropdown>
-                ) : (
-                    <>
-                        <Button ghost onClick={() => setModalOpen(true)}>
-                            Войти
-                        </Button>
-                        <AuthModal open={isModalOpen} onClose={() => setModalOpen(false)} />
-                    </>
-                )}
+                                style={{
+                                    color: 'var(--header-text)'
+                                }}
+                            >
+                                <Space>
+                                    {user.username}
+                                    <DownOutlined />
+                                </Space>
+                            </a>
+                        </Dropdown>
+                    ) : (
+                        <>
+                            <Button className={styles.loginButton} onClick={() => setModalOpen(true)}>
+                                Войти
+                            </Button>
+                            <AuthModal open={isModalOpen} onClose={() => setModalOpen(false)} />
+                        </>
+                    )}
+                </Space>
             </div>
         </Header>
     );
