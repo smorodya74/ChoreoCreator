@@ -3,8 +3,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 24px;
-    background: transparent;
-    box-shadow: 0 1px 0 0 #404040;
+    background: var(--header-bg);
+    box-shadow: 0 1px 0 0 var(--header-border);
     flex-wrap: wrap;
     position: relative; /* или fixed/sticky, если надо */
     z-index: 10; /* чтобы тень была сверху */
@@ -14,7 +14,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: white;
+    color: var(--header-text);
     font-weight: bold;
     font-size: 18px;
     text-decoration: none;
@@ -29,6 +29,26 @@
     min-width: 200px;
     justify-content: center;
     display: flex;
+    background: transparent;
+}
+
+.menu :global(.ant-menu) {
+    background: transparent;
+    border-bottom: none;
+}
+
+.menu :global(.ant-menu-overflow) {
+    background: transparent;
+}
+
+.menu :global(.ant-menu-item),
+.menu :global(.ant-menu-submenu-title) {
+    background: transparent;
+}
+
+.menu :global(.ant-menu) {
+    background: transparent;
+    border-bottom: none;
 }
 
 .right {
@@ -36,6 +56,22 @@
     justify-content: flex-end;
     align-items: center;
     min-width: 150px;
+    color: var(--header-text);
+    background: transparent;
+}
+
+.right :global(.ant-space) {
+    background: transparent;
+}
+
+.right :global(.ant-space-item) {
+    background: transparent;
+}
+
+.loginButton {
+    color: var(--header-text);
+    border-color: var(--header-border);
+    background: var(--surface-bg);
 }
 
 /* Адаптивность */

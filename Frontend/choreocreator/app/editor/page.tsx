@@ -502,14 +502,14 @@ export default function EditorPage() {
                     onExportScenario={handleExportScenario}
                 />
 
-                <Layout style={{ background: '#041527', paddingLeft: 250 }}>
+                <Layout style={{ background: 'var(--app-bg)', paddingLeft: 250 }}>
                     <Content
                         style={{
                             marginTop: 25,
                             marginLeft: 25,
                             marginRight: 25,
                             padding: 0,
-                            background: '#041527'
+                            background: 'var(--app-bg)'
                         }}>
                         <Scene
                             dancerPositions={dancerPositions}

@@ -2,10 +2,10 @@ import React from 'react';
 import { CELL_SIZE, minX, GRID_WIDTH, height } from './gridUtils';
 
 interface XLabelsProps {
-    labelColor: string;
+    color: string;
 }
 
-export const XLabels: React.FC<XLabelsProps> = ({ labelColor }) => (
+export const XLabels: React.FC<XLabelsProps> = ({ color }) => (
     <>
         {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
             const xMark = minX + i;
@@ -15,7 +15,7 @@ export const XLabels: React.FC<XLabelsProps> = ({ labelColor }) => (
                     key={`x-label-${i}`}
                     x={px}
                     y={height - 5}
-                    fill={labelColor}
+                    fill={color}
                     fontSize={10}
                     textAnchor="middle"
                 >

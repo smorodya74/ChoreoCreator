@@ -39,7 +39,7 @@ export default function HomePage() {
 
     return (
         <div className="home-container">
-            <Title style={{ color: '#FFFFFF' }} level={1}>Создайте свою хореографию</Title>
+            <Title style={{ color: 'var(--app-text)' }} level={1}>Создайте свою хореографию</Title>
             <Button
                 className="btnTry"
                 size="large"

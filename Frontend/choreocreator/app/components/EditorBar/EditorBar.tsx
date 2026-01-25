@@ -13,7 +13,7 @@ import {
 import { Button, Layout, MenuProps, Typography } from 'antd';
 import { DancerPosition, Formation } from '../../Models/Types';
 import Menu from 'antd/es/menu/menu';
-import { exportScenarioToPdf } from '../../utils/exportScenarioToPdf';
+import { useTheme } from '@/app/context/theme-context';
 
 const { Sider } = Layout;
 const { Title } = Typography;
@@ -74,6 +74,8 @@ const EditorBar: React.FC<EditorBarProps> = ({
     onExportScenario
 }) => {
     const [selectedMenuKey, setSelectedMenuKey] = useState("1");
+    const { mode } = useTheme();
+    const isDark = mode === 'dark';
 
     const handleMenuClick: MenuProps['onClick'] = (e) => {
         setSelectedMenuKey(e.key);
@@ -81,7 +83,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
 
     return (
         <Sider
-            theme={'dark'}
+            theme={isDark ? 'dark' : 'light'}
             width={250}
             style={{
                 position: 'fixed',
@@ -89,15 +91,15 @@ const EditorBar: React.FC<EditorBarProps> = ({
                 bottom: 0,
                 left: 0,
                 zIndex: 10,
-                borderRight: '1px solid #404040',
+                borderRight: '1px solid var(--editor-sidebar-border)',
             }}
         >
             <Menu
-                theme="dark"
+                theme={isDark ? 'dark' : 'light'}
                 mode="inline"
                 selectedKeys={[selectedMenuKey]}
                 onClick={handleMenuClick}
-                style={{ borderBottom: '1px solid #404040' }}
+                style={{ borderBottom: '1px solid var(--editor-sidebar-border)' }}
                 items={items}
             />
 
@@ -105,10 +107,11 @@ const EditorBar: React.FC<EditorBarProps> = ({
             {selectedMenuKey === "1" && (
                 <>
                     <div style={{ padding: 10 }}>
-                        <Title level={5} style={{ color: '#FFFFFF', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Title level={5} style={{ color: 'var(--editor-item-text)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             Танцоры: {dancerCount}
                             <Button
-                                ghost
+                                type="default"
+                                className="editor-add-button"
                                 icon={<PlusOutlined />}
                                 onClick={onAddDancer}
                             />
@@ -122,12 +125,12 @@ const EditorBar: React.FC<EditorBarProps> = ({
                                 onClick={() => onSelectDancer(dancerPosition.id)}
                                 style={{
                                     padding: '8px',
-                                    background: dancerPosition.id === selectedDancerId ? '#2D2D2D' : 'transparent',
-                                    color: '#FFFFFF',
+                                    background: dancerPosition.id === selectedDancerId ? 'var(--editor-item-selected-bg)' : 'transparent',
+                                    color: 'var(--editor-item-text)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     cursor: 'pointer',
-                                    border: dancerPosition.id === selectedDancerId ? '1px solid #C83A77' : 'none',
+                                    border: dancerPosition.id === selectedDancerId ? '1px solid var(--editor-item-selected-border)' : 'none',
                                 }}
                             >
                                     <div
@@ -135,7 +138,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
                                             width: 16,
                                             height: 16,
                                             borderRadius: '50%',
-                                            backgroundColor: '#C83A77', // цвет танцора
+                                            backgroundColor: 'var(--editor-item-dot)', // цвет танцора
                                             marginRight: 8,
                                         }}
                                     />
@@ -165,7 +168,7 @@ const EditorBar: React.FC<EditorBarProps> = ({
                         <Title
                             level={5}
                             style={{
-                                color: '#FFFFFF',
+                                color: 'var(--editor-item-text)',
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
@@ -173,7 +176,8 @@ const EditorBar: React.FC<EditorBarProps> = ({
                         >
                             Слайды: {formationCount}
                             <Button
-                                ghost
+                                type="default"
+                                className="editor-add-button"
                                 icon={<PlusOutlined />}
                                 onClick={onAddFormation}
                             />
@@ -187,19 +191,19 @@ const EditorBar: React.FC<EditorBarProps> = ({
                                 onClick={() => onSelectFormation(formation.id)}
                                 style={{
                                     padding: '8px',
-                                    background: formation.id === selectedFormationId ? '#2D2D2D' : 'transparent',
-                                    color: '#FFFFFF',
+                                    background: formation.id === selectedFormationId ? 'var(--editor-item-selected-bg)' : 'transparent',
+                                    color: 'var(--editor-item-text)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     cursor: 'pointer',
-                                    border: formation.id === selectedFormationId ? '1px solid #C83A77' : 'none',
+                                    border: formation.id === selectedFormationId ? '1px solid var(--editor-item-selected-border)' : 'none',
                                 }}
                             >
                                 <div
                                     style={{
                                         width: 16,
                                         height: 16,
-                                        backgroundColor: '#C83A77',
+                                        backgroundColor: 'var(--editor-item-dot)',
                                         marginRight: 8,
                                     }}
                                 />
@@ -230,7 +234,8 @@ const EditorBar: React.FC<EditorBarProps> = ({
                 <>
                     <div style={{ padding: 10 }}>
                         <Button
-                            ghost
+                            type="default"
+                            className="editor-action-button"
                             color="default"
                             variant="outlined"
                             style={{ marginTop: 5, paddingTop: 25, paddingBottom: 25 }}
@@ -241,7 +246,8 @@ const EditorBar: React.FC<EditorBarProps> = ({
                             Сохранить
                         </Button>
                         <Button
-                            ghost
+                            type="default"
+                            className="editor-action-button"
                             color="default"
                             variant="outlined"
                             style={{ marginTop: 15, paddingTop: 25, paddingBottom: 25 }}
@@ -252,7 +258,8 @@ const EditorBar: React.FC<EditorBarProps> = ({
                             Опубликовать
                         </Button>
                         <Button
-                            ghost
+                            type="default"
+                            className="editor-action-button"
                             color="default"
                             variant="outlined"
                             style={{ marginTop: 15, paddingTop: 25, paddingBottom: 25 }}
