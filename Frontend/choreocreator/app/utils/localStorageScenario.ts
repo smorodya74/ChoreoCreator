@@ -8,6 +8,7 @@ export interface DraftScenario {
     description?: string;
     dancerCount: number;
     isPublished: boolean;
+    totalDurationMs: number;
     formations: Formation[];
     selectedFormationId?: string;
     selectedDancerId?: string;

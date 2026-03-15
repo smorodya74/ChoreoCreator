@@ -14,5 +14,6 @@ public record ScenarioUpdateRequest(
     string Title,
     string? Description,
     int DancerCount,
+    int TotalDurationMs,
     List<FormationRequest> Formations,
     bool IsPublished);

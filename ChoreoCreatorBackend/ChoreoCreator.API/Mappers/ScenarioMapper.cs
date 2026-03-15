@@ -17,10 +17,17 @@ public static class ScenarioMapper
             s.Description,
             s.DancerCount,
             s.IsPublished,
+            s.TotalDurationMs,
             username,
             s.Formations.Select(f => new FormationResponse(
                 f.Id,
                 f.NumberInScenario,
+                f.StartTimeMs,
+                f.DurationMs,
+                f.AnimationDurationMs,
+                f.Name,
+                f.Description,
+                f.IsAutoName,
                 f.DancerPositions.Select(d => new DancerPositionResponse(
                     d.Id,
                     d.NumberInFormation,

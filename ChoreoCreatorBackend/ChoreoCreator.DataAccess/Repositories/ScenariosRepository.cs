@@ -60,6 +60,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 entity.DancerCount = updated.DancerCount;
                 entity.IsPublished = updated.IsPublished;
                 entity.UserId = updated.UserId;
+                entity.TotalDurationMs = updated.TotalDurationMs;
                 entity.FormationsJson = updated.FormationsJson;
             }
 
