@@ -22,6 +22,8 @@ namespace ChoreoCreator.DataAccess.Entities
 
         public Guid UserId { get; set; }
 
+        public int TotalDurationMs { get; set; } = Scenario.MIN_TIMELINE_DURATION_MS;
+
         public UserEntity User { get; set; }
 
         [Column(TypeName = "jsonb")]

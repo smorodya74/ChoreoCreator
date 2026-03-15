@@ -18,9 +18,16 @@ export default function HomePage() {
         // Неавторизован — создаём локальный сценарий
         saveDraftToLocalStorage({
             isPublished: false,
+            totalDurationMs: 10000,
             formations: [{
                 id: uuidv4(),
                 numberInScenario: 1,
+                startTimeMs: 0,
+                durationMs: 10000,
+                animationDurationMs: 5000,
+                name: "Formation-1",
+                description: "",
+                isAutoName: true,
                 dancerPositions: [{
                     id: uuidv4(),
                     numberInFormation: 1,

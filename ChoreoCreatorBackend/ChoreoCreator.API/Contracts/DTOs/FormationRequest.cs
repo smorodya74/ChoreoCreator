@@ -9,5 +9,11 @@
     public record FormationRequest(
         Guid Id,
         int NumberInScenario,
-        List<DancerPositionRequest> DancerPositions);
+        int StartTimeMs,
+        int DurationMs,
+        int AnimationDurationMs,
+        string Name,
+        string Description,
+        List<DancerPositionRequest> DancerPositions,
+        bool IsAutoName = true);
 }

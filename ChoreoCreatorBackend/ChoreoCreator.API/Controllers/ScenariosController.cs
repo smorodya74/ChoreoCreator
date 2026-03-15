@@ -1,4 +1,4 @@
-﻿using ChoreoCreator.API.Contracts.DTOs;
+using ChoreoCreator.API.Contracts.DTOs;
 using ChoreoCreator.API.Contracts.Scenario;
 using ChoreoCreator.API.Extensions;
 using ChoreoCreator.API.Mappers;
@@ -37,15 +37,10 @@ namespace ChoreoCreator.API.Controllers
         public async Task<ActionResult<List<ScenarioResponse>>> GetAll()
         {
             var scenarios = await _scenarioService.GetAllScenarios();
-
-            var responseTasks = scenarios
-                .Select(s => ScenarioMapper.ToResponseAsync(s, _usersRepository));
-
             var responses = new List<ScenarioResponse>();
             foreach (var s in scenarios)
             {
-                var response = await ScenarioMapper.ToResponseAsync(s, _usersRepository);
-                responses.Add(response);
+                responses.Add(await ScenarioMapper.ToResponseAsync(s, _usersRepository));
             }
 
             return Ok(responses);
@@ -90,31 +85,14 @@ namespace ChoreoCreator.API.Controllers
                 request.Title,
                 request.Description,
                 request.DancerCount,
-                userId
+                userId,
+                request.TotalDurationMs
             );
 
             if (!string.IsNullOrEmpty(error))
                 return BadRequest(error);
 
-            foreach (var formationDto in request.Formations)
-            {
-                var formation = new Formation(Guid.NewGuid(), formationDto.NumberInScenario);
-
-                foreach (var dancerDto in formationDto.DancerPositions)
-                {
-                    var dancer = new DancerPosition(
-                        dancerDto.Id,
-                        dancerDto.NumberInFormation,
-                        new Position(
-                            dancerDto.Position.X, 
-                            dancerDto.Position.Y)
-                    );
-
-                    formation.AddDancerPosition(dancer);
-                }
-
-                scenario.AddFormation(formation);
-            }
+            ApplyFormations(scenario, request.Formations);
 
             if (request.IsPublished)
                 scenario.Publish();
@@ -148,26 +126,16 @@ namespace ChoreoCreator.API.Controllers
             if (userId != existing.UserId)
                 return Forbid();
 
-            // Применяем изменения
             existing.UpdateTitle(request.Title);
             existing.UpdateDescription(request.Description ?? string.Empty);
             existing.UpdateDancerCount(request.DancerCount);
+            existing.UpdateTotalDuration(request.TotalDurationMs);
 
-            // Перезаписываем формирования
             typeof(Scenario)
                 .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
                 .SetValue(existing, new List<Formation>());
 
-            foreach (var f in request.Formations)
-            {
-                var formation = new Formation(Guid.NewGuid(), f.NumberInScenario);
-                foreach (var d in f.DancerPositions)
-                {
-                    var pos = new Position(d.Position.X, d.Position.Y);
-                    formation.AddDancerPosition(new DancerPosition(d.Id, d.NumberInFormation, pos));
-                }
-                existing.AddFormation(formation);
-            }
+            ApplyFormations(existing, request.Formations);
 
             if (request.IsPublished && !existing.IsPublished)
             {
@@ -175,7 +143,7 @@ namespace ChoreoCreator.API.Controllers
             }
 
             await _scenarioService.UpdateScenario(existing);
-            
+
             var response = await ScenarioMapper.ToResponseAsync(existing, _usersRepository);
             return Ok(response);
         }
@@ -197,7 +165,7 @@ namespace ChoreoCreator.API.Controllers
             var scenario = await _scenarioService.GetScenarioById(id);
             var userId = User.GetUserId();
             var userRole = _usersRepository.GetById(userId).Result?.Role;
-            
+
             if (scenario == null)
                 return NotFound();
 
@@ -227,6 +195,52 @@ namespace ChoreoCreator.API.Controllers
 
             var response = await ScenarioMapper.ToResponseAsync(scenario, _usersRepository);
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Нормализует входные формирования в непрерывную последовательность без разрывов
+        /// и добавляет их в сценарий с соблюдением ограничений времени.
+        /// </summary>
+        private static void ApplyFormations(Scenario scenario, List<FormationRequest> requests)
+        {
+            var ordered = requests.OrderBy(f => f.NumberInScenario).ToList();
+            var cursorMs = 0;
+
+            foreach (var f in ordered)
+            {
+                var durationMs = Math.Clamp(f.DurationMs <= 0 ? 10_000 : f.DurationMs, Formation.MIN_DURATION_MS, Formation.MAX_DURATION_MS);
+                var startTimeMs = Math.Max(cursorMs, f.StartTimeMs);
+                var animationDurationMs = f.NumberInScenario == 1 ? 0 : Math.Clamp(f.AnimationDurationMs, 0, durationMs);
+
+                var formationId = f.Id == Guid.Empty ? Guid.NewGuid() : f.Id;
+                var formation = new Formation(
+                    formationId,
+                    f.NumberInScenario,
+                    startTimeMs,
+                    durationMs,
+                    animationDurationMs,
+                    f.Name,
+                    f.Description,
+                    f.IsAutoName);
+
+                foreach (var dancerDto in f.DancerPositions)
+                {
+                    var dancer = new DancerPosition(
+                        dancerDto.Id,
+                        dancerDto.NumberInFormation,
+                        new Position(dancerDto.Position.X, dancerDto.Position.Y));
+
+                    formation.AddDancerPosition(dancer);
+                }
+
+                scenario.AddFormation(formation);
+                cursorMs = startTimeMs + durationMs;
+            }
+
+            if (cursorMs > scenario.TotalDurationMs)
+            {
+                scenario.UpdateTotalDuration(cursorMs);
+            }
         }
     }
 }

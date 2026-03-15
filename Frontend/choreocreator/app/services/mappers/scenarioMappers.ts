@@ -7,5 +7,6 @@ export const mapScenarioResponseToDraft = (data: ScenarioResponse): DraftScenari
     description: data.description,
     dancerCount: data.dancerCount,
     isPublished: data.isPublished,
+    totalDurationMs: data.totalDurationMs,
     formations: data.formations,
 });

@@ -69,6 +69,12 @@ const createFormation = (
 ): RealFormation => ({
   id,
   numberInScenario,
+  startTimeMs: (numberInScenario - 1) * 10000,
+  durationMs: 10000,
+  animationDurationMs: 5000,
+  name: `Formation-${numberInScenario}`,
+  description: "",
+  isAutoName: true,
   dancerPositions
 });
 
@@ -87,6 +93,7 @@ class MockScenarioStore {
         username: "user1",
         dancerCount: 5,
         isPublished: true,
+        totalDurationMs: 10000,
         formations: [
           createFormation("formation-1", 1, [
             createDancerPosition("d1", 1, createPosition(0, 0)),
@@ -104,6 +111,7 @@ class MockScenarioStore {
         username: "user2",
         dancerCount: 8,
         isPublished: false,
+        totalDurationMs: 20000,
         formations: [
           createFormation("formation-1", 1, [
             createDancerPosition("d1", 1, createPosition(0, 0)),
@@ -134,6 +142,7 @@ class MockScenarioStore {
         username: "user1",
         dancerCount: 12,
         isPublished: true,
+        totalDurationMs: 10000,
         formations: [
           createFormation("formation-1", 1, [
             createDancerPosition("d1", 1, createPosition(0, 0)),
@@ -185,6 +194,7 @@ class MockScenarioStore {
       username: mockAuth.user.username,
       dancerCount: scenarioRequest.dancerCount,
       isPublished: scenarioRequest.isPublished,
+      totalDurationMs: scenarioRequest.totalDurationMs,
       formations: scenarioRequest.formations.map((formation, index) => ({
         ...formation,
         numberInScenario: index + 1,
@@ -218,6 +228,7 @@ class MockScenarioStore {
       description: scenarioRequest.description,
       dancerCount: scenarioRequest.dancerCount,
       isPublished: scenarioRequest.isPublished,
+      totalDurationMs: scenarioRequest.totalDurationMs,
       formations: scenarioRequest.formations.map((formation, formationIndex) => ({
         ...formation,
         numberInScenario: formationIndex + 1,
@@ -263,6 +274,12 @@ class MockScenarioStore {
     const defaultFormation: RealFormation = {
       id: "default-formation",
       numberInScenario: 1,
+      startTimeMs: 0,
+      durationMs: 10000,
+      animationDurationMs: 5000,
+      name: "Formation-1",
+      description: "",
+      isAutoName: true,
       dancerPositions: Array.from({ length: 4 }, (_, i) => 
         createDancerPosition(`d${i + 1}`, i + 1, createPosition(i % 2, Math.floor(i / 2)))
       )
@@ -275,6 +292,7 @@ class MockScenarioStore {
       username: mockAuth.user.username,
       dancerCount: 4,
       isPublished: false,
+      totalDurationMs: 10000,
       formations: [defaultFormation]
     };
   };

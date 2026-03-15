@@ -69,10 +69,11 @@ const Scene: React.FC<SceneProps> = ({
     return (
         <svg
             ref={svgRef}
-            width={width}
-            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            width="100%"
+            height="auto"
             onMouseMove={handleMouseMove}
-            style={{ userSelect: 'none' }}
+            style={{ userSelect: 'none', width: 'min(100%, 1360px)', height: 'auto', display: 'block' }}
         >
             <rect width={width} height={height} fill={defaultSceneTheme.background} pointerEvents="none" />
             <Grid stroke={defaultSceneTheme.grid} />
