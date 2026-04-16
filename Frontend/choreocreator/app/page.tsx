@@ -18,9 +18,16 @@ export default function HomePage() {
         // Неавторизован — создаём локальный сценарий
         saveDraftToLocalStorage({
             isPublished: false,
+            totalDurationMs: 10000,
             formations: [{
                 id: uuidv4(),
                 numberInScenario: 1,
+                startTimeMs: 0,
+                durationMs: 10000,
+                animationDurationMs: 5000,
+                name: "Formation-1",
+                description: "",
+                isAutoName: true,
                 dancerPositions: [{
                     id: uuidv4(),
                     numberInFormation: 1,
@@ -39,7 +46,7 @@ export default function HomePage() {
 
     return (
         <div className="home-container">
-            <Title style={{ color: '#FFFFFF' }} level={1}>Создайте свою хореографию</Title>
+            <Title style={{ color: 'var(--app-text)' }} level={1}>Создайте свою хореографию</Title>
             <Button
                 className="btnTry"
                 size="large"

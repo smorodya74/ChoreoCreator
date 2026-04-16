@@ -26,6 +26,11 @@ public class CreateScenarioRequest
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Общая длительность хореографии в миллисекундах.
+    /// </summary>
+    public int TotalDurationMs { get; set; } = 10000;
+
+    /// <summary>
     /// Список формирований с позициями танцоров.
     /// </summary>
     public List<FormationRequest> Formations { get; set; } = [];

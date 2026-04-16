@@ -1,6 +1,12 @@
 export type Formation = {
     id: string;
     numberInScenario: number;
+    startTimeMs: number;
+    durationMs: number;
+    animationDurationMs: number;
+    name: string;
+    description: string;
+    isAutoName: boolean;
     dancerPositions: DancerPosition[];
 }
 
@@ -20,6 +26,7 @@ export interface ScenarioRequest {
     description: string;
     dancerCount: number;
     isPublished: boolean;
+    totalDurationMs: number;
     formations: Formation[];
 }
 
@@ -29,6 +36,7 @@ export interface ScenarioResponse {
     description: string;
     dancerCount: number;
     isPublished: boolean;
+    totalDurationMs: number;
     username: string;
     formations: Formation[];
 }

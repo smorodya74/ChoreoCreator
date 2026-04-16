@@ -81,7 +81,7 @@ export default function ProfilePage() {
                 <Title
                     style={{
                         padding: 15,
-                        color: '#FFFFFF',
+                        color: 'var(--app-text)',
                         textAlign: "center"
                     }}
                     level={1}
@@ -93,7 +93,7 @@ export default function ProfilePage() {
                 <div style={{
                     flex: 1,
                     maxWidth: 400,
-                    border: '3px solid #c83a77',
+                    border: '3px solid var(--table-border)',
                     padding: 15,
                     borderRadius: 8,
                     marginRight: 15
@@ -102,7 +102,7 @@ export default function ProfilePage() {
                     <Title
                         level={4}
                         style={{
-                            color: "#FFFFFF",
+                            color: "var(--app-text)",
                             textAlign: "center",
                             marginTop: '-5px',
                             marginBottom: '15px'
@@ -120,7 +120,9 @@ export default function ProfilePage() {
                             style={{
                                 padding: 14,
                                 borderRadius: 8,
-                                border: '1px solid #FFFFFF'
+                                border: '1px solid var(--surface-border)',
+                                background: 'var(--surface-bg)',
+                                color: 'var(--input-text)'
                             }}
                         />
                         <input
@@ -131,7 +133,9 @@ export default function ProfilePage() {
                             style={{
                                 padding: 14,
                                 borderRadius: 8,
-                                border: '1px solid #FFFFFF'
+                                border: '1px solid var(--surface-border)',
+                                background: 'var(--surface-bg)',
+                                color: 'var(--input-text)'
                             }}
                         />
                         <input
@@ -142,12 +146,16 @@ export default function ProfilePage() {
                             style={{
                                 padding: 14,
                                 borderRadius: 8,
-                                border: '1px solid #FFFFFF'
+                                border: '1px solid var(--surface-border)',
+                                background: 'var(--surface-bg)',
+                                color: 'var(--input-text)'
                             }}
                         />
                         <button
                             className="btnChangePassword"
                             onClick={handleChangePassword}
+                            disabled={isChangingPassword}
+                            aria-busy={isChangingPassword}
                             style={{
                                 padding: '14px 16px',
                                 color: '#fff',
@@ -164,7 +172,7 @@ export default function ProfilePage() {
                         style={{
                             flex: 1,
                             maxWidth: 1400,
-                            border: '3px solid #c83a77',
+                            border: '3px solid var(--table-border)',
                             padding: 15,
                             borderRadius: 8,
                             marginRight: 15
@@ -173,7 +181,7 @@ export default function ProfilePage() {
                         <Title
                             level={4}
                             style={{
-                                color: "#FFFFFF",
+                                color: "var(--app-text)",
                                 textAlign: "center",
                                 marginTop: '-5px',
                                 marginBottom: '15px'

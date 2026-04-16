@@ -1,0 +1,56 @@
+import type { ThemeConfig } from 'antd';
+import { theme as antdTheme } from 'antd';
+
+export const lightThemeConfig: ThemeConfig = {
+    algorithm: antdTheme.defaultAlgorithm,
+    token: {
+        colorPrimary: '#c83a77',
+        colorInfo: '#c83a77',
+        colorSuccess: '#16a34a',
+        colorWarning: '#f59e0b',
+        colorError: '#dc2626',
+        colorTextBase: '#0f172a',
+        colorText: '#0f172a',
+        colorTextSecondary: '#334155',
+        colorBgBase: '#ffffff',
+        colorBgLayout: '#f8fafc',
+        colorBgContainer: '#ffffff',
+        colorBgElevated: '#f1f5f9',
+        colorBorder: '#94a3b8',
+        colorBorderSecondary: '#cbd5e1',
+        colorFillSecondary: '#e2e8f0',
+        colorFillTertiary: '#e2e8f0',
+        colorSplit: '#cbd5e1',
+        colorLink: '#7c3aed',
+        colorLinkHover: '#6d28d9',
+        colorLinkActive: '#5b21b6',
+        colorBgSpotlight: '#111827',
+    },
+};
+
+export const darkThemeConfig: ThemeConfig = {
+    algorithm: antdTheme.darkAlgorithm,
+    token: {
+        colorPrimary: '#c83a77',
+        colorInfo: '#c83a77',
+        colorSuccess: '#22c55e',
+        colorWarning: '#fbbf24',
+        colorError: '#f87171',
+        colorTextBase: '#f8fafc',
+        colorText: '#f8fafc',
+        colorTextSecondary: '#cbd5e1',
+        colorBgBase: '#0b1220',
+        colorBgLayout: '#041527',
+        colorBgContainer: '#0f1b2d',
+        colorBgElevated: '#13233a',
+        colorBorder: '#334155',
+        colorBorderSecondary: '#1f2a3d',
+        colorFillSecondary: '#1e293b',
+        colorFillTertiary: '#111827',
+        colorSplit: '#1f2a3d',
+        colorLink: '#a78bfa',
+        colorLinkHover: '#c4b5fd',
+        colorLinkActive: '#7c3aed',
+        colorBgSpotlight: '#e2e8f0',
+    },
+};

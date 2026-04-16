@@ -62,6 +62,7 @@ export async function exportScenarioToPdf({ title, formations, orientation = 'l'
     container.style.position = 'fixed';
     container.style.top = '-9999px';
     container.style.left = '0';
+    container.style.background = '#ffffff';
     // не задаём фиксированную ширину контейнера
     document.body.appendChild(container);
 
@@ -109,7 +110,7 @@ export async function exportScenarioToPdf({ title, formations, orientation = 'l'
         if (!el) continue;
 
         const canvas = await html2canvas(el, { 
-            backgroundColor: null, 
+            backgroundColor: '#ffffff', 
             //scale: 1
         });
         const imgData = canvas.toDataURL('image/png');

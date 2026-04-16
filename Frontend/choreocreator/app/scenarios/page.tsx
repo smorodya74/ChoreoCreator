@@ -45,7 +45,7 @@ export default function ScenariosPage(){
             <Title
                 style={{
                     padding: 15,
-                    color: '#FFFFFF',
+                    color: 'var(--app-text)',
                     textAlign: "center"
                 }}
                 level={1}
@@ -68,7 +68,7 @@ export default function ScenariosPage(){
             </div>
 
             {loading ? (
-                <Title style={{color: '#FFFFFF', textAlign: 'center'}}>Загрузка...</Title>
+                <Title style={{color: 'var(--app-text)', textAlign: 'center'}}>Загрузка...</Title>
             ) : (
                 <>
                         <ScenariosTable

@@ -1,7 +1,11 @@
 import React from 'react';
 import { CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, width, height } from './gridUtils';
 
-export const Grid: React.FC = () => (
+type GridProps = {
+    stroke: string;
+};
+
+export const Grid: React.FC<GridProps> = ({ stroke }) => (
     <>
         {Array.from({ length: GRID_WIDTH + 1 }, (_, i) => {
             const x = i * CELL_SIZE;
@@ -12,7 +16,7 @@ export const Grid: React.FC = () => (
                     y1={0}
                     x2={x}
                     y2={height}
-                    stroke="#404040"
+                    stroke={stroke}
                     strokeWidth={1}
                 />
             );
@@ -26,7 +30,7 @@ export const Grid: React.FC = () => (
                     y1={y}
                     x2={width}
                     y2={y}
-                    stroke="#404040"
+                    stroke={stroke}
                     strokeWidth={1}
                 />
             );

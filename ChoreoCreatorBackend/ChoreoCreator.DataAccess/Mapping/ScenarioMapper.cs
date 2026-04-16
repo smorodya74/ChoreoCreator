@@ -18,10 +18,17 @@ namespace ChoreoCreator.DataAccess.Mapping
                 DancerCount = domain.DancerCount,
                 IsPublished = domain.IsPublished,
                 UserId = domain.UserId,
+                TotalDurationMs = domain.TotalDurationMs,
                 Formations = domain.Formations.Select(f => new FormationDto
                 {
                     Id = f.Id,
                     NumberInScenario = f.NumberInScenario,
+                    StartTimeMs = f.StartTimeMs,
+                    DurationMs = f.DurationMs,
+                    AnimationDurationMs = f.AnimationDurationMs,
+                    Name = f.Name,
+                    Description = f.Description,
+                    IsAutoName = f.IsAutoName,
                     DancerPositions = f.DancerPositions.Select(d => new DancerPositionDto
                     {
                         Id = d.Id,
@@ -39,16 +46,37 @@ namespace ChoreoCreator.DataAccess.Mapping
         public static Scenario ToDomain(this ScenarioEntity entity)
         {
             var scenario = new Scenario(
-                entity.Id, 
-                entity.Title, 
-                entity.Description, 
-                entity.DancerCount, 
-                entity.UserId, 
-                entity.IsPublished);
+                entity.Id,
+                entity.Title,
+                entity.Description,
+                entity.DancerCount,
+                entity.UserId,
+                entity.IsPublished,
+                entity.TotalDurationMs);
 
-            foreach (var f in entity.Formations)
+            var sortedFormations = entity.Formations.OrderBy(f => f.NumberInScenario).ToList();
+            var cursorMs = 0;
+
+            foreach (var f in sortedFormations)
             {
-                var formation = new Formation(f.Id, f.NumberInScenario);
+                var durationMs = f.DurationMs <= 0 ? 10_000 : f.DurationMs;
+                var startTimeMs = f.StartTimeMs < 0 ? cursorMs : f.StartTimeMs;
+                if (startTimeMs < cursorMs)
+                {
+                    startTimeMs = cursorMs;
+                }
+
+                var defaultName = $"Formation-{f.NumberInScenario}";
+                var isFirst = f.NumberInScenario == 1;
+                var formation = new Formation(
+                    f.Id,
+                    f.NumberInScenario,
+                    startTimeMs,
+                    durationMs,
+                    isFirst ? 0 : (f.AnimationDurationMs <= 0 ? Math.Min(5_000, durationMs) : f.AnimationDurationMs),
+                    string.IsNullOrWhiteSpace(f.Name) ? defaultName : f.Name,
+                    f.Description ?? string.Empty,
+                    f.IsAutoName);
 
                 foreach (var d in f.DancerPositions)
                 {
@@ -58,6 +86,12 @@ namespace ChoreoCreator.DataAccess.Mapping
                 }
 
                 scenario.AddFormation(formation);
+                cursorMs = formation.StartTimeMs + formation.DurationMs;
+            }
+
+            if (cursorMs > scenario.TotalDurationMs)
+            {
+                scenario.UpdateTotalDuration(cursorMs);
             }
 
             return scenario;

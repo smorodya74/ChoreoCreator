@@ -51,10 +51,17 @@ namespace ChoreoCreator.API.Controllers
         /// </summary>
         /// <param name="request">Данные пользователя и требуемый статус блокировки.</param>
         /// <response code="200">Статус блокировки обновлён.</response>
+        /// <response code="400">Нельзя изменить статус блокировки собственного аккаунта.</response>
         /// <response code="404">Пользователь не найден.</response>
         [HttpPost("change-block-status")]
         public async Task<IActionResult> ChangeBlockStatus([FromBody] ChangeBlockStatusRequest request)
         {
+            var currentUserId = User.GetUserId();
+            if (request.UserId == currentUserId)
+            {
+                return BadRequest("Нельзя изменить статус блокировки собственного аккаунта");
+            }
+
             var result = await _usersService.ChangeBlockStatus(request.UserId, request.IsBlocked);
             return result ? Ok() : NotFound();
         }
@@ -68,11 +75,18 @@ namespace ChoreoCreator.API.Controllers
         /// <response code="200">Пользователь удалён.</response>
         /// <response code="401">Пользователь не аутентифицирован.</response>
         /// <response code="403">Нет прав администратора.</response>
+        /// <response code="400">Нельзя удалить собственный аккаунт.</response>
         /// <response code="404">Пользователь не найден.</response>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
+            var currentUserId = User.GetUserId();
+            if (id == currentUserId)
+            {
+                return BadRequest("Нельзя удалить собственный аккаунт");
+            }
+
             var result = await _usersService.DeleteUser(id);
             if (!result)
             {

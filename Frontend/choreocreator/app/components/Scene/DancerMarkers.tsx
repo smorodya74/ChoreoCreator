@@ -7,6 +7,10 @@ type DancerMarkersProps = {
     selectedDancerId?: string | null;
     onSelectDancer?: (id: string) => void;
     onMouseDown?: (e: React.MouseEvent, id: string) => void;
+    fill: string;
+    stroke: string;
+    selectedStroke: string;
+    textColor: string;
 };
 
 export const DancerMarkers: React.FC<DancerMarkersProps> = ({
@@ -14,6 +18,10 @@ export const DancerMarkers: React.FC<DancerMarkersProps> = ({
     selectedDancerId,
     onSelectDancer,
     onMouseDown,
+    fill,
+    stroke,
+    selectedStroke,
+    textColor,
 }) => (
     <>
         {dancerPositions.map((dancerPosition) => {
@@ -24,8 +32,8 @@ export const DancerMarkers: React.FC<DancerMarkersProps> = ({
                         cx={x}
                         cy={y}
                         r={16}
-                        fill="#c83a77"
-                        stroke={dancerPosition.id === selectedDancerId ? '#FFFFFF' : '#c83a77'}
+                        fill={fill}
+                        stroke={dancerPosition.id === selectedDancerId ? selectedStroke : stroke}
                         strokeWidth={dancerPosition.id === selectedDancerId ? 2 : 1}
                         onMouseDown={onMouseDown ? (e) => onMouseDown(e, dancerPosition.id) : undefined}
                         onClick={onSelectDancer ? () => onSelectDancer(dancerPosition.id) : undefined}
@@ -37,7 +45,7 @@ export const DancerMarkers: React.FC<DancerMarkersProps> = ({
                     <text
                         x={x}
                         y={y}
-                        fill="white"
+                        fill={textColor}
                         fontSize="14"
                         textAnchor="middle"
                         dominantBaseline="middle"

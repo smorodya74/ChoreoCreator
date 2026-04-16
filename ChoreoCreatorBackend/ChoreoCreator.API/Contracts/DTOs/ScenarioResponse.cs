@@ -31,6 +31,11 @@ public class ScenarioResponse
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Общая длительность хореографии в миллисекундах.
+    /// </summary>
+    public int TotalDurationMs { get; set; }
+
+    /// <summary>
     /// Имя пользователя-владельца сценария.
     /// </summary>
     public string Username { get; set; } = string.Empty;
@@ -56,6 +61,7 @@ public class ScenarioResponse
         string description,
         int dancerCount,
         bool isPublished,
+        int totalDurationMs,
         string username,
         List<FormationResponse> formations)
     {
@@ -64,6 +70,7 @@ public class ScenarioResponse
         Description = description;
         DancerCount = dancerCount;
         IsPublished = isPublished;
+        TotalDurationMs = totalDurationMs;
         Username = username;
         Formations = formations;
     }

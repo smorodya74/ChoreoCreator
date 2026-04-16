@@ -3,17 +3,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { DancerPosition } from '@/app/Models/Types';
 import {
-    CELL_SIZE,
-    GRID_WIDTH,
-    GRID_HEIGHT,
     minX,
     maxX,
     minY,
     maxY,
-    VISIBLE_FRAME,
     width,
     height,
-    gridToPx,
     pxToGrid,
 } from './gridUtils';
 
@@ -23,6 +18,7 @@ import { BorderFrame } from './BorderFrame';
 import { BackstageLabel } from './BackstageLabel';
 import { XLabels } from './XLabels';
 import { DancerMarkers } from './DancerMarkers';
+import { defaultSceneTheme } from './sceneTheme';
 
 type SceneProps = {
     dancerPositions: DancerPosition[];
@@ -73,21 +69,27 @@ const Scene: React.FC<SceneProps> = ({
     return (
         <svg
             ref={svgRef}
-            width={width}
-            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            width="100%"
+            height="auto"
             onMouseMove={handleMouseMove}
-            style={{ userSelect: 'none' }}
+            style={{ userSelect: 'none', width: 'min(100%, 1360px)', height: 'auto', display: 'block' }}
         >
-            <Grid />
-            <HighlightArea />
-            <BorderFrame />
-            <BackstageLabel />
-            <XLabels labelColor='white'/>
+            <rect width={width} height={height} fill={defaultSceneTheme.background} pointerEvents="none" />
+            <Grid stroke={defaultSceneTheme.grid} />
+            <HighlightArea fill={defaultSceneTheme.highlight} />
+            <BorderFrame stroke={defaultSceneTheme.border} />
+            <BackstageLabel color={defaultSceneTheme.backstage} />
+            <XLabels color={defaultSceneTheme.label} />
             <DancerMarkers
                 dancerPositions={dancerPositions}
                 selectedDancerId={selectedDancerId}
                 onSelectDancer={onSelectDancer}
                 onMouseDown={handleMouseDown}
+                fill={defaultSceneTheme.dancerFill}
+                stroke={defaultSceneTheme.dancerStroke}
+                selectedStroke={defaultSceneTheme.dancerSelectedStroke}
+                textColor={defaultSceneTheme.dancerText}
             />
         </svg>
     );
