@@ -24,6 +24,9 @@ namespace ChoreoCreator.DataAccess.Configurations
 
             builder.Property(u => u.Role)
                 .IsRequired();
+
+            builder.Property(u => u.CreatedAt)
+                .IsRequired();
         }
     }
 }

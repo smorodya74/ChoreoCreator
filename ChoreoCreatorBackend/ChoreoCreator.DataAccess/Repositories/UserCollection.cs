@@ -26,6 +26,7 @@ namespace ChoreoCreator.DataAccess.Repositories
                 Email = user.Email.Value,
                 Username = user.Username.Value,
                 PasswordHash = user.PasswordHash.Value,
+                CreatedAt = user.CreatedAt
             };
 
             await _dbContext.Users.AddAsync(userEntity, ct);

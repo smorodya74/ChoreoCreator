@@ -28,7 +28,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                 userEntity.Username,
                 userEntity.PasswordHash,
                 userEntity.Role,
-                userEntity.IsBlocked
+                userEntity.IsBlocked,
+                userEntity.CreatedAt
             );
 
             return user;
@@ -49,7 +50,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                 userEntity.Username,
                 userEntity.PasswordHash,
                 userEntity.Role,
-                userEntity.IsBlocked
+                userEntity.IsBlocked,
+                userEntity.CreatedAt
             );
 
             return user;
@@ -71,7 +73,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                     userEntity.Username,
                     userEntity.PasswordHash,
                     userEntity.Role,
-                    userEntity.IsBlocked
+                    userEntity.IsBlocked,
+                    userEntity.CreatedAt
                 );
 
                 if (user != null)
@@ -97,7 +100,8 @@ namespace ChoreoCreator.DataAccess.Repositories
                 Username = user.Username.Value,
                 PasswordHash = user.PasswordHash.Value,
                 Role = user.Role,
-                IsBlocked = user.IsBlocked
+                IsBlocked = user.IsBlocked,
+                CreatedAt = user.CreatedAt
             };
 
             await _context.Users.AddAsync(userEntity);

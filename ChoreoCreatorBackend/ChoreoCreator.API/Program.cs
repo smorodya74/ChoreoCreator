@@ -1,10 +1,10 @@
 using ChoreoCreator.API.Services;
-using ChoreoCreator.Infrastructure;
 using ChoreoCreator.Core.Settings;
+using ChoreoCreator.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

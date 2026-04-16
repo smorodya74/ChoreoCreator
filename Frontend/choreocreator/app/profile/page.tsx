@@ -17,6 +17,9 @@ export default function ProfilePage() {
     const [newPassword, setNewPassword] = useState("");
     const [repeatNewPassword, setRepeatNewPassword] = useState("");
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const registrationDate = user?.createdAt
+        ? new Date(user.createdAt).toLocaleString("ru-RU")
+        : "-";
 
     useEffect(() => {
         if (!user) {
@@ -89,16 +92,42 @@ export default function ProfilePage() {
                     Профиль
                 </Title>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '10px', gap: 15 }}>
                 <div style={{
                     flex: 1,
                     maxWidth: 400,
-                    border: '3px solid var(--table-border)',
-                    padding: 15,
-                    borderRadius: 8,
-                    marginRight: 15
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 15
                 }}
                 >
+                    <div style={{
+                        border: '3px solid var(--table-border)',
+                        padding: 15,
+                        borderRadius: 8
+                    }}>
+                        <Title
+                            level={4}
+                            style={{
+                                color: "var(--app-text)",
+                                textAlign: "center",
+                                marginTop: '-5px',
+                                marginBottom: '15px'
+                            }}
+                        >
+                            Информация о профиле
+                        </Title>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: 'var(--app-text)' }}>
+                            <div><strong>Имя пользователя:</strong> {user?.username ?? "-"}</div>
+                            <div><strong>Электронная почта:</strong> {user?.email ?? "-"}</div>
+                            <div><strong>Дата регистрации:</strong> {registrationDate}</div>
+                        </div>
+                    </div>
+                    <div style={{
+                        border: '3px solid var(--table-border)',
+                        padding: 15,
+                        borderRadius: 8
+                    }}>
                     <Title
                         level={4}
                         style={{
@@ -109,7 +138,7 @@ export default function ProfilePage() {
 
                         }}
                     >
-                        Сменить пароль
+                            Сменить пароль
                     </Title>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
                         <input
@@ -165,6 +194,7 @@ export default function ProfilePage() {
                             Сменить пароль
                         </button>
                     </div>
+                    </div>
                 </div>
 
                 {user?.role === "Admin" && (
@@ -174,8 +204,7 @@ export default function ProfilePage() {
                             maxWidth: 1400,
                             border: '3px solid var(--table-border)',
                             padding: 15,
-                            borderRadius: 8,
-                            marginRight: 15
+                            borderRadius: 8
                         }}
                     >
                         <Title

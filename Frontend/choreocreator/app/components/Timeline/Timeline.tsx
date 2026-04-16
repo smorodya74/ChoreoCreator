@@ -3,9 +3,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Formation } from '@/app/Models/Types';
 
-export const MAX_TIMELINE_MS = 1_200_000;
-export const MIN_ZOOM_VIEW_MS = 20_000;
-export const MAX_ZOOM_VIEW_MS = 600_000;
+export const MAX_TIMELINE_MS = 600_000;
+export const MAX_ZOOM_IN_VIEW_MS = 10_000;
 export const TIMELINE_SNAP_MS = 500;
 
 type TimelineProps = {
@@ -32,10 +31,11 @@ const formatLabel = (ms: number) => {
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
-const zoomToVisibleDuration = (zoomPercent: number) => {
+const zoomToVisibleDuration = (zoomPercent: number, totalDurationMs: number) => {
   const z = clipRange(zoomPercent, 1, 100);
   const t = (z - 1) / 99;
-  return Math.round(MAX_ZOOM_VIEW_MS - t * (MAX_ZOOM_VIEW_MS - MIN_ZOOM_VIEW_MS));
+  const zoomOutDuration = Math.max(totalDurationMs, MAX_ZOOM_IN_VIEW_MS);
+  return Math.round(zoomOutDuration - t * (zoomOutDuration - MAX_ZOOM_IN_VIEW_MS));
 };
 
 const tickStepForVisibleDuration = (visibleDurationMs: number) => {
@@ -84,26 +84,26 @@ export default function Timeline({
     return () => observer.disconnect();
   }, []);
 
-  const visibleDurationMs = useMemo(() => zoomToVisibleDuration(zoomPercent), [zoomPercent]);
+  const visibleDurationMs = useMemo(() => zoomToVisibleDuration(zoomPercent, totalDurationMs), [zoomPercent, totalDurationMs]);
   const pxPerMs = viewportWidth / visibleDurationMs;
-  const trackWidth = Math.max(viewportWidth, Math.round(MAX_TIMELINE_MS * pxPerMs));
+  const trackWidth = Math.max(viewportWidth, Math.round(totalDurationMs * pxPerMs));
 
   const majorStep = tickStepForVisibleDuration(visibleDurationMs);
   const minorStep = minorStepForMajor(majorStep);
 
   const majorTicks = useMemo(() => {
     const ticks: number[] = [];
-    for (let t = 0; t <= MAX_TIMELINE_MS; t += majorStep) ticks.push(t);
+    for (let t = 0; t <= totalDurationMs; t += majorStep) ticks.push(t);
     return ticks;
-  }, [majorStep]);
+  }, [majorStep, totalDurationMs]);
 
   const minorTicks = useMemo(() => {
     const ticks: number[] = [];
-    for (let t = 0; t <= MAX_TIMELINE_MS; t += minorStep) {
+    for (let t = 0; t <= totalDurationMs; t += minorStep) {
       if (t % majorStep !== 0) ticks.push(t);
     }
     return ticks;
-  }, [minorStep, majorStep]);
+  }, [minorStep, majorStep, totalDurationMs]);
 
   useEffect(() => {
     const viewport = viewportRef.current;

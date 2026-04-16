@@ -41,6 +41,13 @@ namespace ChoreoCreator.API.Controllers
                 return BadRequest(new { error = result.Error });
             }
 
+            var createdUser = await _userService.ValidateCredentials(request.Email, request.Password);
+            if (createdUser != null)
+            {
+                var token = _jwtTokenService.GenerateToken(createdUser);
+                AppendAuthCookie(token);
+            }
+
             return Ok(new { userId = result.Value.Value });
         }
 
@@ -59,14 +66,7 @@ namespace ChoreoCreator.API.Controllers
                 return Unauthorized("Неверный логин или пароль");
 
             var token = _jwtTokenService.GenerateToken(user);
-
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(60)
-            });
+            AppendAuthCookie(token);
 
             return Ok(new { Message = "Успешный вход" });
         }
@@ -105,9 +105,22 @@ namespace ChoreoCreator.API.Controllers
 
             return Ok(new
             {
-                username = user.Username,
+                username = user.Username.Value,
                 email = user.Email.Value,
-                role = user.Role
+                role = user.Role,
+                createdAt = user.CreatedAt
+            });
+        }
+
+        private void AppendAuthCookie(string token)
+        {
+            var isHttps = HttpContext.Request.IsHttps;
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = isHttps,
+                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(60)
             });
         }
     }

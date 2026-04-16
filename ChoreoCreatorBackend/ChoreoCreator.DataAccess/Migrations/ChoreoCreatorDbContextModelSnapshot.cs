@@ -72,6 +72,9 @@ namespace ChoreoCreator.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsBlocked")
                         .HasColumnType("boolean");
 
