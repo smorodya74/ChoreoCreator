@@ -27,6 +27,28 @@ export const mockAuth = {
     return;
   },
 
+  register: async (data: { email: string; username: string; password: string }): Promise<void> => {
+    console.log("[MOCK] Register attempt:", data);
+
+    if (!data.email || !data.username || !data.password) {
+      throw new Error("Email, username and password are required");
+    }
+
+    if (data.password.length < 6) {
+      throw new Error("Password must be at least 6 characters");
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    mockAuth.user = {
+      username: data.username,
+      email: data.email,
+      role: "user"
+    };
+
+    return;
+  },
+  
   logout: async (): Promise<void> => {
     console.log("[MOCK] Logout");
     await new Promise(resolve => setTimeout(resolve, 150));

@@ -12,6 +12,10 @@ function getInitialTheme(): ThemeMode {
     if (typeof window === 'undefined') {
         return 'light';
     }
+    return 'light';
+}
+
+function getThemeFromBrowser(): ThemeMode {
 
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') {
@@ -47,6 +51,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     React.useEffect(() => {
         document.documentElement.dataset.theme = mode;
     }, [mode]);
+
+    React.useEffect(() => {
+        const browserTheme = getThemeFromBrowser();
+        setMode(browserTheme);
+        document.documentElement.dataset.theme = browserTheme;
+    }, []);
 
     const value = useMemo(() => ({ mode, setTheme, toggleTheme }), [mode, setTheme, toggleTheme]);
 

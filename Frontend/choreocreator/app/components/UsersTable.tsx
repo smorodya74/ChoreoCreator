@@ -5,6 +5,7 @@ import { Table, Space, Button } from 'antd';
 import type { TableProps } from 'antd';
 import { DeleteOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import { changeBlockStatus, deleteUser, getAllUsers } from '../services/users';
+import { useAuth } from '../context/auth-context';
 
 interface User {
     id: string;
@@ -16,6 +17,7 @@ interface User {
 
 const UsersTable: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
+    const { user: currentUser } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,6 +71,7 @@ const UsersTable: React.FC = () => {
                         ghost
                         danger
                         icon={<DeleteOutlined />}
+                        disabled={record.email === currentUser?.email}
                         onClick={() => handleDelete(record.id)}
                     >
                         Удалить
