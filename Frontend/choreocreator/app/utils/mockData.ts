@@ -5,7 +5,8 @@ export const mockAuth = {
   user: {
     username: "testuser",
     email: "test@example.com",
-    role: "user"
+    role: "user",
+    createdAt: new Date().toISOString()
   },
 
   login: async (data: { email: string; password: string }): Promise<void> => {
@@ -43,7 +44,8 @@ export const mockAuth = {
     mockAuth.user = {
       username: data.username,
       email: data.email,
-      role: "user"
+      role: "user",
+      createdAt: new Date().toISOString()
     };
 
     return;

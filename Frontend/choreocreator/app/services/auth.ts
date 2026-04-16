@@ -28,6 +28,7 @@ export interface User {
   username: string;
   email: string;
   role: string;
+  createdAt: string;
 }
 
 function looksLikeHtml(payload: string): boolean {
@@ -133,6 +134,7 @@ export const getMe = async (): Promise<User | null> => {
     username: user.username?.value ?? user.username,
     email: user.email?.value ?? user.email,
     role: user.role,
+    createdAt: user.createdAt ?? "",
   };
 };
 

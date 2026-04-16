@@ -7,6 +7,7 @@ type User = {
   username: string;
   email: string;
   role: string;
+  createdAt: string;
 };
 
 interface AuthContextType {
@@ -45,6 +46,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await apiLogin({ email, password });
       const currentUser = await getMe();
+      if (!currentUser) {
+        setError('Не удалось получить сессию после входа');
+        return false;
+      }
       setUser(currentUser);
       return true;
     } catch (e: unknown) {
@@ -58,6 +63,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await apiRegister({ email, username, password });
       const currentUser = await getMe();
+      if (!currentUser) {
+        setError('Регистрация выполнена, но сессия не создана');
+        return false;
+      }
       setUser(currentUser);
       return true;
     } catch (e: unknown) {

@@ -29,5 +29,10 @@
         /// Флаг блокировки пользователя.
         /// </summary>
         public bool IsBlocked { get; set; }
+
+        /// <summary>
+        /// Дата регистрации пользователя (UTC).
+        /// </summary>
+        public DateTime CreatedAt { get; set; }
     }
 }

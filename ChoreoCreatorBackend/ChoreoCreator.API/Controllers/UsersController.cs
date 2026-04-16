@@ -40,7 +40,8 @@ namespace ChoreoCreator.API.Controllers
                 Email = u.Email.Value,
                 Username = u.Username.Value,
                 Role = u.Role,
-                IsBlocked = u.IsBlocked
+                IsBlocked = u.IsBlocked,
+                CreatedAt = u.CreatedAt
             }).ToList();
 
             return Ok(response);

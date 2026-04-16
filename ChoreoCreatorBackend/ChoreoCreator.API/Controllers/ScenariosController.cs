@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChoreoCreator.API.Controllers
 {
     /// <summary>
-    /// Управление сценариями и их построением.
+    /// API-контроллер управления сценариями хореографии.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -27,11 +27,7 @@ namespace ChoreoCreator.API.Controllers
             _usersRepository = usersRepository;
         }
 
-        // GET: api/scenarios
-        /// <summary>
-        /// Возвращает список всех сценариев.
-        /// </summary>
-        /// <response code="200">Список сценариев.</response>
+        /// <summary>Возвращает список всех сценариев.</summary>
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<List<ScenarioResponse>>> GetAll()
@@ -46,13 +42,7 @@ namespace ChoreoCreator.API.Controllers
             return Ok(responses);
         }
 
-        // GET: api/scenarios/{id}
-        /// <summary>
-        /// Возвращает сценарий по идентификатору.
-        /// </summary>
-        /// <param name="id">Идентификатор сценария.</param>
-        /// <response code="200">Сценарий найден.</response>
-        /// <response code="404">Сценарий не найден.</response>
+        /// <summary>Возвращает сценарий по идентификатору.</summary>
         [HttpGet("{id:guid}")]
         [AllowAnonymous]
         public async Task<ActionResult<ScenarioResponse>> GetById(Guid id)
@@ -65,15 +55,7 @@ namespace ChoreoCreator.API.Controllers
             return Ok(response);
         }
 
-        // POST: api/scenarios
-        /// <summary>
-        /// Создаёт новый сценарий от имени текущего пользователя.
-        /// </summary>
-        /// <remarks>Требуется аутентификация. При <c>IsPublished=true</c> сценарий публикуется сразу.</remarks>
-        /// <param name="request">Данные нового сценария.</param>
-        /// <response code="200">Сценарий создан.</response>
-        /// <response code="400">Некорректные данные сценария.</response>
-        /// <response code="401">Пользователь не аутентифицирован.</response>
+        /// <summary>Создаёт новый сценарий.</summary>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ScenarioResponse>> CreateScenario([FromBody] CreateScenarioRequest request)
@@ -103,17 +85,7 @@ namespace ChoreoCreator.API.Controllers
             return Ok(response);
         }
 
-        // PUT: api/scenarios/{id}
-        /// <summary>
-        /// Обновляет сценарий и его формирования.
-        /// </summary>
-        /// <remarks>Требуется аутентификация. Обновлять может только владелец сценария.</remarks>
-        /// <param name="id">Идентификатор сценария.</param>
-        /// <param name="request">Новые данные сценария.</param>
-        /// <response code="200">Сценарий обновлён.</response>
-        /// <response code="401">Пользователь не аутентифицирован.</response>
-        /// <response code="403">Нет прав на изменение чужого сценария.</response>
-        /// <response code="404">Сценарий не найден.</response>
+        /// <summary>Обновляет существующий сценарий и его формирования.</summary>
         [HttpPut("{id:guid}")]
         [Authorize]
         public async Task<IActionResult> Update(Guid id, [FromBody] ScenarioUpdateRequest request)
@@ -148,16 +120,7 @@ namespace ChoreoCreator.API.Controllers
             return Ok(response);
         }
 
-        // DELETE: api/scenarios/{id}
-        /// <summary>
-        /// Удаляет сценарий.
-        /// </summary>
-        /// <remarks>Требуется аутентификация. Удалять может владелец или администратор.</remarks>
-        /// <param name="id">Идентификатор сценария.</param>
-        /// <response code="204">Сценарий удалён.</response>
-        /// <response code="401">Пользователь не аутентифицирован.</response>
-        /// <response code="403">Нет прав на удаление.</response>
-        /// <response code="404">Сценарий не найден.</response>
+        /// <summary>Удаляет сценарий.</summary>
         [HttpDelete("{id:guid}")]
         [Authorize]
         public async Task<IActionResult> Delete(Guid id)
@@ -176,13 +139,7 @@ namespace ChoreoCreator.API.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Возвращает сценарий текущего пользователя.
-        /// </summary>
-        /// <remarks>Требуется аутентификация.</remarks>
-        /// <response code="200">Сценарий пользователя найден.</response>
-        /// <response code="401">Пользователь не аутентифицирован.</response>
-        /// <response code="404">Сценарий пользователя не найден.</response>
+        /// <summary>Возвращает сценарий текущего пользователя.</summary>
         [HttpGet("mine")]
         [Authorize]
         public async Task<ActionResult<ScenarioResponse>> GetMyScenario()

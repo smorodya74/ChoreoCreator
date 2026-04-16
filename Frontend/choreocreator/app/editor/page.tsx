@@ -71,7 +71,7 @@ const normalizeWithDuration = (formations: Formation[], baseDurationMs: number) 
   const totalDurationMs = clamp(Math.max(baseDurationMs, required), MIN_SCENARIO_MS, MAX_SCENARIO_MS);
 
   if (required > totalDurationMs) {
-    // hard guard for 20 min cap: trim last formations if needed
+    // hard guard for max duration cap: trim last formations if needed
     const constrained = normalizeFormations(
       normalized.map((f) => ({ ...f })).map((f) => {
         const maxDur = Math.max(MIN_FORMATION_MS, totalDurationMs - f.startTimeMs);
@@ -277,6 +277,11 @@ export default function EditorPage() {
     const active = formations[Math.max(0, activeIndex)];
     if (!active) return [] as DancerPosition[];
 
+    // In pause mode, preview always shows final positions of current formation.
+    if (!isPlaying) {
+      return active.dancerPositions;
+    }
+
     if (activeIndex <= 0 || active.animationDurationMs <= 0) {
       return active.dancerPositions;
     }
@@ -306,7 +311,7 @@ export default function EditorPage() {
         },
       };
     });
-  }, [formations, currentTimeMs]);
+  }, [formations, currentTimeMs, isPlaying]);
 
   const handleAddDancer = () => {
     if (!selectedFormation) return;
@@ -361,7 +366,7 @@ export default function EditorPage() {
       dancerPositions: source.map((d, i) => ({ id: uuidv4(), numberInFormation: i + 1, position: { ...d.position } })),
     };
 
-    const normalized = normalizeWithDuration([...formations, newFormation], totalDurationMs);
+    const normalized = normalizeWithDuration([...formations, newFormation], totalDurationMs + durationMs);
     setFormations(normalized.formations);
     setTotalDurationMs(normalized.totalDurationMs);
     setSelectedFormationId(newFormationId);

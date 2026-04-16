@@ -12,5 +12,6 @@ namespace ChoreoCreator.DataAccess.Entities
         public string ?PasswordHash { get; set; }
         public string Role { get; set; } = "Choreographer";
         public bool IsBlocked { get; set; } = false;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
