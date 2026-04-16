@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: choreocrestordb
+      POSTGRES_DB: choreocreatordb
       PGDATA: /var/lib/postgresql/data/pgdata
 
     ports:
@@ -19,7 +19,7 @@ services:
       - pgdata:/var/lib/postgresql/data/pgdata
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d choreocrestordb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d choreocreatordb"]
       interval: 10s
       timeout: 5s
       retries: 10

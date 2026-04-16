@@ -1,3 +1,4 @@
+using ChoreoCreator.API.Services;
 using ChoreoCreator.Infrastructure;
 using ChoreoCreator.Core.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,7 @@ builder.Services.AddAuthorization();
 
 // DI registrations
 builder.Services.AddProjectServices(builder.Configuration);
+builder.Services.AddHostedService<LocalPostgresBootstrapService>();
 
 // Controllers, Swagger, etc.
 builder.Services.AddControllers();
