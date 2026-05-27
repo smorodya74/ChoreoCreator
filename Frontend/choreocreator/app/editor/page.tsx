@@ -104,6 +104,8 @@ export default function EditorPage() {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [scenarioId, setScenarioId] = useState<string | undefined>(undefined);
+  const [scenarioTitle, setScenarioTitle] = useState('Новый сценарий');
+  const [scenarioDescription, setScenarioDescription] = useState('');
   const [localScenarioId, setLocalScenarioId] = useState<string | undefined>(undefined);
 
   const [formations, setFormations] = useState<Formation[]>([]);
@@ -132,6 +134,8 @@ export default function EditorPage() {
   ) => {
     saveDraftToLocalStorage({
       id: localScenarioId,
+      title: scenarioTitle,
+      description: scenarioDescription,
       isPublished: false,
       totalDurationMs: nextTotalDurationMs,
       formations: nextFormations,
@@ -179,6 +183,8 @@ export default function EditorPage() {
           const fromServer = await getMyScenario();
           const normalized = normalizeWithDuration(fromServer.formations, fromServer.totalDurationMs || MIN_SCENARIO_MS);
           setScenarioId(fromServer.id);
+          setScenarioTitle(fromServer.title);
+          setScenarioDescription(fromServer.description ?? '');
           setFormations(normalized.formations);
           setTotalDurationMs(normalized.totalDurationMs);
           setSelectedFormationId(normalized.formations[0]?.id ?? null);
@@ -192,6 +198,8 @@ export default function EditorPage() {
       if (draft) {
         const normalized = normalizeWithDuration(draft.formations, draft.totalDurationMs || MIN_SCENARIO_MS);
         setLocalScenarioId(draft.id);
+        setScenarioTitle(draft.title?.trim() || 'Новый сценарий');
+        setScenarioDescription(draft.description ?? '');
         setFormations(normalized.formations);
         setTotalDurationMs(normalized.totalDurationMs);
         setSelectedFormationId(draft.selectedFormationId ?? normalized.formations[0]?.id ?? null);
@@ -214,7 +222,6 @@ export default function EditorPage() {
       }];
 
       const normalized = normalizeWithDuration(initial, MIN_SCENARIO_MS);
-      setScenarioId(uuidv4());
       setFormations(normalized.formations);
       setTotalDurationMs(normalized.totalDurationMs);
       setSelectedFormationId(formationId);
@@ -417,17 +424,49 @@ export default function EditorPage() {
       return;
     }
 
-    const existing = await getScenarioById(scenarioId);
     const request: ScenarioRequest = {
-      title: existing.title,
-      description: existing.description,
+      title: scenarioTitle,
+      description: scenarioDescription,
       formations,
       dancerCount: Math.max(...formations.map((f) => f.dancerPositions.length)),
       isPublished,
       totalDurationMs,
     };
 
-    await updateScenario(scenarioId, request);
+    try {
+      await updateScenario(scenarioId, request);
+    } catch (error) {
+      const errorText = error instanceof Error ? error.message : String(error);
+      if (!errorText.includes('404')) {
+        throw error;
+      }
+
+      const created = await createScenario(request);
+      setScenarioId(created.id);
+      setScenarioTitle(created.title);
+      setScenarioDescription(created.description ?? '');
+    }
+  };
+
+  const exportScenario = async () => {
+    if (!scenarioId) {
+      exportScenarioToPdf({ title: scenarioTitle, formations });
+      return;
+    }
+
+    try {
+      const scenario = await getScenarioById(scenarioId);
+      setScenarioTitle(scenario.title);
+      setScenarioDescription(scenario.description ?? '');
+      exportScenarioToPdf({ title: scenario.title, formations: scenario.formations });
+    } catch (error) {
+      const errorText = error instanceof Error ? error.message : String(error);
+      if (!errorText.includes('404')) {
+        throw error;
+      }
+
+      exportScenarioToPdf({ title: scenarioTitle, formations });
+    }
   };
 
   return (
@@ -448,11 +487,7 @@ export default function EditorPage() {
           onDeleteFormation={handleDeleteFormation}
           onSaveScenario={() => saveToBackend(false)}
           onPublicScenario={() => saveToBackend(true)}
-          onExportScenario={async () => {
-            if (!scenarioId) return;
-            const scenario = await getScenarioById(scenarioId);
-            exportScenarioToPdf({ title: scenario.title, formations: scenario.formations });
-          }}
+          onExportScenario={exportScenario}
           totalDurationMs={totalDurationMs}
           onChangeTotalDuration={(nextMs) => {
             const required = requiredScenarioDurationMs(formations);
@@ -542,6 +577,8 @@ export default function EditorPage() {
           setPendingAction(null);
         }}
         handleCreate={async (data) => {
+          setScenarioTitle(data.title);
+          setScenarioDescription(data.description);
           const request: ScenarioRequest = {
             ...data,
             dancerCount: Math.max(...formations.map((f) => f.dancerPositions.length)),
@@ -552,6 +589,8 @@ export default function EditorPage() {
 
           const response = await createScenario(request);
           setScenarioId(response.id);
+          setScenarioTitle(response.title);
+          setScenarioDescription(response.description ?? '');
           setScenarioModalVisible(false);
           setPendingAction(null);
         }}

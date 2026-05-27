@@ -22,7 +22,8 @@ internal sealed class InMemoryUsersRepository : IUsersRepository
 
     public Task<bool> ExistsByEmail(string email)
     {
-        return Task.FromResult(_store.Values.Any(x => x.Email.Value == email));
+        var normalizedEmail = UserEmail.Normalize(email);
+        return Task.FromResult(_store.Values.Any(x => x.Email.Value == normalizedEmail));
     }
 
     public Task<List<User>> GetAll()
@@ -32,7 +33,8 @@ internal sealed class InMemoryUsersRepository : IUsersRepository
 
     public Task<User?> GetByEmail(string email)
     {
-        var user = _store.Values.FirstOrDefault(x => x.Email.Value == email);
+        var normalizedEmail = UserEmail.Normalize(email);
+        var user = _store.Values.FirstOrDefault(x => x.Email.Value == normalizedEmail);
         return Task.FromResult(user);
     }
 
@@ -110,4 +112,3 @@ internal sealed class StubUserCollection : IUserCollection
         return Task.FromResult(Exists);
     }
 }
-

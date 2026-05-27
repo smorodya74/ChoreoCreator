@@ -9,7 +9,7 @@ public static class ScenarioMapper
     public static async Task<ScenarioResponse> ToResponseAsync(Scenario s, IUsersRepository userRepository)
     {
         var user = await userRepository.GetById(s.UserId);
-        var username = user?.Username.ToString();
+        var username = user?.Username.ToString() ?? string.Empty;
 
         return new ScenarioResponse(
             s.Id,

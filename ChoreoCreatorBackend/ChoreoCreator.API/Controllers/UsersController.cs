@@ -55,8 +55,14 @@ namespace ChoreoCreator.API.Controllers
         /// <response code="400">Нельзя изменить статус блокировки собственного аккаунта.</response>
         /// <response code="404">Пользователь не найден.</response>
         [HttpPost("change-block-status")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeBlockStatus([FromBody] ChangeBlockStatusRequest request)
         {
+            if (request.UserId == Guid.Empty)
+            {
+                return BadRequest("Некорректный идентификатор пользователя");
+            }
+
             var currentUserId = User.GetUserId();
             if (request.UserId == currentUserId)
             {
@@ -111,6 +117,11 @@ namespace ChoreoCreator.API.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             var userId = User.GetUserId(); // получаем ID из токена
+
+            if (!UserPassword.CanCreate(request.CurrentPassword) || !UserPassword.CanCreate(request.NewPassword))
+            {
+                return BadRequest($"Пароль должен быть длиной {UserPassword.MinimumLength}-{UserPassword.MaximumLength} символов и содержать заглавную букву, цифру и спецсимвол");
+            }
 
             var currentPassword = new UserPassword(request.CurrentPassword);
             var newPassword = new UserPassword(request.NewPassword);

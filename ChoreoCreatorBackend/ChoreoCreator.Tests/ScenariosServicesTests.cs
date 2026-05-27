@@ -100,6 +100,7 @@ public class ScenariosServicesTests
         Assert.Equal("Updated title", saved!.Title);
         Assert.Equal("Updated description", saved.Description);
         Assert.Equal(8, saved.DancerCount);
+        Assert.Equal(30_000, saved.TotalDurationMs);
         Assert.True(saved.IsPublished);
         Assert.Equal(2, saved.Formations.Count);
     }

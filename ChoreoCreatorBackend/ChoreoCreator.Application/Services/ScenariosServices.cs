@@ -43,6 +43,7 @@ namespace ChoreoCreator.Application.Services
             existing.UpdateTitle(scenario.Title);
             existing.UpdateDescription(scenario.Description);
             existing.UpdateDancerCount(scenario.DancerCount);
+            existing.UpdateTotalDuration(scenario.TotalDurationMs);
 
             typeof(Scenario)
                 .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?

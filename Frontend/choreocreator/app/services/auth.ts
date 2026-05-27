@@ -40,6 +40,10 @@ function getFallbackErrorMessage(status: number): string {
   return FALLBACK_ERROR_MESSAGES[status] ?? `Ошибка авторизации (${status})`;
 }
 
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 async function parseErrorMessage(response: Response): Promise<string> {
   const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
 
@@ -62,15 +66,17 @@ async function parseErrorMessage(response: Response): Promise<string> {
 }
 
 export async function login(data: LoginRequest): Promise<void> {
+  const request = { ...data, email: normalizeEmail(data.email) };
+
   if (process.env.NEXT_PUBLIC_MOCK_API === "true") {
-    return mockAuth.login(data);
+    return mockAuth.login(request);
   }
 
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(request),
       credentials: "include",
     });
 
@@ -88,15 +94,17 @@ export async function login(data: LoginRequest): Promise<void> {
 }
 
 export async function register(data: RegisterRequest): Promise<void> {
+  const request = { ...data, email: normalizeEmail(data.email) };
+
   if (process.env.NEXT_PUBLIC_MOCK_API === "true") {
-    return mockAuth.register(data);
+    return mockAuth.register(request);
   }
 
   try {
     const res = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(request),
       credentials: "include",
     });
 
@@ -105,7 +113,7 @@ export async function register(data: RegisterRequest): Promise<void> {
       throw new Error(errorMessage);
     }
 
-    await login({ email: data.email, password: data.password });
+    await login({ email: request.email, password: request.password });
   } catch (error) {
     if (error instanceof Error) {
       throw error;

@@ -16,7 +16,7 @@ namespace ChoreoCreator.DataAccess.Repositories
 
         public async Task<bool> UserExistBy(UserEmail email, CancellationToken ct)
         {
-            return await _dbContext.Users.AnyAsync(u => u.Email == email.Value, ct);
+            return await _dbContext.Users.AnyAsync(u => u.Email.ToLower() == email.Value, ct);
         }
 
         public async Task AddUserAsync(User user, CancellationToken ct)

@@ -47,6 +47,20 @@ public class UsersServiceTests
     }
 
     [Fact]
+    public async Task ValidateCredentials_ReturnsNull_WhenCredentialsEmpty()
+    {
+        var service = new UsersService(
+            new InMemoryUsersRepository(),
+            NullLogger<UsersService>.Instance,
+            new UserRegistrationService(new StubPasswordHasher(), new StubUserCollection()),
+            new StubPasswordHasher());
+
+        var result = await service.ValidateCredentials("", "");
+
+        Assert.Null(result);
+    }
+
+    [Fact]
     public async Task ValidateCredentials_ReturnsNull_WhenPasswordInvalid()
     {
         var usersRepository = new InMemoryUsersRepository();
@@ -84,6 +98,25 @@ public class UsersServiceTests
     }
 
     [Fact]
+    public async Task ValidateCredentials_ReturnsUser_WhenEmailHasDifferentCase()
+    {
+        var usersRepository = new InMemoryUsersRepository();
+        var user = CreateUser("admin1@mail.ru");
+        await usersRepository.Create(user);
+        var passwordHasher = new StubPasswordHasher { VerifyResult = PasswordVerificationResult.Success };
+        var service = new UsersService(
+            usersRepository,
+            NullLogger<UsersService>.Instance,
+            new UserRegistrationService(passwordHasher, new StubUserCollection()),
+            passwordHasher);
+
+        var result = await service.ValidateCredentials("Admin1@mail.ru", "Password1!");
+
+        Assert.NotNull(result);
+        Assert.Equal(user.Id.Value, result!.Id.Value);
+    }
+
+    [Fact]
     public async Task RegisterUser_ReturnsError_WhenEmailInvalid()
     {
         var service = new UsersService(
@@ -107,6 +140,20 @@ public class UsersServiceTests
             new StubPasswordHasher());
 
         var result = await service.RegisterUser("user@example.com", "user_1", "short", CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+    }
+
+    [Fact]
+    public async Task RegisterUser_ReturnsError_WhenUsernameInvalid()
+    {
+        var service = new UsersService(
+            new InMemoryUsersRepository(),
+            NullLogger<UsersService>.Instance,
+            new UserRegistrationService(new StubPasswordHasher(), new StubUserCollection()),
+            new StubPasswordHasher());
+
+        var result = await service.RegisterUser("user@example.com", "??", "Password1!", CancellationToken.None);
 
         Assert.True(result.IsFailure);
     }
@@ -142,6 +189,23 @@ public class UsersServiceTests
 
         Assert.True(result.IsSuccess);
         Assert.Single(allUsers);
+    }
+
+    [Fact]
+    public async Task RegisterUser_StoresEmailInLowerCase()
+    {
+        var usersRepository = new InMemoryUsersRepository();
+        var service = new UsersService(
+            usersRepository,
+            NullLogger<UsersService>.Instance,
+            new UserRegistrationService(new StubPasswordHasher(), new StubUserCollection()),
+            new StubPasswordHasher());
+
+        var result = await service.RegisterUser("Admin1@mail.ru", "admin_1", "Password1!", CancellationToken.None);
+        var allUsers = await usersRepository.GetAll();
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("admin1@mail.ru", allUsers.Single().Email.Value);
     }
 
     [Fact]

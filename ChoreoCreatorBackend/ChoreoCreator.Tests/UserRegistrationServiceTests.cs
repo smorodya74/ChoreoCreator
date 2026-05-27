@@ -59,4 +59,12 @@ public class UserRegistrationServiceTests
         Assert.Equal("new_user", result.Value.Username.Value);
         Assert.Equal("hashed", result.Value.PasswordHash.Value);
     }
+
+    [Fact]
+    public void UserEmail_From_NormalizesCaseAndWhitespace()
+    {
+        var email = UserEmail.From("  Admin1@mail.ru  ");
+
+        Assert.Equal("admin1@mail.ru", email.Value);
+    }
 }

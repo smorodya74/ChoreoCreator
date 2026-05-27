@@ -15,7 +15,7 @@ public sealed class UserEmail : ValueObject
         if (string.IsNullOrWhiteSpace(value))
             return false;
 
-        return MailAddress.TryCreate(value, out _);
+        return MailAddress.TryCreate(value.Trim(), out _);
     }
 
     public static UserEmail From(string value)
@@ -23,7 +23,12 @@ public sealed class UserEmail : ValueObject
         if (!CanCreate(value))
             throw new ArgumentException("Неправильный формат почты", nameof(value));
 
-        return new UserEmail(value);
+        return new UserEmail(Normalize(value));
+    }
+
+    public static string Normalize(string value)
+    {
+        return value.Trim().ToLowerInvariant();
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()
