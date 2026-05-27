@@ -96,6 +96,8 @@
             if (string.IsNullOrWhiteSpace(title) || title.Length > MAX_TITLE_LENGTH)
                 throw new ArgumentException($"Название не может быть пустым или длиннее {MAX_TITLE_LENGTH} символов");
 
+            description ??= string.Empty;
+
             if (description.Length > MAX_DESCRIPTION_LENGTH)
                 throw new ArgumentException($"Описание не может быть длиннее {MAX_DESCRIPTION_LENGTH} символов");
 
@@ -125,10 +127,12 @@
         /// </summary>
         public void UpdateDescription(string newDescription)
         {
+            newDescription ??= string.Empty;
+
             if (newDescription.Length > MAX_DESCRIPTION_LENGTH)
                 throw new ArgumentException($"Описание не может быть длиннее {MAX_DESCRIPTION_LENGTH} символов");
 
-            Description = newDescription ?? string.Empty;
+            Description = newDescription;
         }
 
         /// <summary>
@@ -136,6 +140,9 @@
         /// </summary>
         public void UpdateDancerCount(int count)
         {
+            if (count < 1 || count > 16)
+                throw new ArgumentException("Количество танцоров должно быть от 1 до 16");
+
             DancerCount = count;
         }
 

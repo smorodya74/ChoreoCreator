@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.vs/
+.vscode/
+*.user
+*.suo
+*.tmp
+Dockerfile
+ChoreoCreator.API/docker-compose.yml

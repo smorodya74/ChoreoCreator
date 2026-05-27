@@ -1,7 +1,9 @@
 using ChoreoCreator.API.Services;
 using ChoreoCreator.Core.Settings;
+using ChoreoCreator.DataAccess;
 using ChoreoCreator.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Security.Claims;
@@ -78,18 +80,50 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:3000"];
+
+allowedOrigins = allowedOrigins
+    .Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .ToArray();
+
+if (allowedOrigins.Length == 0)
+{
+    allowedOrigins = ["http://localhost:3000"];
+}
 
 app.UseCors(x =>
 {
-    x.WithOrigins("http://localhost:3000")
+    x.WithOrigins(allowedOrigins)
      .AllowAnyHeader()
      .AllowAnyMethod()
      .AllowCredentials();
 });
+
+await ApplyMigrationsAsync(app.Services, app.Logger);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
+
+static async Task ApplyMigrationsAsync(IServiceProvider services, ILogger logger)
+{
+    using var scope = services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ChoreoCreatorDbContext>();
+
+    for (var attempt = 1; attempt <= 10; attempt++)
+    {
+        try
+        {
+            await dbContext.Database.MigrateAsync();
+            return;
+        }
+        catch (Exception ex) when (attempt < 10)
+        {
+            logger.LogWarning(ex, "Failed to apply migrations (attempt {Attempt}/10). Retrying...", attempt);
+            await Task.Delay(TimeSpan.FromSeconds(3));
+        }
+    }
+}

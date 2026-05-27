@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-choreocreatordb}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-choreocreatordb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./ChoreoCreatorBackend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__ChoreoCreatorDbContext: Host=postgres;Port=5432;Database=${POSTGRES_DB:-choreocreatordb};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      JwtSettings__SecretKey: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
+      JwtSettings__Issuer: ${JWT_ISSUER:-ChoreoCreator}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-ChoreoCreatorUser}
+      JwtSettings__ExpiresInMinutes: ${JWT_EXPIRES_IN_MINUTES:-60}
+      Cors__AllowedOrigins__0: http://localhost:3000
+    expose:
+      - "8080"
+    volumes:
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Frontend/choreocreator
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+        NEXT_PUBLIC_MOCK_API: "false"
+        BACKEND_INTERNAL_URL: http://backend:8080/api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  dataprotection-keys:

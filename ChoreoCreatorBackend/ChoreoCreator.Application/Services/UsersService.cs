@@ -35,6 +35,9 @@ namespace ChoreoCreator.Application.Services
 
         public async Task<User?> ValidateCredentials(string email, string password)
         {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(password))
+                return null;
+
             var user = await GetByEmail(email);
 
             if (user == null)
@@ -60,6 +63,11 @@ namespace ChoreoCreator.Application.Services
             if (!UserPassword.CanCreate(password))
             {
                 return $"Минимальная длина пароля {UserPassword.MinimumLength} символов, максимальная {UserPassword.MaximumLength}.";
+            }
+
+            if (!Username.CanCreate(username))
+            {
+                return "Имя пользователя должно содержать 3-30 символов: латинские буквы, цифры, _ или -.";
             }
 
             var result = await _userRegistrationService.Register(UserEmail.From(email), Username.From(username), UserPassword.From(password), ct);

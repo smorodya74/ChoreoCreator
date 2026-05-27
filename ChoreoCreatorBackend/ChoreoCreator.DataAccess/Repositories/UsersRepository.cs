@@ -37,9 +37,10 @@ namespace ChoreoCreator.DataAccess.Repositories
 
         public async Task<User?> GetByEmail(string email)
         {
+            var normalizedEmail = UserEmail.Normalize(email);
             var userEntity = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
 
             if (userEntity == null)
                 return null;
@@ -88,7 +89,8 @@ namespace ChoreoCreator.DataAccess.Repositories
 
         public async Task<bool> ExistsByEmail(string email)
         {
-            return await _context.Users.AnyAsync(u => u.Email == email);
+            var normalizedEmail = UserEmail.Normalize(email);
+            return await _context.Users.AnyAsync(u => u.Email.ToLower() == normalizedEmail);
         }
 
         public async Task<Guid> Create(User user)

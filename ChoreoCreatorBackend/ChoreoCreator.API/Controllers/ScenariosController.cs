@@ -62,27 +62,34 @@ namespace ChoreoCreator.API.Controllers
         {
             var userId = User.GetUserId();
 
-            var (scenario, error) = Scenario.Create(
-                Guid.NewGuid(),
-                request.Title,
-                request.Description,
-                request.DancerCount,
-                userId,
-                request.TotalDurationMs
-            );
+            try
+            {
+                var (scenario, error) = Scenario.Create(
+                    Guid.NewGuid(),
+                    request.Title,
+                    request.Description,
+                    request.DancerCount,
+                    userId,
+                    request.TotalDurationMs
+                );
 
-            if (!string.IsNullOrEmpty(error))
-                return BadRequest(error);
+                if (!string.IsNullOrEmpty(error))
+                    return BadRequest(error);
 
-            ApplyFormations(scenario, request.Formations);
+                ApplyFormations(scenario, request.Formations);
 
-            if (request.IsPublished)
-                scenario.Publish();
+                if (request.IsPublished)
+                    scenario.Publish();
 
-            await _scenarioService.CreateScenario(scenario);
+                await _scenarioService.CreateScenario(scenario);
 
-            var response = await ScenarioMapper.ToResponseAsync(scenario, _usersRepository);
-            return Ok(response);
+                var response = await ScenarioMapper.ToResponseAsync(scenario, _usersRepository);
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>Обновляет существующий сценарий и его формирования.</summary>
@@ -98,16 +105,23 @@ namespace ChoreoCreator.API.Controllers
             if (userId != existing.UserId)
                 return Forbid();
 
-            existing.UpdateTitle(request.Title);
-            existing.UpdateDescription(request.Description ?? string.Empty);
-            existing.UpdateDancerCount(request.DancerCount);
-            existing.UpdateTotalDuration(request.TotalDurationMs);
+            try
+            {
+                existing.UpdateTitle(request.Title);
+                existing.UpdateDescription(request.Description ?? string.Empty);
+                existing.UpdateDancerCount(request.DancerCount);
+                existing.UpdateTotalDuration(request.TotalDurationMs);
 
-            typeof(Scenario)
-                .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
-                .SetValue(existing, new List<Formation>());
+                typeof(Scenario)
+                    .GetField("_formations", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                    .SetValue(existing, new List<Formation>());
 
-            ApplyFormations(existing, request.Formations);
+                ApplyFormations(existing, request.Formations);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             if (request.IsPublished && !existing.IsPublished)
             {
@@ -125,9 +139,9 @@ namespace ChoreoCreator.API.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var scenario = await _scenarioService.GetScenarioById(id);
             var userId = User.GetUserId();
-            var userRole = _usersRepository.GetById(userId).Result?.Role;
+            var userRole = (await _usersRepository.GetById(userId))?.Role;
+            var scenario = await _scenarioService.GetScenarioById(id);
 
             if (scenario == null)
                 return NotFound();
@@ -158,13 +172,33 @@ namespace ChoreoCreator.API.Controllers
         /// Нормализует входные формирования в непрерывную последовательность без разрывов
         /// и добавляет их в сценарий с соблюдением ограничений времени.
         /// </summary>
-        private static void ApplyFormations(Scenario scenario, List<FormationRequest> requests)
+        private static void ApplyFormations(Scenario scenario, List<FormationRequest>? requests)
         {
+            if (requests == null)
+            {
+                return;
+            }
+
             var ordered = requests.OrderBy(f => f.NumberInScenario).ToList();
             var cursorMs = 0;
 
             foreach (var f in ordered)
             {
+                if (f == null)
+                {
+                    throw new ArgumentException("Формирование не может быть null");
+                }
+
+                if (f.NumberInScenario < 1 || f.NumberInScenario > 16)
+                {
+                    throw new ArgumentException("Номер формирования должен быть от 1 до 16");
+                }
+
+                if (f.DancerPositions == null)
+                {
+                    throw new ArgumentException("Позиции танцоров должны быть переданы списком");
+                }
+
                 var durationMs = Math.Clamp(f.DurationMs <= 0 ? 10_000 : f.DurationMs, Formation.MIN_DURATION_MS, Formation.MAX_DURATION_MS);
                 var startTimeMs = Math.Max(cursorMs, f.StartTimeMs);
                 var animationDurationMs = f.NumberInScenario == 1 ? 0 : Math.Clamp(f.AnimationDurationMs, 0, durationMs);
@@ -182,8 +216,23 @@ namespace ChoreoCreator.API.Controllers
 
                 foreach (var dancerDto in f.DancerPositions)
                 {
+                    if (dancerDto == null)
+                    {
+                        throw new ArgumentException("Позиция танцора не может быть null");
+                    }
+
+                    if (dancerDto.Position == null)
+                    {
+                        throw new ArgumentException("Координаты позиции танцора обязательны");
+                    }
+
+                    if (dancerDto.NumberInFormation < 1 || dancerDto.NumberInFormation > scenario.DancerCount)
+                    {
+                        throw new ArgumentException("Номер танцора должен быть от 1 до количества танцоров в сценарии");
+                    }
+
                     var dancer = new DancerPosition(
-                        dancerDto.Id,
+                        dancerDto.Id == Guid.Empty ? Guid.NewGuid() : dancerDto.Id,
                         dancerDto.NumberInFormation,
                         new Position(dancerDto.Position.X, dancerDto.Position.Y));
 
