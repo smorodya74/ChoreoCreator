@@ -60,6 +60,16 @@ http://localhost:3000
 
 Frontend проксирует API-запросы через `/api` внутрь Docker-сети на backend. Backend напрямую наружу не публикуется.
 
+Swagger для локальной проверки доступен здесь:
+```text
+http://localhost:8080/swagger
+```
+
+Если Swagger не нужен, поставить в `.env`:
+```env
+SWAGGER_ENABLED=false
+```
+
 PostgreSQL хранит данные в Docker volume `choreocreator_pgdata`, поэтому данные остаются после остановки и повторного запуска контейнеров. Backend хранит служебные ASP.NET DataProtection keys в volume `choreocreator_dataprotection-keys`.
 
 Остановить приложение без удаления данных:

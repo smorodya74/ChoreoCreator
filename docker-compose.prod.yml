@@ -31,8 +31,11 @@ services:
       JwtSettings__Audience: ${JWT_AUDIENCE:-ChoreoCreatorUser}
       JwtSettings__ExpiresInMinutes: ${JWT_EXPIRES_IN_MINUTES:-60}
       Cors__AllowedOrigins__0: http://localhost:3000
+      Swagger__Enabled: ${SWAGGER_ENABLED:-true}
     expose:
       - "8080"
+    ports:
+      - "127.0.0.1:8080:8080"
     volumes:
       - dataprotection-keys:/root/.aspnet/DataProtection-Keys
     depends_on:
