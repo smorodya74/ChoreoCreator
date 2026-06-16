@@ -50,7 +50,7 @@ export default function RootLayout({
                     color: 'var(--app-text)'
                   }}
                 >
-                  © 2025 Choreo Creator. Created by Stepan Smorodnikov
+                  © 2026 Choreo Creator. Created by Stepan Smorodnikov
                 </Footer>}
             </Layout>
           </AuthProvider>

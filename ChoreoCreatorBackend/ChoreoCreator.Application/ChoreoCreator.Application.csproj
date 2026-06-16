@@ -20,13 +20,4 @@
     <ProjectReference Include="..\ChoreoCreator.Core\ChoreoCreator.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Mediatr\Auth\Queries\" />
-    <Folder Include="Mediatr\Auth\Commands\" />
-    <Folder Include="Mediatr\Scenarios\Commands\" />
-    <Folder Include="Mediatr\Scenarios\Queries\" />
-    <Folder Include="Mediatr\Users\Commands\" />
-    <Folder Include="Mediatr\Users\Queries\" />
-  </ItemGroup>
-
 </Project>

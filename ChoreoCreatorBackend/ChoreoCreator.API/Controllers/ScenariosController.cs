@@ -27,7 +27,9 @@ namespace ChoreoCreator.API.Controllers
             _usersRepository = usersRepository;
         }
 
-        /// <summary>Возвращает список всех сценариев.</summary>
+        /// <summary>
+        /// Возвращает список всех сценариев.
+        /// </summary>
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<List<ScenarioResponse>>> GetAll()
@@ -42,7 +44,9 @@ namespace ChoreoCreator.API.Controllers
             return Ok(responses);
         }
 
-        /// <summary>Возвращает сценарий по идентификатору.</summary>
+        /// <summary>
+        /// Возвращает сценарий по идентификатору.
+        /// </summary>
         [HttpGet("{id:guid}")]
         [AllowAnonymous]
         public async Task<ActionResult<ScenarioResponse>> GetById(Guid id)
@@ -55,7 +59,9 @@ namespace ChoreoCreator.API.Controllers
             return Ok(response);
         }
 
-        /// <summary>Создаёт новый сценарий.</summary>
+        /// <summary>
+        /// Создаёт новый сценарий.
+        /// </summary>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ScenarioResponse>> CreateScenario([FromBody] CreateScenarioRequest request)
@@ -92,7 +98,9 @@ namespace ChoreoCreator.API.Controllers
             }
         }
 
-        /// <summary>Обновляет существующий сценарий и его формирования.</summary>
+        /// <summary>
+        /// Обновляет существующий сценарий и его формирования.
+        /// </summary>
         [HttpPut("{id:guid}")]
         [Authorize]
         public async Task<IActionResult> Update(Guid id, [FromBody] ScenarioUpdateRequest request)
@@ -134,7 +142,9 @@ namespace ChoreoCreator.API.Controllers
             return Ok(response);
         }
 
-        /// <summary>Удаляет сценарий.</summary>
+        /// <summary>
+        /// Удаляет сценарий.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize]
         public async Task<IActionResult> Delete(Guid id)
